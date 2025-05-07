@@ -38,11 +38,11 @@ export default function DeleteAccoun({
   const formSchema = z
     .object({
       password: z.string(),
-      confirm_password: z.string(),
+      password_confirmation: z.string(),
     })
-    .refine((data) => data.password === data.confirm_password, {
+    .refine((data) => data.password === data.password_confirmation, {
       message: t("Passwords must match"),
-      path: ["confirm_password"],
+      path: ["password_confirmation"],
     });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -99,7 +99,7 @@ export default function DeleteAccoun({
           />
           <FormField
             control={form.control}
-            name="confirm_password"
+            name="password_confirmation"
             render={({ field }) => (
               <FormItem className="relative">
                 <FormLabel>{t("Confirm Password")}</FormLabel>

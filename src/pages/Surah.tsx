@@ -1,7 +1,7 @@
 import FadeInUp from "@/components/Animation/FadeInUp";
 import AyahCard from "@/components/AyahCard";
 import { IFilter, IAayh } from "@/types/generalTypes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import EditionSelector from "@/components/EditionSelector";
@@ -47,6 +47,20 @@ export default function Surah() {
     true,
     "surah"
   );
+  console.count();
+
+  useEffect(() => {
+    if (
+      (audioEditions.length || textEditions.length) &&
+      isNaN(filters.audio_edition || NaN)
+    ) {
+      setFilters({
+        ...filters,
+        audio_edition: audioEditions[0].id,
+        text_edition: textEditions[0].id,
+      });
+    }
+  }, [audioEditions.length, textEditions.length]);
 
   return (
     <div>

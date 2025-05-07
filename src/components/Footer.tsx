@@ -7,8 +7,7 @@ export default function Footer() {
       <div className="container mx-auto">
         <p>
           {t("Our quran")}
-          <br /> © {new Date().getFullYear()}
-          {t("All rights reserved")}
+          <br /> © {new Date().getFullYear()} {t("All rights reserved")}
         </p>
       </div>
     </footer>

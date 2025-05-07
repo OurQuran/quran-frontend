@@ -11,18 +11,24 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import useLogin from "@/react-query/auth/useLogin";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { EyeIcon, EyeOff } from "lucide-react";
-import { ILogin, ILoginP, RoleTypeEnum } from "@/types/authTypes";
+import { ILogin, IRegister, RoleTypeEnum } from "@/types/authTypes";
 import { saveToken } from "@/helpers/localStorage";
 import { AxiosError } from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useAuthStore } from "@/store/authStore";
+import useAdd from "@/react-query/useAdd";
 
 export default function SignUp() {
   const [t] = useTranslation("global");
@@ -72,9 +78,9 @@ export default function SignUp() {
       message: t("Passwords do not match"),
     });
 
-  async function onSuccess(data: ILogin) {
-    saveToken(data.token);
-    setUser(data.user);
+  async function onSuccess(data: { data: ILogin }) {
+    saveToken(data.data.token);
+    setUser(data.data.user);
     navigate("/");
   }
 
@@ -83,14 +89,14 @@ export default function SignUp() {
     toast.error(error.response?.data.message);
   }
 
-  const loginMutation = useLogin(onSuccess, onError);
+  const loginMutation = useAdd<IRegister>("signup", onSuccess, onError);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit = (data: FieldValues) => {
-    loginMutation.mutate(data as ILoginP);
+    loginMutation.mutate(data as IRegister);
   };
 
   return (
@@ -211,6 +217,14 @@ export default function SignUp() {
             </form>
           </Form>
         </CardContent>
+        <CardFooter className="flex justify-center">
+          <div className="text-sm">
+            {t("Already have an account ?")}{" "}
+            <Link to="/login" className="text-primary hover:underline">
+              {t("Login")}
+            </Link>
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );

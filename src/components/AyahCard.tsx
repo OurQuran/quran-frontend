@@ -267,7 +267,7 @@ export default function AyahCard({
                 </p>
               ) : null}
             </div>
-            <AyahTags tags={ayah.tags} limit={3} />
+            <AyahTags tags={ayah.tags} limit={3} ayahId={ayah.id} />
           </div>
         </div>
 

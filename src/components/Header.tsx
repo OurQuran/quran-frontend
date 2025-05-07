@@ -6,7 +6,7 @@ import { User } from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { isLoggedIn } from "@/helpers/authGuards";
 
-import { Button, buttonVariants } from "./ui/button";
+import { Button } from "./ui/button";
 import { useTranslation } from "react-i18next";
 
 import HeaderProfile from "./HeaderProfile";
@@ -28,6 +28,17 @@ function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const navLinks = [
+    {
+      label: "Home",
+      href: "/",
+    },
+    {
+      label: "Tags",
+      href: "/tags",
+    },
+  ];
+
   return (
     <motion.div
       initial={false}
@@ -43,28 +54,22 @@ function Header() {
             <QuranLogoIcon className="w-10 h-10 text-primary" />
           </Link>
           <nav className="flex gap-5 items-center">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                `text-muted-foreground hover:text-primary transition-colors ${
-                  isActive ? "underline" : ""
-                }`
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/tags"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Tags
-            </NavLink>
-            <NavLink
-              to="/bookmarks"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Bookmarks
-            </NavLink>
+            {navLinks.map((link, i) => {
+              return (
+                <NavLink
+                  key={i}
+                  to={link.href}
+                  className={({ isActive }) =>
+                    cn(
+                      "font-poppins hover:underline",
+                      isActive ? "text-primary underline" : "text-text"
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
         {isLoggedIn() ? (

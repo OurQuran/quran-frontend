@@ -11,7 +11,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import useLogin from "@/react-query/auth/useLogin";
 import { useTranslation } from "react-i18next";
@@ -21,7 +27,7 @@ import { ILogin, ILoginP } from "@/types/authTypes";
 import { saveToken } from "@/helpers/localStorage";
 import { AxiosError } from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useAuthStore } from "@/store/authStore";
 
 export default function Login() {
@@ -111,12 +117,12 @@ export default function Login() {
                     {showPassword ? (
                       <EyeOff
                         onClick={() => setShowPassword(false)}
-                        className="absolute top-10 end-4 cursor-pointer hover:text-primary"
+                        className="absolute top-10 w-5 h-5 end-4 cursor-pointer hover:text-primary"
                       />
                     ) : (
                       <EyeIcon
                         onClick={() => setShowPassword(true)}
-                        className="absolute top-10 end-4 cursor-pointer hover:text-primary"
+                        className="absolute top-10 w-5 h-5 end-4 cursor-pointer hover:text-primary"
                       />
                     )}
                   </FormItem>
@@ -128,6 +134,14 @@ export default function Login() {
             </form>
           </Form>
         </CardContent>
+        <CardFooter className="flex justify-center">
+          <div className="text-sm">
+            {t("Don't have an account?")}{" "}
+            <Link to="/signup" className="text-primary hover:underline">
+              {t("Sign up")}
+            </Link>
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );

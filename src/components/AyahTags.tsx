@@ -1,4 +1,4 @@
-import { Hash, Minus, MoreHorizontal, Plus } from "lucide-react";
+import { Hash, Minus, MoreHorizontal, Plus, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router";
@@ -7,8 +7,13 @@ import { ITag } from "@/types/generalTypes";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import useAdd from "@/react-query/useAdd";
+import { onError, onSuccess } from "@/helpers/utils";
+import { hasPermissionClient } from "@/helpers/authGuards";
+import { RoleTypeEnum } from "@/types/authTypes";
 
 interface TagsProps extends React.HTMLAttributes<HTMLDivElement> {
+  ayahId: number;
   tags: Partial<ITag>[];
   limit?: number;
   icon?: React.ReactNode;
@@ -16,6 +21,7 @@ interface TagsProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export default function AyahTags({
+  ayahId,
   tags,
   limit = 3,
   icon = <Hash className="w-3 h-3 mr-1" />,
@@ -28,6 +34,12 @@ export default function AyahTags({
   const visibleTags = !showAllTags ? tags.slice(0, limit) : tags;
   const remainingCount = tags.length - limit;
   const hasMoreTags = remainingCount > 0;
+
+  const unattachMutation = useAdd(
+    "tags/unattach",
+    () => onSuccess(t("Tag removed successfuly")),
+    () => onError(t("There was an error while removing the tag"))
+  );
 
   return (
     <div
@@ -52,9 +64,30 @@ export default function AyahTags({
               layout
             >
               <Link to={"/tags/" + tag.id}>
-                <Badge variant={variant} className="px-2 py-0.5 text-xs">
+                <Badge
+                  variant={variant}
+                  className="px-2 py-0.5 text-xs group relative"
+                >
                   {icon}
                   {tag.name}
+                  {hasPermissionClient([
+                    RoleTypeEnum.ADMIN,
+                    RoleTypeEnum.SUPERADMIN,
+                  ]) && (
+                    <button
+                      title="Remove tag"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        unattachMutation.mutate({
+                          ayah_id: ayahId,
+                          tag_id: tag.id,
+                        });
+                      }}
+                      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
                 </Badge>
               </Link>
             </motion.div>

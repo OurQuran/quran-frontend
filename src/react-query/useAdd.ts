@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 export default function useAdd<T>(
   path: string,
-  onSuccess: (data: T) => void,
+  onSuccess: (data: any) => void,
   onError: (error: any) => void
 ) {
   const postData = (data: T) => {

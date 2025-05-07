@@ -23,7 +23,13 @@ export function setItem(key: string, value: any) {
 }
 
 export function getItem(key: string) {
-  return JSON.parse(localStorage.getItem(key) || "");
+  const item = localStorage.getItem(key);
+  if (!item) return null;
+  try {
+    return JSON.parse(item);
+  } catch (error) {
+    return null;
+  }
 }
 
 export function removeItem(key: string) {
