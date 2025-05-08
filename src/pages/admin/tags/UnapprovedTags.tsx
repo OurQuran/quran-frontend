@@ -75,7 +75,7 @@ export default function UnapprovedTags() {
         return (
           <TableDropdown>
             <ApproveTagAttach id={row.original.id} />
-            <UnapproveTagAttach id={row.original.id} />
+            {false && <UnapproveTagAttach id={row.original.id} />}
           </TableDropdown>
         );
       },

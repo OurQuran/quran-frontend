@@ -37,6 +37,10 @@ function Header() {
       label: "Tags",
       href: "/tags",
     },
+    {
+      label: "Advaced Search",
+      href: "/advanced-search",
+    },
   ];
 
   return (

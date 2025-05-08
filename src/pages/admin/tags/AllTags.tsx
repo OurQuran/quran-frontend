@@ -49,14 +49,14 @@ export default function AllTags() {
   const tagsColumn: ColumnDef<ITagDashbaord>[] = [
     {
       accessorKey: "name",
-      id: "name",
-      header: "name",
+      id: "Name",
+      header: "Name",
     },
     {
-      id: "creator",
+      id: "Creator",
       enableSorting: false,
       accessorKey: "creator.username",
-      header: "creator",
+      header: "Creator",
       cell: ({ row }) => {
         return row.original.creator ? (
           <HoverCard>
@@ -83,10 +83,10 @@ export default function AllTags() {
       },
     },
     {
-      id: "updater",
+      id: "Updater",
       enableSorting: false,
       accessorKey: "updater.username",
-      header: "updater",
+      header: "Updater",
       cell: ({ row }) => {
         return row.original.updater ? (
           <HoverCard>
@@ -113,10 +113,10 @@ export default function AllTags() {
       },
     },
     {
-      id: "parent",
+      id: "Parent",
       enableSorting: false,
       accessorKey: "parent.username",
-      header: "parent",
+      header: "Parent",
       cell: ({ row }) => {
         return (
           <Badge className="w-full">{row.original.parent?.name || "_"}</Badge>
@@ -124,9 +124,9 @@ export default function AllTags() {
       },
     },
     {
-      id: "children",
+      id: "Children",
       accessorKey: "children_count",
-      header: "children",
+      header: "Children",
       cell: ({ row }) => {
         return (
           <Badge variant={"secondary"} className="w-full">

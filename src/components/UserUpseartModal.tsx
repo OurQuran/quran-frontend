@@ -27,10 +27,12 @@ export function UserUpsearModal({
   isOpen,
   setIsOpen,
   selectedRecord,
+  isSelf = false,
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   selectedRecord: IUser | null;
+  isSelf?: boolean;
 }) {
   const [t] = useTranslation("global");
 
@@ -43,16 +45,22 @@ export function UserUpsearModal({
         selectedRecord ? t("Update the selected user") : t("Create a new user")
       }
     >
-      <UpsertUser setIsOpen={setIsOpen} selectedRecord={selectedRecord} />
+      <UpsertUser
+        setIsOpen={setIsOpen}
+        selectedRecord={selectedRecord}
+        isSelf={isSelf}
+      />
     </AppDialog>
   );
 }
 function UpsertUser({
   setIsOpen,
   selectedRecord,
+  isSelf = false,
 }: {
   setIsOpen: (isOpen: boolean) => void;
   selectedRecord: IUser | null;
+  isSelf?: boolean;
 }) {
   const [t] = useTranslation("global");
   const queryClient = useQueryClient();
@@ -64,9 +72,11 @@ function UpsertUser({
     .object({
       name: z.string().min(1, t("User name is required")),
       username: z.string().min(1, t("Username is required")),
-      role: z.enum(roleOptions, {
-        required_error: t("Role is required"),
-      }),
+      role: isSelf
+        ? z.string().optional()
+        : z.enum(roleOptions, {
+            required_error: t("Role is required"),
+          }),
       password: selectedRecord
         ? z
             .string()
@@ -186,24 +196,26 @@ function UpsertUser({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("Role")}</FormLabel>
-              <FormControl>
-                <Select {...field} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("Select a Role")} />
-                  </SelectTrigger>
-                  <SelectContent>{roles}</SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {!isSelf && (
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("Role")}</FormLabel>
+                <FormControl>
+                  <Select {...field} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t("Select a Role")} />
+                    </SelectTrigger>
+                    <SelectContent>{roles}</SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         {!selectedRecord ? (
           <>

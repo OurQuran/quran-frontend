@@ -80,6 +80,7 @@ export interface IFilter {
   page?: number;
   per_page?: number;
   sort_by?: string;
+  q?: string;
 }
 
 export interface IUser {

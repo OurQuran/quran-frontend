@@ -11,7 +11,7 @@ import Home from "./pages/Home";
 import Surah from "./pages/Surah";
 import Tags from "./pages/Tags";
 import Login from "./pages/Login";
-import { hasPermission, isLoggedIn } from "./helpers/authGuards";
+import { hasPermission, isLoggedIn, requireAuth } from "./helpers/authGuards";
 import { RoleTypeEnum } from "./types/authTypes";
 import SignUp from "./pages/SignUp";
 import Tag from "./pages/Tag";
@@ -20,6 +20,8 @@ import AllTags from "./pages/admin/tags/AllTags";
 import UnapprovedTags from "./pages/admin/tags/UnapprovedTags";
 import DashboardLayout from "./layout/DashboardLayout";
 import Bookamarks from "./pages/Bookmarks";
+import Loading from "./components/Loading";
+import AdvancedSearch from "./pages/AdvancedSearch";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,15 +30,23 @@ const router = createBrowserRouter(
         <Route
           index
           element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <Home />
+            </Suspense>
+          }
+        />
+        <Route
+          path="advanced-search"
+          element={
+            <Suspense fallback={<Loading />}>
+              <AdvancedSearch />
             </Suspense>
           }
         />
         <Route
           path="/surah/:id"
           element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <Surah />
             </Suspense>
           }
@@ -45,7 +55,7 @@ const router = createBrowserRouter(
         <Route
           path="/tags"
           element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <Tags />
             </Suspense>
           }
@@ -53,15 +63,16 @@ const router = createBrowserRouter(
         <Route
           path="/tags/:id"
           element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <Tag />
             </Suspense>
           }
         />
         <Route
           path="/bookmarks"
+          loader={() => requireAuth(true)}
           element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <Bookamarks />
             </Suspense>
           }
@@ -73,15 +84,16 @@ const router = createBrowserRouter(
             hasPermission([RoleTypeEnum.SUPERADMIN, RoleTypeEnum.ADMIN])
           }
           element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading />}>
               <DashboardLayout />
             </Suspense>
           }
         >
           <Route
             path="users"
+            loader={() => hasPermission([RoleTypeEnum.SUPERADMIN])}
             element={
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<Loading />}>
                 <Users />
               </Suspense>
             }
@@ -90,7 +102,7 @@ const router = createBrowserRouter(
           <Route
             path="tags"
             element={
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<Loading />}>
                 <AllTags />
               </Suspense>
             }
@@ -98,7 +110,7 @@ const router = createBrowserRouter(
           <Route
             path="unapproved"
             element={
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<Loading />}>
                 <UnapprovedTags />
               </Suspense>
             }

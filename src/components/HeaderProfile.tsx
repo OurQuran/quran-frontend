@@ -169,6 +169,7 @@ function HeaderProfile() {
           isOpen={isUserUpsearOpen}
           setIsOpen={setIsUserUpsearOpen}
           selectedRecord={authStore.user}
+          isSelf={true}
         />
       )}
       {isPasswordOpen && (
