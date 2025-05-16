@@ -69,25 +69,28 @@ export default function AyahTags({
                   className="px-2 py-0.5 text-xs group relative"
                 >
                   {icon}
-                  {tag.name}
+                  <span className="truncate  max-w-[150px] sm:max-w-full">
+                    {tag.name}
+                  </span>
                   {hasPermissionClient([
                     RoleTypeEnum.ADMIN,
                     RoleTypeEnum.SUPERADMIN,
-                  ]) && (
-                    <button
-                      title="Remove tag"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        unattachMutation.mutate({
-                          ayah_id: ayahId,
-                          tag_id: tag.id,
-                        });
-                      }}
-                      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
+                  ]) &&
+                    false && (
+                      <button
+                        title="Remove tag"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          unattachMutation.mutate({
+                            ayah_id: ayahId,
+                            tag_id: tag.id,
+                          });
+                        }}
+                        className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
                 </Badge>
               </Link>
             </motion.div>

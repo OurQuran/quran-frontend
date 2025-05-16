@@ -47,7 +47,6 @@ export default function Surah() {
     true,
     "surah"
   );
-  console.count();
 
   useEffect(() => {
     if (

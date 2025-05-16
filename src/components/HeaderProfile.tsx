@@ -153,7 +153,7 @@ function HeaderProfile() {
         <DropdownMenuTrigger asChild>
           <Button
             variant={"outline"}
-            className="rounded-4xl text-primary hover:bg-transparent"
+            className=" text-primary hover:bg-transparent"
           >
             <User className="w-6 h-6 text-primary" />
             {authStore.user?.username}

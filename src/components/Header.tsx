@@ -11,6 +11,8 @@ import { useTranslation } from "react-i18next";
 
 import HeaderProfile from "./HeaderProfile";
 import { cn } from "@/lib/utils";
+import { NavDrawer } from "./NavDrawer";
+import { navLinks } from "@/helpers/utils";
 
 function Header() {
   const scrollDirection = useScrollDirection();
@@ -28,21 +30,6 @@ function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinks = [
-    {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Tags",
-      href: "/tags",
-    },
-    {
-      label: "Advaced Search",
-      href: "/advanced-search",
-    },
-  ];
-
   return (
     <motion.div
       initial={false}
@@ -57,7 +44,7 @@ function Header() {
           <Link to="/" className="flex w-fit flex-col items-center ">
             <QuranLogoIcon className="w-10 h-10 text-primary" />
           </Link>
-          <nav className="flex gap-5 items-center">
+          <nav className="gap-5 items-center hidden sm:flex">
             {navLinks.map((link, i) => {
               return (
                 <NavLink
@@ -76,19 +63,24 @@ function Header() {
             })}
           </nav>
         </div>
-        {isLoggedIn() ? (
-          <HeaderProfile />
-        ) : (
-          <Link to="/login">
-            <Button
-              variant={"outline"}
-              className="rounded-4xl text-primary hover:bg-transparent"
-            >
-              <User className="w-6 h-6 text-primary" />
-              {t("Login or Sign Up")}
-            </Button>
-          </Link>
-        )}
+        <div className="flex items-center gap-1">
+          {isLoggedIn() ? (
+            <HeaderProfile />
+          ) : (
+            <Link to="/login">
+              <Button
+                variant={"outline"}
+                className=" text-primary hover:bg-transparent"
+              >
+                <User className="w-6 h-6 text-primary" />
+                {t("Login or Sign Up")}
+              </Button>
+            </Link>
+          )}
+          <div className="sm:hidden">
+            <NavDrawer />
+          </div>
+        </div>
       </div>
     </motion.div>
   );

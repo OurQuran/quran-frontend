@@ -76,8 +76,6 @@ export default function AyahCard({
   }
 
   function handleBookmark() {
-    console.log(ayah);
-
     if (requireAuth()) {
       ayah.bookmarked
         ? removeBookmarkMutation.mutate(ayah.id + "")

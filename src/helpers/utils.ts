@@ -43,3 +43,18 @@ export function formatStringDate(dateString: string): string {
 
   return `${year}-${month}-${day}`;
 }
+
+export const navLinks = [
+  {
+    label: "Home",
+    href: "/",
+  },
+  {
+    label: "Tags",
+    href: "/tags",
+  },
+  {
+    label: "Advaced Search",
+    href: "/advanced-search",
+  },
+];
