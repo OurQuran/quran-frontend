@@ -1,12 +1,12 @@
 import FadeInUp from "@/components/Animation/FadeInUp";
 import AyahCard from "@/components/AyahCard";
-import { IFilter, IAayh } from "@/types/generalTypes";
+import { IFilter } from "@/types/generalTypes";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import EditionSelector from "@/components/EditionSelector";
 import { useEditionStore } from "@/store/editionStore";
-import useGet from "@/react-query/useGet";
+// import useGet from "@/react-query/useGet";
 import { useNavigate, useParams } from "react-router";
 import Loading from "@/components/Loading";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getItem, setItem } from "@/helpers/localStorage";
 import { Switch } from "@/components/ui/switch";
 import { useSurahIdsStore } from "@/store/surahsIdStore";
+import { useSurahInfinite } from "@/hooks/useSurahInfinite";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+
 export default function Surah() {
   const [t] = useTranslation("global");
   const { audioEditions, textEditions } = useEditionStore();
@@ -41,12 +44,18 @@ export default function Surah() {
     setItem("focus_mode", checked.toString());
   };
 
-  const { data, isLoading, isFetching } = useGet<IAayh[], false>(
-    `surahs/${id}`,
-    filters,
-    true,
-    "surah"
-  );
+const {
+  data,
+  isLoading,
+  isFetching,
+  isFetchingNextPage,
+  fetchNextPage,
+  hasNextPage,
+} = useSurahInfinite(id, filters);
+
+const ayahs =
+  data?.pages.flatMap((page) => page.ayahs) ?? [];
+
 
   useEffect(() => {
     if (
@@ -121,7 +130,7 @@ export default function Surah() {
         {isLoading ? (
           <Loading />
         ) : (
-          data?.map((item) => (
+          ayahs?.map((item) => (
             <AyahCard
               key={item.id + "ayah-card"}
               ayah={item}
@@ -129,6 +138,15 @@ export default function Surah() {
             />
           ))
         )}
+        <div
+      ref={useInfiniteScroll(
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage
+      )}
+      className="h-10"
+    />
+{isFetchingNextPage && <Loading />}
       </FadeInUp>
       <div
         className={cn(
