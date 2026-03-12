@@ -34,7 +34,7 @@ export default function ApproveTagAttach({ id }: { id: number }) {
   const approveMutation = useAdd(
     "tags/approve",
     onApproveSuccess,
-    onApproveError
+    onApproveError,
   );
 
   const handleSubmit = () => {
@@ -53,7 +53,7 @@ export default function ApproveTagAttach({ id }: { id: number }) {
             <DialogTitle className="text-lg font-semibold">
               {t("Approve Tag")}
             </DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogDescription className="text-muted-foreground">
               {t("Are you sure you want to approve this tag?")}
             </DialogDescription>
           </DialogHeader>

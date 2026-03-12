@@ -16,8 +16,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import ApproveTagAttach from "@/components/dropdown/ApproveTagAttach";
 import UnapproveTagAttach from "@/components/dropdown/UnapproveTagAttach";
 import AppTooltip from "@/components/AppTooltip";
+import { useTranslation } from "react-i18next";
 export default function UnapprovedTags() {
   const [filters, setFilters] = useState<IFilter>({});
+  const [t] = useTranslation("global");
 
   const { data, isLoading } = useGet<ITaggedAyah, true>(
     `tags/unapproved`,
@@ -38,7 +40,7 @@ export default function UnapprovedTags() {
     {
       accessorKey: "tag.name",
       id: "Tag",
-      header: "Tag",
+      header: t("Tag"),
     },
     /*  {
       accessorKey: "tag.notes",
@@ -49,7 +51,7 @@ export default function UnapprovedTags() {
       id: "Ayah",
       enableSorting: false,
       accessorKey: "ayah.text",
-      header: "Ayah",
+      header: t("Ayah"),
       cell: ({ row }) => {
         return (
           <AppTooltip

@@ -1,30 +1,43 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
-export function useScrollDirection(threshold = 10) {
+export function useScrollDirection() {
   const [scrollDirection, setScrollDirection] = useState<"up" | "down">("up");
+  const lastScrollY = useRef(0);
+  const threshold = 15; // Minimum scroll to trigger direction change
 
   useEffect(() => {
-    let lastScrollY = window.pageYOffset;
+    let ticking = false;
 
-    const updateScroll = () => {
-      const currentScrollY = window.pageYOffset;
-      const direction =
-        currentScrollY > lastScrollY + threshold
-          ? "down"
-          : currentScrollY < lastScrollY - threshold
-          ? "up"
-          : scrollDirection;
+    const updateScrollDirection = () => {
+      const scrollY = window.scrollY;
 
+      // Ensure we're not at the very top (iOS bounce, etc.)
+      if (Math.abs(scrollY - lastScrollY.current) < threshold) {
+        ticking = false;
+        return;
+      }
+
+      const direction = scrollY > lastScrollY.current ? "down" : "up";
+      
       if (direction !== scrollDirection) {
         setScrollDirection(direction);
       }
-
-      lastScrollY = currentScrollY > 0 ? currentScrollY : 0;
+      
+      lastScrollY.current = scrollY > 0 ? scrollY : 0;
+      ticking = false;
     };
 
-    window.addEventListener("scroll", updateScroll);
-    return () => window.removeEventListener("scroll", updateScroll);
-  }, [scrollDirection, threshold]);
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScrollDirection);
+        ticking = true;
+      }
+    };
+
+    lastScrollY.current = window.scrollY;
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollDirection]);
 
   return scrollDirection;
 }

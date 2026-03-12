@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { User } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Settings,
+  Bookmark,
+  Users,
+  Tags,
+  CheckCircle2,
+  KeyRound,
+  UserMinus,
+} from "lucide-react";
 import { Link } from "react-router";
 import { hasPermissionClient } from "@/helpers/authGuards";
 import {
@@ -14,6 +24,7 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "./ui/button";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 import { RoleTypeEnum } from "@/types/authTypes";
 import { UserUpsearModal } from "./UserUpseartModal";
 import ChangePasswordModal from "./dropdown/ChangePasswordModal";
@@ -28,6 +39,7 @@ interface MenuItem {
   variant?: "destructive" | "default";
   onClick?: () => void;
   className?: string;
+  icon?: React.ReactNode;
 }
 
 function HeaderProfile() {
@@ -37,14 +49,17 @@ function HeaderProfile() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const authStore = useAuthStore();
-  const [t] = useTranslation("globL");
+  const { t, i18n } = useTranslation("global");
+  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   const menuItems: MenuItem[] = [
     {
       label: t("My Account"),
+      icon: <User className="w-4 h-4" />,
       items: [
         {
           label: t("Edit Profile"),
+          icon: <Settings className="w-4 h-4" />,
           onClick: () => {
             setIsDropdownOpen(false);
             setIsUserUpsearOpen(true);
@@ -52,6 +67,7 @@ function HeaderProfile() {
         },
         {
           label: t("Change Password"),
+          icon: <KeyRound className="w-4 h-4" />,
           onClick: () => {
             setIsDropdownOpen(false);
             setIsPasswordOpen(true);
@@ -59,37 +75,42 @@ function HeaderProfile() {
         },
         {
           label: t("My Bookmarks"),
+          icon: <Bookmark className="w-4 h-4" />,
           to: "/bookmarks",
         },
       ],
     },
     {
       label: t("Management"),
-
+      icon: <CheckCircle2 className="w-4 h-4" />,
       permission: [RoleTypeEnum.ADMIN, RoleTypeEnum.SUPERADMIN],
       items: [
         {
           label: t("Users"),
+          icon: <Users className="w-4 h-4" />,
           to: "/dashbaord/users",
           permission: [RoleTypeEnum.SUPERADMIN, RoleTypeEnum.USER],
         },
         {
           label: t("Tags"),
+          icon: <Tags className="w-4 h-4" />,
           to: "/dashbaord/tags",
         },
         {
           label: t("Approve Tag assigns"),
+          icon: <CheckCircle2 className="w-4 h-4" />,
           to: "/dashbaord/unapproved",
         },
       ],
     },
     {
       label: t("Actions"),
-
       items: [
         {
           label: t("Delete My Account"),
+          icon: <UserMinus className="w-4 h-4 text-destructive" />,
           variant: "destructive",
+          className: "text-destructive hover:bg-destructive/10",
           onClick: () => {
             setIsDropdownOpen(false);
             setIsDeleteAccountOpen(true);
@@ -97,7 +118,9 @@ function HeaderProfile() {
         },
         {
           label: t("Log out"),
+          icon: <LogOut className="w-4 h-4 text-destructive" />,
           variant: "destructive",
+          className: "text-destructive hover:bg-destructive/10",
           onClick: () => {
             setIsDropdownOpen(false);
             setIsLogoutOpen(true);
@@ -115,11 +138,16 @@ function HeaderProfile() {
 
       const menuItem = (
         <DropdownMenuItem
-          className={item.className}
+          className={cn(
+            item.className,
+            fontClass,
+            "flex items-center gap-2 cursor-pointer transition-colors duration-200",
+          )}
           variant={item.variant || "default"}
           onClick={item.onClick ? item.onClick : () => {}}
         >
-          {item.label}
+          {item.icon}
+          <span>{item.label}</span>
         </DropdownMenuItem>
       );
 
@@ -127,13 +155,22 @@ function HeaderProfile() {
         <div key={`${level}-${index}`}>
           {item.items ? (
             <>
-              <DropdownMenuLabel className={item.className}>
+              <DropdownMenuLabel
+                className={cn(
+                  item.className,
+                  fontClass,
+                  "px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-2",
+                )}
+              >
+                {item.icon}
                 {item.label}
               </DropdownMenuLabel>
-              <DropdownMenuGroup>
+              <DropdownMenuGroup className="px-1">
                 {renderMenuGroup(item.items, level + 1)}
               </DropdownMenuGroup>
-              {index < items.length - 1 && <DropdownMenuSeparator />}
+              {index < items.length - 1 && (
+                <DropdownMenuSeparator className="my-2 bg-border/40" />
+              )}
             </>
           ) : item.to ? (
             <Link className="w-full" to={item.to}>
@@ -152,14 +189,23 @@ function HeaderProfile() {
       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button
-            variant={"outline"}
-            className=" text-primary hover:bg-transparent"
+            variant="ghost"
+            className={cn(
+              "flex items-center gap-2 p-2 sm:px-3 sm:py-2 text-primary bg-accent/20 hover:bg-accent/40 backdrop-blur-sm border border-border/50 shadow-xs",
+              fontClass,
+            )}
           >
-            <User className="w-6 h-6 text-primary" />
-            {authStore.user?.username}
+            <User className="h-4 w-4 text-primary" />
+            <span className="font-medium hidden sm:inline">
+              {authStore.user?.username}
+            </span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
+        <DropdownMenuContent
+          className="w-64 bg-card/95 backdrop-blur-md border-border/50 shadow-xl p-2"
+          align="end"
+          sideOffset={8}
+        >
           {renderMenuGroup(menuItems)}
         </DropdownMenuContent>
       </DropdownMenu>

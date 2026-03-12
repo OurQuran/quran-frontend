@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 export default function Footer() {
   const { t } = useTranslation("global");
   return (
-    <footer className="py-4 text-center text-sm text-gray-600">
+    <footer className="py-4 text-center text-sm text-muted-foreground">
       <div className="container mx-auto">
         <p>
           {t("Our quran")}

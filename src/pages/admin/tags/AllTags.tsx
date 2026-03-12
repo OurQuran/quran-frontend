@@ -50,13 +50,13 @@ export default function AllTags() {
     {
       accessorKey: "name",
       id: "Name",
-      header: "Name",
+      header: t("Name"),
     },
     {
       id: "Creator",
       enableSorting: false,
       accessorKey: "creator.username",
-      header: "Creator",
+      header: t("Creator"),
       cell: ({ row }) => {
         return row.original.creator ? (
           <HoverCard>
@@ -86,7 +86,7 @@ export default function AllTags() {
       id: "Updater",
       enableSorting: false,
       accessorKey: "updater.username",
-      header: "Updater",
+      header: t("Updater"),
       cell: ({ row }) => {
         return row.original.updater ? (
           <HoverCard>
@@ -116,7 +116,7 @@ export default function AllTags() {
       id: "Parent",
       enableSorting: false,
       accessorKey: "parent.username",
-      header: "Parent",
+      header: t("Parent"),
       cell: ({ row }) => {
         return (
           <Badge className="w-full">{row.original.parent?.name || "_"}</Badge>
@@ -126,7 +126,7 @@ export default function AllTags() {
     {
       id: "Children",
       accessorKey: "children_count",
-      header: "Children",
+      header: t("Children"),
       cell: ({ row }) => {
         return (
           <Badge variant={"secondary"} className="w-full">

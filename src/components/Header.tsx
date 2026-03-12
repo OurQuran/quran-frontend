@@ -13,17 +13,22 @@ import HeaderProfile from "./HeaderProfile";
 import { cn } from "@/lib/utils";
 import { NavDrawer } from "./NavDrawer";
 import { navLinks } from "@/helpers/utils";
+import { LanguageToggle } from "./LanguageToggle";
+import { ThemeToggle } from "./ThemeToggle";
 
 function Header() {
   const scrollDirection = useScrollDirection();
   const [hasScrolled, setHasScrolled] = useState(false);
 
-  const [t] = useTranslation("globL");
+  const { t, i18n } = useTranslation("global");
+  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   useEffect(() => {
     const onScroll = () => {
-      if (window.scrollY > 10) {
+      if (window.scrollY > 50) {
         setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
       }
     };
     window.addEventListener("scroll", onScroll);
@@ -34,10 +39,18 @@ function Header() {
     <motion.div
       initial={false}
       animate={{
-        y: scrollDirection === "down" && hasScrolled ? "-100%" : "0%",
+        y: scrollDirection === "down" && hasScrolled ? -100 : 0,
       }}
-      transition={{ duration: 0.1, ease: "easeInOut" }}
-      className="sticky top-0 z-40 bg-card border-b border-border transition-all"
+      transition={{ 
+        duration: 0.3, 
+        ease: [0.4, 0, 0.2, 1] // Custom ease-in-out for premium feel
+      }}
+      className={cn(
+        "sticky top-0 z-40 transition-all duration-300",
+        hasScrolled 
+          ? "bg-card/80 backdrop-blur-md shadow-sm border-b border-border/50" 
+          : "bg-transparent border-b border-transparent"
+      )}
     >
       <div className="mx-auto max-w-screen-xl flex justify-between items-center px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex gap-5 items-center">
@@ -52,28 +65,44 @@ function Header() {
                   to={link.href}
                   className={({ isActive }) =>
                     cn(
-                      "font-poppins hover:underline",
-                      isActive ? "text-primary underline" : "text-text"
+                      fontClass,
+                      "relative px-3 py-1.5 transition-colors duration-200 font-medium text-sm",
+                      isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                     )
                   }
                 >
-                  {link.label}
+                  {({ isActive }) => (
+                    <>
+                      {t(link.label)}
+                      {isActive && (
+                        <motion.div
+                          layoutId="nav-underline"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary/80 rounded-full mx-3"
+                        />
+                      )}
+                    </>
+                  )}
                 </NavLink>
               );
             })}
           </nav>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <ThemeToggle />
+          <LanguageToggle />
           {isLoggedIn() ? (
             <HeaderProfile />
           ) : (
             <Link to="/login">
               <Button
-                variant={"outline"}
-                className=" text-primary hover:bg-transparent"
+                variant="ghost"
+                className={cn(
+                  "flex items-center gap-2 p-2 sm:px-3 sm:py-2 text-primary bg-accent/20 hover:bg-accent/40 backdrop-blur-sm border border-border/50 shadow-xs", 
+                  fontClass
+                )}
               >
-                <User className="w-6 h-6 text-primary" />
-                {t("Login or Sign Up")}
+                <User className="h-[1.1rem] w-[1.1rem] text-primary" />
+                <span className="hidden sm:inline">{t("Login or Sign Up")}</span>
               </Button>
             </Link>
           )}

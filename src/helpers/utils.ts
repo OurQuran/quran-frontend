@@ -54,7 +54,7 @@ export const navLinks = [
     href: "/tags",
   },
   {
-    label: "Advaced Search",
+    label: "Advanced Search",
     href: "/advanced-search",
   },
 ];

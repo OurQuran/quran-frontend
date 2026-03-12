@@ -49,7 +49,7 @@ export default function Delete({ id, path }: { id: number; path: string }) {
             <DialogTitle className="text-lg font-semibold text-red-600">
               {t("Delete Record")}
             </DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogDescription className="text-muted-foreground">
               {t("Are you sure you want to delete this record?")}
             </DialogDescription>
           </DialogHeader>

@@ -1,4 +1,5 @@
 import FadeInUp from "@/components/Animation/FadeInUp";
+import { Helmet } from "react-helmet-async";
 import AyahCard from "@/components/AyahCard";
 import { IFilter } from "@/types/generalTypes";
 import { useEffect, useState } from "react";
@@ -16,10 +17,12 @@ import { getItem, setItem } from "@/helpers/localStorage";
 import { Switch } from "@/components/ui/switch";
 import { useSurahIdsStore } from "@/store/surahsIdStore";
 import { useSurahInfinite } from "@/hooks/useSurahInfinite";
+import useGet from "@/react-query/useGet";
+import { ISurahs } from "@/types/generalTypes";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
 export default function Surah() {
-  const [t] = useTranslation("global");
+  const [t, i18n] = useTranslation("global");
   const { audioEditions, textEditions } = useEditionStore();
   const {
     getNextId,
@@ -36,7 +39,7 @@ export default function Surah() {
     text_edition: parseInt(getItem("text_edition") || ""),
   });
   const [isFocusMode, setIsFocusMode] = useState(
-    getItem("focus_mode") === "true" ? true : false
+    getItem("focus_mode") === "true" ? true : false,
   );
 
   const handleFocusModeChange = (checked: boolean) => {
@@ -44,18 +47,23 @@ export default function Surah() {
     setItem("focus_mode", checked.toString());
   };
 
-const {
-  data,
-  isLoading,
-  isFetching,
-  isFetchingNextPage,
-  fetchNextPage,
-  hasNextPage,
-} = useSurahInfinite(id, filters);
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useSurahInfinite(id, filters);
 
-const ayahs =
-  data?.pages.flatMap((page) => page.ayahs) ?? [];
+  const { data: allSurahs } = useGet<ISurahs[]>("surahs");
 
+  const ayahs = data?.pages.flatMap((page) => page.ayahs) ?? [];
+
+  const surahInfo = allSurahs?.find((s) => s.number === parseInt(id || ""));
+
+  const surahName =
+    i18n.language === "en" ? surahInfo?.name_en : surahInfo?.name_ar || id;
 
   useEffect(() => {
     if (
@@ -72,6 +80,16 @@ const ayahs =
 
   return (
     <div>
+      <Helmet>
+        <title>{t("Surah {{name}} - Our Quran", { name: surahName })}</title>
+        <meta
+          name="description"
+          content={t(
+            "Read and listen to Surah {{name}} with translations and audio.",
+            { name: surahName },
+          )}
+        />
+      </Helmet>
       <Card className="w-full">
         <CardContent>
           <div className="space-y-5">
@@ -124,7 +142,7 @@ const ayahs =
         className={cn(
           "flex flex-col w-full",
           isFetching && "animate-pulse",
-          isFocusMode ? "items-center" : "mt-5"
+          isFocusMode ? "items-center" : "mt-5",
         )}
       >
         {isLoading ? (
@@ -139,19 +157,19 @@ const ayahs =
           ))
         )}
         <div
-      ref={useInfiniteScroll(
-        hasNextPage,
-        fetchNextPage,
-        isFetchingNextPage
-      )}
-      className="h-10"
-    />
-{isFetchingNextPage && <Loading />}
+          ref={useInfiniteScroll(
+            hasNextPage,
+            fetchNextPage,
+            isFetchingNextPage,
+          )}
+          className="h-10"
+        />
+        {isFetchingNextPage && <Loading />}
       </FadeInUp>
       <div
         className={cn(
           "w-full items-center justify-between gap-2 mt-5",
-          isLoading ? "hidden" : "flex"
+          isLoading ? "hidden" : "flex",
         )}
       >
         <Button
@@ -163,7 +181,7 @@ const ayahs =
           variant="secondary"
           size="sm"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
           {t("Previous")}
         </Button>
         <Button
@@ -176,7 +194,7 @@ const ayahs =
           size="sm"
         >
           {t("Next")}
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4 rtl:rotate-180" />
         </Button>
       </div>
     </div>

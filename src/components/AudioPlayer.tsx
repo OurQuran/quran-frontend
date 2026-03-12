@@ -67,7 +67,7 @@ export default function AudioPlayer({
   };
 
   return (
-    <div className="w-full mt-5">
+    <div className="w-full mt-5" dir="ltr">
       <div className="px-2 sm:p-4 sm:pb-0">
         <div className="space-y-4">
           {/* Slider */}
@@ -76,6 +76,7 @@ export default function AudioPlayer({
               value={[currentTime]}
               max={duration || 100}
               step={0.1}
+              dir="ltr"
               onValueChange={(val) => seek(val[0])}
               className="cursor-pointer"
               thumb={(children, index) => (

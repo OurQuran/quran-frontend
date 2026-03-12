@@ -37,7 +37,7 @@ export default function AppDialog({
           <DialogHeader>
             {title && <DialogTitle>{title}</DialogTitle>}
             {description && (
-              <DialogDescription className="whitespace-pre-line">
+              <DialogDescription className="whitespace-pre-line text-start">
                 {description}
               </DialogDescription>
             )}

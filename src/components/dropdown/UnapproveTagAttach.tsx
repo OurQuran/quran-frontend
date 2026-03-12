@@ -56,7 +56,7 @@ export default function UnapproveTagAttach({ id }: { id: number }) {
             <DialogTitle className="text-lg font-semibold">
               {t("Unapprove Tag")}
             </DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogDescription className="text-muted-foreground">
               {t("Are you sure you want to unapprove this tag?")}
             </DialogDescription>
           </DialogHeader>

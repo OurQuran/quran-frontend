@@ -1,5 +1,6 @@
 import FadeInUp from "@/components/Animation/FadeInUp";
 import AyahCard from "@/components/AyahCard";
+import { Helmet } from "react-helmet-async";
 import Loading from "@/components/Loading";
 import { TablePagination } from "@/components/TablePagination";
 import { useLenis } from "@/hooks/useLenis";
@@ -30,9 +31,16 @@ export default function Bookamarks() {
 
   return (
     <div className="flex flex-col w-full mt-5">
+      <Helmet>
+        <title>{t("My Bookmarks - Our Quran")}</title>
+        <meta
+          name="description"
+          content={t("View and manage your bookmarked Quranic verses.")}
+        />
+      </Helmet>
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-3xl font-semibold">{t("Bookmarks")}</h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           {data?.meta?.total_count || 0}{" "}
           {t(data?.meta?.total_count === 1 ? "Bookamrk" : "Bookmarks")}
         </p>

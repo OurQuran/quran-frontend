@@ -253,12 +253,12 @@ function UpsertUser({
                   {showPassword ? (
                     <EyeOff
                       onClick={() => setShowPassword(false)}
-                      className="absolute top-7 w-5 end-4 cursor-pointer hover:text-primary"
+                      className="absolute top-7 w-5 ltr:right-4 rtl:left-4 cursor-pointer hover:text-primary"
                     />
                   ) : (
                     <EyeIcon
                       onClick={() => setShowPassword(true)}
-                      className="absolute top-7 w-5 end-4 cursor-pointer hover:text-primary"
+                      className="absolute top-7 w-5 ltr:right-4 rtl:left-4 cursor-pointer hover:text-primary"
                     />
                   )}
                 </FormItem>

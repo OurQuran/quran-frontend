@@ -33,7 +33,7 @@ export default function SurahCard({
             <div className="text-lg font-bold font-poppins">
               {surah.name_en}
             </div>
-            <div className="text-sm text-accent font-semibold">
+            <div className="text-sm text-muted-foreground font-semibold">
               {surah.name_en_translation}
             </div>
           </div>
@@ -42,7 +42,7 @@ export default function SurahCard({
             <div className=" text-lg font-bold font-quran-1">
               {surah.name_ar}
             </div>
-            <div className=" text-sm text-accent ">{surah.type}</div>
+            <div className=" text-sm text-muted-foreground ">{surah.type}</div>
           </div>
         </CardContent>
       </Card>

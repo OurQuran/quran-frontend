@@ -245,7 +245,7 @@ export default function AyahCard({
     <Card>
       <CardContent className="flex flex-col justify-between ">
         <div className="flex justify-between gap-4 ">
-          <div className="flex flex-col items-center gap-1">{sidebarBtns}</div>
+          <div className="flex flex-col items-center gap-1 rtl:order-last">{sidebarBtns}</div>
           <div className="w-full flex flex-col items-center gap-4">
             <div
               dir="rtl"

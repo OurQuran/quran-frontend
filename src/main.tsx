@@ -7,10 +7,11 @@ import global_ku from "./translation/ku.json";
 import global_ar from "./translation/ar.json";
 
 import { getLang } from "./helpers/localStorage";
-import { Toaster } from "./components/ui/sonner";
 import App from "./App";
 import "@/index.css";
 import { TooltipProvider } from "./components/ui/tooltip";
+import { ThemeProvider } from "./components/ThemeProvider";
+import { HelmetProvider } from "react-helmet-async";
 
 i18next.init({
   interpolation: { escapeValue: true },
@@ -27,10 +28,13 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <I18nextProvider i18n={i18next}>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <App />
-      </TooltipProvider>
-      <Toaster />
+      <ThemeProvider defaultTheme="system" storageKey="our-quran-theme">
+        <HelmetProvider>
+          <TooltipProvider>
+            <App />
+          </TooltipProvider>
+        </HelmetProvider>
+      </ThemeProvider>
     </QueryClientProvider>
-  </I18nextProvider>
+  </I18nextProvider>,
 );

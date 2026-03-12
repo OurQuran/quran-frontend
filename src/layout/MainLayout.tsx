@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { HelmetProvider } from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router";
 import { useLenis } from "@/hooks/useLenis";
 import { useEffect } from "react";
@@ -13,6 +14,7 @@ export default function ClientLayout() {
   const { pathname } = useLocation();
   const { fetchEditions } = useEditionStore();
   const { fetchMe } = useAuthStore();
+  const { t } = useTranslation("global");
 
   useEffect(() => {
     fetchEditions();
@@ -31,9 +33,16 @@ export default function ClientLayout() {
       {/* Main Content */}
       <main className="flex-1 w-full">
         <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8 py-6">
-          <HelmetProvider>
-            <Outlet />
-          </HelmetProvider>
+          <Helmet>
+            <title>{t("Our Quran - Read, Listen, and Search")}</title>
+            <meta
+              name="description"
+              content={t(
+                "A modern Quranic platform for reading, listening, and semantic search."
+              )}
+            />
+          </Helmet>
+          <Outlet />
         </div>
       </main>
 

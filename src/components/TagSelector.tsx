@@ -81,12 +81,12 @@ export default function TagSelector({
           aria-expanded={open}
           className={cn(
             "w-full justify-between hover:bg-transparent text-sm font-normal",
-            !tag && "text-muted-foreground hover:text-muted-foreground"
+            !tag && "text-muted-foreground hover:text-muted-foreground",
           )}
         >
           {tag
             ? tags.find((item) => item.id === tag)?.name
-            : t("Select Tag...")}
+            : t("Select Tag")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -105,7 +105,7 @@ export default function TagSelector({
             onValueChange={(e) => {
               setSearch(e);
             }}
-            placeholder={t("Search Tag...")}
+            placeholder={t("Search Tag")}
             className="h-9"
           />
           <CommandList>
@@ -114,7 +114,7 @@ export default function TagSelector({
               className="h-[100px] pointer-events-auto"
             >
               <CommandGroup>
-                <CommandEmpty>{t("No Tag found.")}</CommandEmpty>
+                <CommandEmpty>{t("No Tag found")}</CommandEmpty>
                 {tags.map((tagItem) => (
                   <CommandItem
                     key={tagItem.id + "tag-item"}
@@ -130,7 +130,7 @@ export default function TagSelector({
                     <Check
                       className={cn(
                         "ml-auto h-4 w-4",
-                        tag === tagItem.id ? "opacity-100" : "opacity-0"
+                        tag === tagItem.id ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>

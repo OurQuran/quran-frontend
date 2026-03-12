@@ -46,7 +46,7 @@ export default function EditionSelector({
         >
           {filters[accessor]
             ? editions.find((edition) => edition.id === filters[accessor])?.name
-            : t("Select Edition...")}
+            : t("Select Edition")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -58,11 +58,11 @@ export default function EditionSelector({
         data-lenis-prevent
       >
         <Command>
-          <CommandInput placeholder={t("Search Edition...")} className="h-9" />
+          <CommandInput placeholder={t("Search Edition")} className="h-9" />
           <CommandList>
             <ScrollArea className="h-[200px]">
               <CommandGroup>
-                <CommandEmpty>{t("No Edition found.")}</CommandEmpty>
+                <CommandEmpty>{t("No Edition found")}</CommandEmpty>
                 {editions.map((edition) => (
                   <CommandItem
                     key={edition.id + "edition-item"}

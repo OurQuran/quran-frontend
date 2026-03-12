@@ -11,6 +11,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { formatStringDate } from "@/helpers/utils";
+import { cn } from "@/lib/utils";
 import TableDropdown from "@/components/dropdown/TableDropdown";
 import Delete from "@/components/dropdown/Delete";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -20,7 +21,8 @@ import { SquarePlus } from "lucide-react";
 import ChangePasswordModal from "@/components/dropdown/ChangePasswordModal";
 
 export default function Users() {
-  const [t] = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
+  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
   const [filters, setFilters] = useState<IFilter>({
     page: 1,
     per_page: 10,
@@ -45,22 +47,22 @@ export default function Users() {
     {
       accessorKey: "name",
       id: "name",
-      header: "name",
+      header: t("Name"),
     },
     {
       accessorKey: "username",
       id: "username",
-      header: "username",
+      header: t("Username"),
     },
     {
       id: "role",
       enableSorting: false,
       accessorKey: "role",
-      header: "role",
+      header: t("Role"),
 
       cell: ({ row }) => {
         return (
-          <Badge className="bg-green-600 font-normal w-full hover:bg-green-700">
+          <Badge className={cn("bg-green-600 font-normal w-full hover:bg-green-700", fontClass)}>
             {t(row.original.role || "")}
           </Badge>
         );
@@ -70,7 +72,7 @@ export default function Users() {
       id: "created_at",
       enableSorting: true,
       accessorKey: "created_at",
-      header: "created_at",
+      header: t("Created At"),
       cell: ({ row }) => {
         return formatStringDate(row.original.created_at || "");
       },
@@ -79,7 +81,7 @@ export default function Users() {
       id: "updated_at",
       enableSorting: true,
       accessorKey: "updated_at",
-      header: "updated_at",
+      header: t("Updated At"),
       cell: ({ row }) => {
         return formatStringDate(row.original.updated_at || "");
       },
