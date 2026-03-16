@@ -1,30 +1,30 @@
+"use client";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
-import { useTranslation } from "react-i18next";
-import { Outlet, useLocation } from "react-router";
+import { usePathname } from "next/navigation";
 import { useLenis } from "@/hooks/useLenis";
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 import { useEditionStore } from "@/store/editionStore";
 import { useAuthStore } from "@/store/authStore";
 import { isLoggedIn } from "@/helpers/authGuards";
 
-export default function ClientLayout() {
+export default function MainLayout({ children }: { children: ReactNode }) {
   const lenisRef = useLenis();
-  const { pathname } = useLocation();
+  const pathname = usePathname();
   const { fetchEditions } = useEditionStore();
   const { fetchMe } = useAuthStore();
-  const { t } = useTranslation("global");
 
   useEffect(() => {
     fetchEditions();
-    if (isLoggedIn()) {
+    if (typeof window !== "undefined" && isLoggedIn()) {
       fetchMe();
     }
-  }, []);
+  }, [fetchEditions, fetchMe]);
+
   useEffect(() => {
-    lenisRef.current?.scrollTo(0);
-  }, [pathname]);
+    lenisRef.current?.scrollTo(0, { immediate: true });
+  }, [pathname, lenisRef]);
 
   return (
     <div className="flex flex-col min-h-screen scroll-smooth">
@@ -33,16 +33,7 @@ export default function ClientLayout() {
       {/* Main Content */}
       <main className="flex-1 w-full">
         <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8 py-6">
-          <Helmet>
-            <title>{t("Our Quran - Read, Listen, and Search")}</title>
-            <meta
-              name="description"
-              content={t(
-                "A modern Quranic platform for reading, listening, and semantic search."
-              )}
-            />
-          </Helmet>
-          <Outlet />
+          {children}
         </div>
       </main>
 

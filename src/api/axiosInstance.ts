@@ -1,4 +1,3 @@
-import { getToken } from "@/helpers/localStorage";
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 export interface IApiResponse<T> {
@@ -21,11 +20,13 @@ export interface IMeta {
 }
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API,
+  baseURL: process.env.NEXT_PUBLIC_BASE_API || "http://localhost:3000",
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+import { getToken } from "@/helpers/localStorage";
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {

@@ -2,7 +2,7 @@
   "Ctrl+K to focus": "Ctrl+K to focus",
   "Search Type": "Search Type",
   "Semantic": "Semantic",
-  "Set the saerch type to semantic": "Set the saerch type to semantic",
+  "Set the search type to semantic": "Set the search type to semantic",
   "Exact": "Exact",
   "Set the search type to exact": "Set the search type to exact",
   "Mute": "Mute",
@@ -29,7 +29,7 @@
   "Add Bookmark": "Add Bookmark",
   "Show Audio": "Show Audio",
   "Go to surah": "Go to surah",
-  "Tag removed successfuly": "Tag removed successfuly",
+  "Tag removed successfully": "Tag removed successfully",
   "There was an error while removing the tag": "There was an error while removing the tag",
   "Hide": "Hide",
   "Show All": "Show All",
@@ -173,6 +173,7 @@
   "Updated At": "Updated At",
   "Tag": "Tag",
   "Ayah": "Ayah",
+  "Ayahs": "Ayahs",
   "Creator": "Creator",
   "Updater": "Updater",
   "Parent": "Parent",
@@ -189,5 +190,6 @@
   "Explore search results for {{query}} in Our Quran.": "Explore search results for {{query}} in Our Quran.",
   "superadmin": "Super Admin",
   "admin": "Admin",
-  "user": "User"
+  "user": "User",
+  "Quick Settings": "Quick Settings"
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import type React from "react";
-
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
-import { NavLink, NavLinkProps } from "react-router";
+import Link from "next/link";
+import { usePathname, useParams } from "next/navigation";
 
 const RouterTabs = ({
   className,
@@ -36,26 +36,37 @@ const RouterTabsList = forwardRef<
 ));
 RouterTabsList.displayName = "RouterTabsList";
 
-interface RouterTabNavLinkProps extends Omit<NavLinkProps, "className"> {
+interface RouterTabNavLinkProps {
+  href: string;
+  children: React.ReactNode;
   className?: string;
+  exact?: boolean;
 }
 
 const RouterTabNavLink = forwardRef<HTMLAnchorElement, RouterTabNavLinkProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, href, children, exact = false, ...props }, ref) => {
+    const pathname = usePathname();
+    const { locale } = useParams();
+    
+    // Normalize href for locale
+    const localizedHref = href.startsWith("/") ? href : `/${locale}/dashboard/${href}`;
+    const isActive = exact ? pathname === localizedHref : pathname.startsWith(localizedHref);
+
     return (
-      <NavLink
+      <Link
+        href={localizedHref}
         ref={ref}
-        className={({ isActive }) =>
-          cn(
-            "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-            isActive
-              ? "bg-background text-foreground shadow-sm"
-              : "hover:bg-background/50 hover:text-foreground",
-            className
-          )
-        }
+        className={cn(
+          "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          isActive
+            ? "bg-background text-foreground shadow-sm"
+            : "hover:bg-background/50 hover:text-foreground",
+          className
+        )}
         {...props}
-      />
+      >
+        {children}
+      </Link>
     );
   }
 );

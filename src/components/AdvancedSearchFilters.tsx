@@ -1,3 +1,5 @@
+"use client";
+
 import { Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -83,7 +85,7 @@ export default function AdvancedSearchFilters({
                       {t("Semantic")}
                     </button>
                   }
-                  content={<div>{t("Set the saerch type to semantic")}</div>}
+                  content={<div>{t("Set the search type to semantic")}</div>}
                 />
 
                 <AppTooltip

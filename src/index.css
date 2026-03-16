@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
+@layer theme {
+  :root {
+    --header-height: 4rem;
+  }
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -20,9 +24,7 @@
   --muted-foreground: oklch(0.5 0.02 40);
   --accent: oklch(0.65 0.03 80);
   --accent-foreground: oklch(0.2 0.04 40);
-  --destructive: oklch(
-    0.577 0.245 27.325
-  ); /* Keep or tone down depending on design */
+  --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.9 0.01 80);
   --input: oklch(0.92 0.01 80);
   --ring: oklch(0.65 0.03 80);
@@ -42,35 +44,29 @@
 }
 
 .dark {
-  --background: oklch(0.10 0.01 60); /* Even deeper dark background */
+  --background: oklch(0.10 0.01 60);
   --foreground: oklch(0.95 0.01 60);
   --card: oklch(0.12 0.01 60);
   --card-foreground: oklch(0.95 0.01 60);
   --popover: oklch(0.12 0.01 60);
   --popover-foreground: oklch(0.95 0.01 60);
-  
-  --primary: oklch(0.82 0.08 75); /* Slightly lighter/more vibrant brownish for better pop on deep dark */
+  --primary: oklch(0.82 0.08 75);
   --primary-foreground: oklch(0.10 0.01 60);
-  
   --secondary: oklch(0.18 0.01 60);
   --secondary-foreground: oklch(0.95 0.01 60);
   --muted: oklch(0.18 0.01 60);
-  --muted-foreground: oklch(0.75 0.02 65); /* Improved contrast for muted text */
-  --accent: oklch(0.78 0.06 70); /* Accent now much lighter (same as brownish primary variant) for visibility */
+  --muted-foreground: oklch(0.75 0.02 65);
+  --accent: oklch(0.78 0.06 70);
   --accent-foreground: oklch(0.10 0.01 60);
-  
-  --destructive: oklch(0.577 0.245 27.325); /* Kept aligned with light mode */
-  
+  --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.35 0.01 80);
   --input: oklch(0.35 0.01 80);
   --ring: oklch(0.55 0.03 80);
-  
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  
   --sidebar: oklch(0.20 0.01 80);
   --sidebar-foreground: oklch(0.985 0.01 80);
   --sidebar-primary: oklch(0.40 0.05 40);
@@ -127,22 +123,22 @@
     @apply bg-background text-foreground;
   }
   html[lang="en"] body {
-    font-family: "ArkanGraphik", sans-serif;
+    font-family: var(--font-kurdish), sans-serif;
     font-weight: 400;
     direction: ltr;
   }
 
   html[lang="ar"] body {
-    font-family: "ArkanGraphik", sans-serif;
+    font-family: var(--font-kurdish), sans-serif;
     direction: rtl;
   }
   html[lang="ku"] body {
-    font-family: "ArkanGraphik", sans-serif;
+    font-family: var(--font-kurdish), sans-serif;
     direction: rtl;
   }
 
   .ayah span:hover {
-    border-bottom: 1px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
     background-color: var(--secondary);
   }
 
@@ -150,116 +146,13 @@
     @apply selection:bg-primary selection:text-primary-foreground;
   }
 }
-/* * {
-  outline: 1px solid red !important;
-} */
-
-@font-face {
-  font-family: "QuranFont1";
-  src: url("/fonts/quran/quran_font_1.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "QuranFont2";
-  src: url("/fonts/quran/quran_font_2.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "QuranFont3";
-  src: url("/fonts/quran/quran_font_3.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "QuranFont4";
-  src: url("/fonts/quran/quran_font_4.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "QuranFont5";
-  src: url("/fonts/quran/quran_font_5.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-/* Kurdish Font */
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-Thin.ttf") format("truetype");
-  font-weight: 100;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-ExtraLight.ttf") format("truetype");
-  font-weight: 200;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-Light.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-Black.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "ArkanGraphik";
-  src: url("/fonts/kurdish/Arkan_Graphik-Super.ttf") format("truetype");
-  font-weight: 1000;
-  font-style: normal;
-}
 
 @theme {
-  --font-quran-1: "QuranFont1", sans-serif;
-  --font-quran-2: "QuranFont2", sans-serif;
-  --font-quran-3: "QuranFont3", sans-serif;
-  --font-quran-4: "QuranFont4", sans-serif;
-  --font-quran-5: "QuranFont5", sans-serif;
+  --font-quran-1: var(--font-quran-1), sans-serif;
+  --font-quran-2: var(--font-quran-2), sans-serif;
+  --font-quran-3: var(--font-quran-3), sans-serif;
+  --font-quran-4: var(--font-quran-4), sans-serif;
+  --font-quran-5: var(--font-quran-5), sans-serif;
   --font-poppins: "Poppins", sans-serif;
-  --font-kurdish: "ArkanGraphik", sans-serif;
+  --font-kurdish: var(--font-kurdish), sans-serif;
 }

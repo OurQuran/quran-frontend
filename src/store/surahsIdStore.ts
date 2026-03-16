@@ -15,8 +15,8 @@ interface SurhaIdsState {
 }
 
 export const useSurahIdsStore = create<SurhaIdsState>((set, get) => ({
-  surahIds: getItem("surahIds") || [],
-  index: getItem("index") || 0,
+  surahIds: [],
+  index: 0,
   setIndex: (index: number) => {
     if (index >= 0 && index < get().surahIds.length) {
       set({ index });

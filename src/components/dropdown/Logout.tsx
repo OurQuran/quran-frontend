@@ -4,7 +4,7 @@ import { onError } from "@/helpers/utils";
 import AppDialog from "../AppDialog";
 import useAdd from "@/react-query/useAdd";
 import { destroyToken } from "@/helpers/localStorage";
-import { useNavigate } from "react-router";
+import { useRouter, useParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 
 export default function Logout({
@@ -17,13 +17,14 @@ export default function Logout({
   setIsOpen: (open: boolean) => void;
 }) {
   const [t] = useTranslation("global");
-  const navigate = useNavigate();
+  const router = useRouter();
+  const { locale } = useParams();
   const authStore = useAuthStore();
 
   function onMutationSuccess() {
     destroyToken();
     authStore.reset();
-    navigate("/login");
+    router.push(`/${locale}/login`);
   }
   function onMutationError() {
     onError(t("Something went wrong"));

@@ -1,28 +1,43 @@
+import Cookies from "js-cookie";
+
+const isBrowser = typeof window !== "undefined";
+
 export function getLang(): string {
+  if (!isBrowser) return "en";
   return localStorage.getItem("lang") || "en";
 }
 
 export function setLang(newLang: string): void {
-  localStorage.setItem("lang", newLang);
+  if (isBrowser) {
+    localStorage.setItem("lang", newLang);
+  }
 }
 
 export function saveToken(token: string) {
-  localStorage.setItem("token", token);
+  if (isBrowser) {
+    Cookies.set("token", token, { expires: 30, path: "/" }); // 30 days
+  }
 }
 
 export function getToken(): string {
-  return localStorage.getItem("token") || "";
+  if (!isBrowser) return "";
+  return Cookies.get("token") || "";
 }
 
 export function destroyToken() {
-  localStorage.removeItem("token");
+  if (isBrowser) {
+    Cookies.remove("token", { path: "/" });
+  }
 }
 
 export function setItem(key: string, value: any) {
-  localStorage.setItem(key, JSON.stringify(value));
+  if (isBrowser) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 }
 
 export function getItem(key: string) {
+  if (!isBrowser) return null;
   const item = localStorage.getItem(key);
   if (!item) return null;
   try {
@@ -33,5 +48,7 @@ export function getItem(key: string) {
 }
 
 export function removeItem(key: string) {
-  localStorage.removeItem(key);
+  if (isBrowser) {
+    localStorage.removeItem(key);
+  }
 }

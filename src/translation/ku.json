@@ -2,7 +2,7 @@
   "Ctrl+K to focus": "Ctrl+K بۆ سەرنجدان",
   "Search Type": "جۆری گەڕان",
   "Semantic": "مانایی",
-  "Set the saerch type to semantic": "جۆری گەڕان بۆ مانایی دیاری بکە",
+  "Set the search type to semantic": "جۆری گەڕان بۆ مانایی دیاری بکە",
   "Exact": "دروست",
   "Set the search type to exact": "جۆری گەڕان بۆ دروست دیاری بکە",
   "Mute": "بێدەنگکردن",
@@ -29,7 +29,7 @@
   "Add Bookmark": "زیادکرنی دڵخواز",
   "Show Audio": "پیشاندانی دەنگ",
   "Go to surah": "بڕؤ بۆ سوورەت",
-  "Tag removed successfuly": "تاگ بە سەرکەوتوویی لابرا",
+  "Tag removed successfully": "تاگ بە سەرکەوتوویی لابرا",
   "There was an error while removing the tag": "هەڵەیەک ڕوویدا لە کاتی لابردنی تاگەکە",
   "Hide": "شاردنەوە",
   "Show All": "پیشاندانی هەمووی",
@@ -173,6 +173,7 @@
   "Updated At": "بەرواری نوێکردنەوە",
   "Tag": "تاگ",
   "Ayah": "ئایەت",
+  "Ayahs": "ئایەتەکان",
   "Creator": "دروستکەر",
   "Updater": "نوێکار",
   "Parent": "سەرەکی",
@@ -189,5 +190,6 @@
   "Explore search results for {{query}} in Our Quran.": "گەڕان بەدوای ئەنجامەکانی گەڕان بۆ {{query}} لە قورئانەکەماندا.",
   "superadmin": "سۆپەر ئەدمین",
   "admin": "ئەدمین",
-  "user": "بەکارهێنەر"
+  "user": "بەکارهێنەر",
+  "Quick Settings": "ڕێکخستنە خێراکان"
 }

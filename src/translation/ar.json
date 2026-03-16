@@ -2,7 +2,7 @@
   "Ctrl+K to focus": "Ctrl+K للتركيز",
   "Search Type": "نوع البحث",
   "Semantic": "دلالي",
-  "Set the saerch type to semantic": "تعيين نوع البحث إلى دلالي",
+  "Set the search type to semantic": "تعيين نوع البحث إلى دلالي",
   "Exact": "دقيق",
   "Set the search type to exact": "تعيين نوع البحث إلى دقيق",
   "Mute": "كتم الصوت",
@@ -29,7 +29,7 @@
   "Add Bookmark": "إضافة إشارة مرجعية",
   "Show Audio": "إظهار الصوت",
   "Go to surah": "الذهاب إلى السورة",
-  "Tag removed successfuly": "تمت إزالة الإشارة بنجاح",
+  "Tag removed successfully": "تمت إزالة الإشارة بنجاح",
   "There was an error while removing the tag": "حدث خطأ أثناء إزالة الإشارة",
   "Hide": "إخفاء",
   "Show All": "إظهار الكل",
@@ -173,6 +173,7 @@
   "Updated At": "تاريخ التحديث",
   "Tag": "الإشارة",
   "Ayah": "الآية",
+  "Ayahs": "الآيات",
   "Creator": "المنشئ",
   "Updater": "المُحَدِّث",
   "Parent": "الأصل",
@@ -189,5 +190,6 @@
   "Explore search results for {{query}} in Our Quran.": "استكشف نتائج البحث عن {{query}} في قرآننا.",
   "superadmin": "مدير فائق",
   "admin": "مدير",
-  "user": "مستخدم"
+  "user": "مستخدم",
+  "Quick Settings": "إعدادات سريعة"
 }

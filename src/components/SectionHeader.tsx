@@ -4,7 +4,8 @@ import { SquarePlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { hasPermissionClient } from "@/helpers/authGuards";
 import { RoleTypeEnum } from "@/types/authTypes";
-import { Link } from "react-router";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function SectionHeader({
   title,
@@ -16,6 +17,7 @@ export default function SectionHeader({
   children?: React.ReactNode;
 }) {
   const [t] = useTranslation("global");
+  const { locale } = useParams();
 
   return (
     <CardHeader className="flex w-full gap-5 justify-between">
@@ -24,7 +26,7 @@ export default function SectionHeader({
         {role && hasPermissionClient(role) && children ? (
           children
         ) : role && hasPermissionClient(role) ? (
-          <Link to="upsert">
+          <Link href={`/${locale}/dashboard/upsert`}>
             <Button>
               <SquarePlus />
               <span className="px-2 hidden sm:inline">{t("Add")}</span>

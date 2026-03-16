@@ -1,3 +1,5 @@
+"use client";
+
 import { Globe, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -7,8 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { setLang } from "@/helpers/localStorage";
 import { cn } from "@/lib/utils";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 const languages = [
   { code: "en", label: "English" },
@@ -18,11 +20,18 @@ const languages = [
 
 export function LanguageToggle() {
   const { i18n } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   const handleLanguageChange = (code: string) => {
-    i18n.changeLanguage(code);
-    setLang(code);
+    // Basic localized routing change
+    const segments = pathname.split("/");
+    segments[1] = code;
+    const newPath = segments.join("/");
+    const query = searchParams.toString();
+    router.push(`${newPath}${query ? `?${query}` : ""}`);
   };
 
   return (

@@ -1,7 +1,8 @@
 import { Hash, Minus, MoreHorizontal, Plus, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import AppTooltip from "./AppTooltip";
 import { ITag } from "@/types/generalTypes";
 import { useState } from "react";
@@ -31,6 +32,7 @@ export default function AyahTags({
 }: TagsProps) {
   const [showAllTags, setShowAllTags] = useState(false);
   const [t] = useTranslation("global");
+  const { locale } = useParams();
   const visibleTags = !showAllTags ? tags.slice(0, limit) : tags;
   const remainingCount = tags.length - limit;
   const hasMoreTags = remainingCount > 0;
@@ -38,14 +40,14 @@ export default function AyahTags({
   const unattachMutation = useAdd(
     "tags/unattach",
     () => onSuccess(t("Tag removed successfuly")),
-    () => onError(t("There was an error while removing the tag"))
+    () => onError(t("There was an error while removing the tag")),
   );
 
   return (
     <div
       className={cn(
         "flex flex-wrap justify-start flex-row-reverse w-full gap-1.5",
-        className
+        className,
       )}
       {...props}
     >
@@ -63,7 +65,7 @@ export default function AyahTags({
               transition={{ duration: 0.2 }}
               layout
             >
-              <Link to={"/tags/" + tag.id}>
+              <Link href={`/${locale}/tags/${tag.id}`}>
                 <Badge
                   variant={variant}
                   className="px-2 py-0.5 text-xs group relative"
@@ -114,7 +116,10 @@ export default function AyahTags({
               content={
                 <div className="flex flex-wrap items-stretch gap-1.5">
                   {tags.slice(limit).map((tag, index) => (
-                    <Link key={index + "tag"} to={"/tags/" + tag.id}>
+                    <Link
+                      key={index + "tag"}
+                      href={`/${locale}/tags/${tag.id}`}
+                    >
                       <Badge variant={variant} className="px-2 py-0.5 text-xs">
                         {icon}
                         {tag.name}

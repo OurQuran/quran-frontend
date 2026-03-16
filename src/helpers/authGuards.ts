@@ -1,23 +1,22 @@
-import { redirect } from "react-router";
 import { getToken } from "./localStorage";
 import { RoleTypeEnum } from "@/types/authTypes";
 import { useAuthStore } from "@/store/authStore";
 
-export function requireAuth(isRoute: Boolean = false): boolean | Response {
+export function requireAuth(isRoute: boolean = false): boolean {
   if (getToken()) {
     return true;
   } else {
-    if (isRoute) {
-      return redirect("/login");
+    if (isRoute && typeof window !== "undefined") {
+      window.location.href = "/login";
     }
     return false;
   }
 }
 
-export function isLoggedIn(isRoute: Boolean = false) {
+export function isLoggedIn(isRoute: boolean = false): boolean {
   if (getToken()) {
-    if (isRoute) {
-      return redirect("/");
+    if (isRoute && typeof window !== "undefined") {
+      window.location.href = "/";
     }
     return true;
   } else {
@@ -27,32 +26,41 @@ export function isLoggedIn(isRoute: Boolean = false) {
 
 export async function hasPermission(
   role: RoleTypeEnum | RoleTypeEnum[]
-): Promise<boolean | Response> {
-  if (!getToken()) {
-    return redirect("/login");
+): Promise<boolean> {
+  const token = getToken();
+  if (!token) {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+    return false;
   }
   const store = useAuthStore.getState();
   if (!store.user?.role) {
     await store.fetchMe();
   }
   const { user } = useAuthStore.getState();
+  if (!user) return false;
+
   const hasPerm = Array.isArray(role)
     ? role.includes(user.role)
     : user.role === role;
 
-  if (!hasPerm) {
-    return redirect(`/?redirect=${window.location.pathname}`);
+  if (!hasPerm && typeof window !== "undefined") {
+    window.location.href = `/?redirect=${encodeURIComponent(window.location.pathname)}`;
+    return false;
   }
   return true;
 }
 
 export function hasPermissionClient(
   role: RoleTypeEnum | RoleTypeEnum[]
-): Boolean {
+): boolean {
   if (!getToken()) {
     return false;
   }
   const { user } = useAuthStore.getState();
+  if (!user) return false;
+
   const hasPerm = Array.isArray(role)
     ? role.includes(user.role)
     : user.role === role;

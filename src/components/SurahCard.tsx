@@ -1,9 +1,12 @@
-// components/SurahCard.tsx
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { setItem } from "@/helpers/localStorage";
 import { useSurahIdsStore } from "@/store/surahsIdStore";
 import { ISurahs } from "@/types/generalTypes";
-import { Link } from "react-router";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export default function SurahCard({
   surah,
@@ -12,10 +15,13 @@ export default function SurahCard({
   surah: ISurahs;
   index: number;
 }) {
+  const { t } = useTranslation("global");
   const { setIndex } = useSurahIdsStore();
+  const { locale } = useParams();
+
   return (
     <Link
-      to={`/surah/${surah.id}`}
+      href={`/${locale}/surah/${surah.id}`}
       onClick={() => {
         setIndex(index);
         setItem("index", index);
@@ -42,7 +48,7 @@ export default function SurahCard({
             <div className=" text-lg font-bold font-quran-1">
               {surah.name_ar}
             </div>
-            <div className=" text-sm text-muted-foreground ">{surah.type}</div>
+            <div className=" text-sm text-muted-foreground ">{t(surah.type)}</div>
           </div>
         </CardContent>
       </Card>

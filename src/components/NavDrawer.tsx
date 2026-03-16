@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, LogIn, UserPlus } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Drawer,
@@ -7,12 +7,20 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { navLinks } from "@/helpers/utils";
-import { NavLink } from "react-router";
+import Link from "next/link";
+import { usePathname, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { ThemeToggle } from "./ThemeToggle";
+import { LanguageToggle } from "./LanguageToggle";
+import { useAuthStore } from "@/store/authStore";
+import { isLoggedIn } from "@/helpers/authGuards";
 
 export function NavDrawer() {
   const { t, i18n } = useTranslation("global");
+  const pathname = usePathname();
+  const { locale } = useParams();
+  const { user } = useAuthStore();
   const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   return (
@@ -26,29 +34,66 @@ export function NavDrawer() {
           <Menu className="h-[1.1rem] w-[1.1rem]" />
         </Button>
       </DrawerTrigger>
-      <DrawerContent>
-        <div className="mx-auto w-full max-w-sm">
-          <nav className="gap-2 m-5 items-center flex flex-col">
-            {navLinks.map((link, i) => {
-              return (
-                <NavLink
-                  key={i}
-                  to={link.href}
-                  className={({ isActive }) =>
-                    cn(
+      <DrawerContent className="bg-card/95 backdrop-blur-xl border-border/40">
+        <div className="mx-auto w-full max-w-sm p-6">
+          <div className="flex flex-col gap-6">
+            {/* Quick Actions */}
+            <div className="flex items-center justify-between px-2">
+              <span className="text-sm font-medium text-muted-foreground">{t("Quick Settings")}</span>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <LanguageToggle />
+              </div>
+            </div>
+
+            <div className="h-px bg-border/40" />
+
+            {/* Navigation Links */}
+            <nav className="flex flex-col gap-2">
+              {navLinks.map((link, i) => {
+                const localizedHref = link.href.startsWith("/") ? `/${locale}${link.href}` : `/${locale}/${link.href}`;
+                const isActive = pathname === localizedHref;
+                
+                return (
+                  <Link
+                    key={i}
+                    href={localizedHref}
+                    className={cn(
                       fontClass,
                       buttonVariants({
-                        variant: isActive ? "default" : "secondary",
-                        className: "w-full",
+                        variant: isActive ? "default" : "ghost",
+                        className: "w-full justify-start text-base font-medium",
                       }),
-                    )
-                  }
-                >
-                  <DrawerClose className="w-full">{t(link.label)}</DrawerClose>
-                </NavLink>
-              );
-            })}
-          </nav>
+                      isActive ? "shadow-md" : "hover:bg-accent/50"
+                    )}
+                  >
+                    <DrawerClose className="w-full text-start">{t(link.label)}</DrawerClose>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Auth Section for Logged Out Users */}
+            {!(isLoggedIn() && user) && (
+              <>
+                <div className="h-px bg-border/40" />
+                <div className="flex flex-col gap-3">
+                  <Link href={`/${locale}/login`} className="w-full">
+                    <Button variant="outline" className={cn(fontClass, "w-full h-11 gap-2 border-primary/20 hover:bg-primary/5")}>
+                      <LogIn className="w-4 h-4" />
+                      <DrawerClose>{t("Login")}</DrawerClose>
+                    </Button>
+                  </Link>
+                  <Link href={`/${locale}/signup`} className="w-full">
+                    <Button className={cn(fontClass, "w-full h-11 gap-2 shadow-md")}>
+                      <UserPlus className="w-4 h-4" />
+                      <DrawerClose>{t("Sign Up")}</DrawerClose>
+                    </Button>
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </DrawerContent>
     </Drawer>

@@ -9,8 +9,10 @@ import {
   CheckCircle2,
   KeyRound,
   UserMinus,
+  type LucideIcon,
 } from "lucide-react";
-import { Link } from "react-router";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { hasPermissionClient } from "@/helpers/authGuards";
 import {
   DropdownMenu,
@@ -39,7 +41,7 @@ interface MenuItem {
   variant?: "destructive" | "default";
   onClick?: () => void;
   className?: string;
-  icon?: React.ReactNode;
+  icon?: LucideIcon;
 }
 
 function HeaderProfile() {
@@ -50,16 +52,17 @@ function HeaderProfile() {
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const authStore = useAuthStore();
   const { t, i18n } = useTranslation("global");
+  const { locale } = useParams();
   const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   const menuItems: MenuItem[] = [
     {
       label: t("My Account"),
-      icon: <User className="w-4 h-4" />,
+      icon: User,
       items: [
         {
           label: t("Edit Profile"),
-          icon: <Settings className="w-4 h-4" />,
+          icon: Settings,
           onClick: () => {
             setIsDropdownOpen(false);
             setIsUserUpsearOpen(true);
@@ -67,7 +70,7 @@ function HeaderProfile() {
         },
         {
           label: t("Change Password"),
-          icon: <KeyRound className="w-4 h-4" />,
+          icon: KeyRound,
           onClick: () => {
             setIsDropdownOpen(false);
             setIsPasswordOpen(true);
@@ -75,31 +78,31 @@ function HeaderProfile() {
         },
         {
           label: t("My Bookmarks"),
-          icon: <Bookmark className="w-4 h-4" />,
+          icon: Bookmark,
           to: "/bookmarks",
         },
       ],
     },
     {
       label: t("Management"),
-      icon: <CheckCircle2 className="w-4 h-4" />,
+      icon: CheckCircle2,
       permission: [RoleTypeEnum.ADMIN, RoleTypeEnum.SUPERADMIN],
       items: [
         {
           label: t("Users"),
-          icon: <Users className="w-4 h-4" />,
-          to: "/dashbaord/users",
+          icon: Users,
+          to: "/dashboard/users",
           permission: [RoleTypeEnum.SUPERADMIN, RoleTypeEnum.USER],
         },
         {
           label: t("Tags"),
-          icon: <Tags className="w-4 h-4" />,
-          to: "/dashbaord/tags",
+          icon: Tags,
+          to: "/dashboard/tags",
         },
         {
           label: t("Approve Tag assigns"),
-          icon: <CheckCircle2 className="w-4 h-4" />,
-          to: "/dashbaord/unapproved",
+          icon: CheckCircle2,
+          to: "/dashboard/unapproved",
         },
       ],
     },
@@ -108,7 +111,7 @@ function HeaderProfile() {
       items: [
         {
           label: t("Delete My Account"),
-          icon: <UserMinus className="w-4 h-4 text-destructive" />,
+          icon: UserMinus,
           variant: "destructive",
           className: "text-destructive hover:bg-destructive/10",
           onClick: () => {
@@ -118,7 +121,7 @@ function HeaderProfile() {
         },
         {
           label: t("Log out"),
-          icon: <LogOut className="w-4 h-4 text-destructive" />,
+          icon: LogOut,
           variant: "destructive",
           className: "text-destructive hover:bg-destructive/10",
           onClick: () => {
@@ -136,6 +139,8 @@ function HeaderProfile() {
         return null;
       }
 
+      const Icon = item.icon;
+
       const menuItem = (
         <DropdownMenuItem
           className={cn(
@@ -146,7 +151,7 @@ function HeaderProfile() {
           variant={item.variant || "default"}
           onClick={item.onClick ? item.onClick : () => {}}
         >
-          {item.icon}
+          {Icon && <Icon className="w-4 h-4" />}
           <span>{item.label}</span>
         </DropdownMenuItem>
       );
@@ -162,7 +167,7 @@ function HeaderProfile() {
                   "px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-2",
                 )}
               >
-                {item.icon}
+                {Icon && <Icon className="w-4 h-4" />}
                 {item.label}
               </DropdownMenuLabel>
               <DropdownMenuGroup className="px-1">
@@ -173,7 +178,7 @@ function HeaderProfile() {
               )}
             </>
           ) : item.to ? (
-            <Link className="w-full" to={item.to}>
+            <Link className="w-full" href={`/${locale}${item.to}`}>
               {menuItem}
             </Link>
           ) : (
@@ -210,7 +215,7 @@ function HeaderProfile() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {isUserUpsearOpen && (
+      {isUserUpsearOpen && authStore.user && (
         <UserUpsearModal
           isOpen={isUserUpsearOpen}
           setIsOpen={setIsUserUpsearOpen}
@@ -220,7 +225,7 @@ function HeaderProfile() {
       )}
       {isPasswordOpen && (
         <ChangePasswordModal
-          id={authStore.user.id + "" || ""}
+          id={authStore.user?.id + "" || ""}
           setIsOpen={setIsPasswordOpen}
           isOpen={isPasswordOpen}
           isSelf={true}

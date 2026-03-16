@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import {
   ChevronDown,
@@ -12,11 +14,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router";
+import Link from "next/link";
 import { ITag } from "@/types/generalTypes";
 import { useTranslation } from "react-i18next";
 import useGet from "@/react-query/useGet";
 import Loading from "./Loading";
+import { useParams } from "next/navigation";
 
 interface TreeNodeProps {
   item: ITag;
@@ -51,6 +54,7 @@ const levelBorders = [
 const TreeNode = ({ item, level, searchTerm }: TreeNodeProps) => {
   const [isExpanded, setIsExpanded] = useState(level < 1 || searchTerm !== "");
   const hasChildren = item.all_children && item.all_children.length > 0;
+  const { locale } = useParams();
 
   useEffect(() => {
     if (searchTerm !== "") {
@@ -82,7 +86,7 @@ const TreeNode = ({ item, level, searchTerm }: TreeNodeProps) => {
       transition={{ duration: 0.2 }}
     >
       <div className={cn("mb-2", hasChildren && isExpanded ? "" : "")}>
-        <Link to={`/tags/${item.id}`} className="block">
+        <Link href={`/${locale}/tags/${item.id}`} className="block">
           <div
             className={cn(
               "border rounded-lg transition-all duration-200 cursor-pointer overflow-hidden",
@@ -220,7 +224,7 @@ export default function TagTree() {
           <div>
             {data?.result.length ? (
               data?.result.map((item, index) => (
-                <>
+                <div key={item.id + "-container"}>
                   <TreeNode
                     key={item.id}
                     item={item}
@@ -228,7 +232,7 @@ export default function TagTree() {
                     searchTerm={searchTerm}
                   />
                   {index !== data?.result.length - 1 && <hr className="m-3" />}
-                </>
+                </div>
               ))
             ) : (
               <div className="text-center">{t("No tags found")}</div>

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Copy,
@@ -27,7 +29,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { requireAuth } from "@/helpers/authGuards";
-import { useNavigate } from "react-router";
+import { useRouter, useParams } from "next/navigation";
 import useAdd from "@/react-query/useAdd";
 import useDelete from "@/react-query/useDelete";
 import { useQueryClient } from "@tanstack/react-query";
@@ -49,7 +51,8 @@ export default function AyahCard({
   const { hovered, ref } = useHover();
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [tagModalOpen, setTagModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
+  const { locale } = useParams();
 
   const addBookmarkMutation = useAdd(
     "bookmarks",
@@ -77,13 +80,15 @@ export default function AyahCard({
 
   function handleBookmark() {
     if (requireAuth()) {
-      ayah.bookmarked
-        ? removeBookmarkMutation.mutate(ayah.id + "")
-        : addBookmarkMutation.mutate({
-            ayah_id: ayah.id,
-          });
+      if (ayah.bookmarked) {
+        removeBookmarkMutation.mutate(ayah.id + "");
+      } else {
+        addBookmarkMutation.mutate({
+          ayah_id: ayah.id,
+        });
+      }
     } else {
-      navigate("/login");
+      router.push(`/${locale}/login`);
     }
   }
 
@@ -91,7 +96,7 @@ export default function AyahCard({
     if (requireAuth()) {
       setTagModalOpen(true);
     } else {
-      navigate("/login");
+      router.push(`/${locale}/login`);
     }
   }
 
@@ -183,7 +188,7 @@ export default function AyahCard({
                 variant="ghost"
                 size="icon"
                 className="hover:bg-border hover:text-primary rounded-full"
-                onClick={() => navigate(`/surah/${ayah.surah_id}`)}
+                onClick={() => router.push(`/${locale}/surah/${ayah.surah_id}`)}
               >
                 <GalleryVerticalEnd className="h-5 w-5" />
               </Button>

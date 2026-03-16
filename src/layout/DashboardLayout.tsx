@@ -1,3 +1,5 @@
+"use client";
+
 import {
   RouterTabNavLink,
   RouterTabs,
@@ -6,9 +8,13 @@ import {
 import { hasPermissionClient } from "@/helpers/authGuards";
 import { RoleTypeEnum } from "@/types/authTypes";
 import { useTranslation } from "react-i18next";
-import { Outlet } from "react-router";
-export default function DashboardLayout() {
+import { ReactNode } from "react";
+import { useAuthStore } from "@/store/authStore";
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [t] = useTranslation("global");
+  // Subscribe to user so the component re-renders when auth loads after refresh
+  useAuthStore((state) => state.user);
 
   const routerTabItems = [
     {
@@ -33,9 +39,8 @@ export default function DashboardLayout() {
       hasPermissionClient(tab.permission) && (
         <RouterTabNavLink
           key={"tab" + index}
-          end
           className="w-full"
-          to={tab.href}
+          href={tab.href}
         >
           {t(tab.label)}
         </RouterTabNavLink>
@@ -50,7 +55,7 @@ export default function DashboardLayout() {
           {tabs}
         </RouterTabsList>
       </RouterTabs>
-      <Outlet />
+      {children}
     </div>
   );
 }
