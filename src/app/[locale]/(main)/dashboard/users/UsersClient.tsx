@@ -23,8 +23,7 @@ import ChangePasswordModal from "@/components/dropdown/ChangePasswordModal";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 export default function UsersClient() {
-  const { t, i18n } = useTranslation("global");
-  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
+  const { t } = useTranslation("global");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -74,7 +73,7 @@ export default function UsersClient() {
 
       cell: ({ row }) => {
         return (
-          <Badge className={cn("bg-green-600 font-normal w-full hover:bg-green-700", fontClass)}>
+          <Badge className={cn("bg-green-600 font-normal w-full hover:bg-green-700")}>
             {t(row.original.role || "")}
           </Badge>
         );

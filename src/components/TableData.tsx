@@ -18,6 +18,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import Loading from "./Loading";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,8 +26,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowUpDown, Eye } from "lucide-react";
+import { ArrowUpDown, Eye, ChevronDown, ChevronRight } from "lucide-react";
 import { IFilter } from "@/types/generalTypes";
+import React from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,6 +36,8 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean;
   sortBy: string | null;
   setSortBy: any;
+  onRowClick?: (data: TData) => void;
+  renderRowDetails?: (data: TData) => React.ReactNode;
 }
 
 export default function TableData<TData, TValue>({
@@ -42,10 +46,13 @@ export default function TableData<TData, TValue>({
   isLoading,
   sortBy,
   setSortBy,
+  onRowClick,
+  renderRowDetails,
 }: DataTableProps<TData, TValue>) {
   const [t] = useTranslation("global");
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
   const table = useReactTable({
     columns,
@@ -151,16 +158,47 @@ export default function TableData<TData, TValue>({
             </TableRow>
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
+              <React.Fragment key={row.id}>
+                <TableRow
+                  data-state={row.getIsSelected() && "selected"}
+                  onClick={() => {
+                    if (renderRowDetails) {
+                      setExpandedRowId(expandedRowId === row.id ? null : row.id);
+                    }
+                    onRowClick?.(row.original);
+                  }}
+                  className={cn(
+                    (onRowClick || renderRowDetails) && "cursor-pointer transition-all",
+                    renderRowDetails && expandedRowId === row.id ? "bg-muted/30" : "hover:bg-muted/50"
+                  )}
+                >
+                  {row.getVisibleCells().map((cell, index) => (
+                    <TableCell key={cell.id}>
+                      <div className="flex items-center gap-2">
+                        {index === 0 && renderRowDetails && (
+                          <div className="shrink-0 text-muted-foreground">
+                            {expandedRowId === row.id ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                            )}
+                          </div>
+                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </div>
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {renderRowDetails && expandedRowId === row.id && (
+                  <TableRow className="hover:bg-transparent border-b-2 border-primary/20">
+                    <TableCell colSpan={columns.length} className="p-0">
+                      <div className="animate-in slide-in-from-top-2 duration-300">
+                        {renderRowDetails(row.original)}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
             ))
           ) : (
             <TableRow>

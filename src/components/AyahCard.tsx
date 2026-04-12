@@ -25,7 +25,7 @@ import { useHover } from "react-haiku";
 import AyahTags from "./AyahTags";
 import { toast } from "sonner";
 import AudioPlayer from "./AudioPlayer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { requireAuth } from "@/helpers/authGuards";
@@ -35,16 +35,16 @@ import useDelete from "@/react-query/useDelete";
 import { useQueryClient } from "@tanstack/react-query";
 import { AyahAttachModal } from "./AyahAttachModal";
 
+export type AyahAction = "copy" | "bookmark" | "tag" | "audio" | "surah";
+
 export default function AyahCard({
   ayah,
   isFocusMode = false,
-  hasAudio = true,
-  surahLink = false,
+  ignoredActions = [],
 }: {
   ayah: IAayh;
   isFocusMode?: boolean;
-  hasAudio?: boolean;
-  surahLink?: boolean;
+  ignoredActions?: AyahAction[];
 }) {
   const queryClient = useQueryClient();
   const [t] = useTranslation("global");
@@ -58,17 +58,16 @@ export default function AyahCard({
     "bookmarks",
     () => {
       onSuccess(t("Ayah added to bookmarks"));
-      queryClient.refetchQueries({ queryKey: ["ayah"], exact: false });
     },
-    () => onError(t("Ayah could not be added to bookmarks"))
+    () => onError(t("Ayah could not be added to bookmarks")),
   );
   const removeBookmarkMutation = useDelete(
     "bookmarks",
     () => {
       onSuccess(t("Ayah removed from bookmarks"));
-      queryClient.refetchQueries({ queryKey: ["ayah"], exact: false });
     },
-    () => onError(t("Ayah could not be removed from bookmarks"))
+    () => onError(t("Ayah could not be removed from bookmarks")),
+    false,
   );
 
   const [playerId] = useState(uniqueId());
@@ -78,14 +77,36 @@ export default function AyahCard({
     toast.success(t("Text copied to clipboard"));
   }
 
+  const [localBookmarked, setLocalBookmarked] = useState(ayah.bookmarked);
+
+  useEffect(() => {
+    setLocalBookmarked(ayah.bookmarked);
+  }, [ayah.id]);
+
   function handleBookmark() {
     if (requireAuth()) {
-      if (ayah.bookmarked) {
-        removeBookmarkMutation.mutate(ayah.id + "");
-      } else {
-        addBookmarkMutation.mutate({
-          ayah_id: ayah.id,
+      const isRemoving = localBookmarked;
+      setLocalBookmarked(!isRemoving);
+
+      if (isRemoving) {
+        removeBookmarkMutation.mutate(ayah.id + "", {
+          onError: () => {
+            setLocalBookmarked(true);
+            onError(t("Ayah could not be removed from bookmarks"));
+          },
         });
+      } else {
+        addBookmarkMutation.mutate(
+          {
+            ayah_id: ayah.id,
+          },
+          {
+            onError: () => {
+              setLocalBookmarked(false);
+              onError(t("Ayah could not be added to bookmarks"));
+            },
+          },
+        );
       }
     } else {
       router.push(`/${locale}/login`);
@@ -102,6 +123,7 @@ export default function AyahCard({
 
   const sidebarItems = [
     {
+      action: "copy",
       trigger: (
         <Button
           variant="ghost"
@@ -114,8 +136,8 @@ export default function AyahCard({
       ),
       content: t("Copy Text"),
     },
-
     {
+      action: "bookmark",
       trigger: (
         <Button
           variant="ghost"
@@ -125,11 +147,11 @@ export default function AyahCard({
           className="hover:bg-border hover:text-primary rounded-full"
           onClick={handleBookmark}
         >
-          {hovered && ayah.bookmarked ? (
+          {hovered && localBookmarked ? (
             <BookmarkMinus className="h-5 w-5" />
-          ) : hovered && !ayah.bookmarked ? (
+          ) : hovered && !localBookmarked ? (
             <BookmarkPlus className="h-5 w-5" />
-          ) : ayah.bookmarked ? (
+          ) : localBookmarked ? (
             <BookmarkCheck className="h-5 w-5" />
           ) : (
             <Bookmark className="h-5 w-5" />
@@ -137,17 +159,18 @@ export default function AyahCard({
         </Button>
       ),
       content:
-        hovered && ayah.bookmarked ? (
+        hovered && localBookmarked ? (
           <p>{t("Remove Bookmark")}</p>
-        ) : hovered && !ayah.bookmarked ? (
+        ) : hovered && !localBookmarked ? (
           <p>{t("Add Bookmark")}</p>
-        ) : ayah.bookmarked ? (
+        ) : localBookmarked ? (
           <p>{t("Remove Bookmark")}</p>
         ) : (
           <p>{t("Add Bookmark")}</p>
         ),
     },
     {
+      action: "tag",
       trigger: (
         <Button
           variant="ghost"
@@ -160,44 +183,38 @@ export default function AyahCard({
       ),
       content: t("Attach Tag"),
     },
-    ...(hasAudio
-      ? [
-          {
-            trigger: (
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "hover:bg-border hover:text-primary rounded-full",
-                  showAudioPlayer ? "bg-secondary border" : ""
-                )}
-                onClick={() => setShowAudioPlayer((prev) => !prev)}
-              >
-                <Play className="h-5 w-5" />
-              </Button>
-            ),
-            content: t("Show Audio"),
-          },
-        ]
-      : []),
-    ...(surahLink
-      ? [
-          {
-            trigger: (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover:bg-border hover:text-primary rounded-full"
-                onClick={() => router.push(`/${locale}/surah/${ayah.surah_id}`)}
-              >
-                <GalleryVerticalEnd className="h-5 w-5" />
-              </Button>
-            ),
-            content: t("Go to surah"),
-          },
-        ]
-      : []),
-  ];
+    {
+      action: "audio",
+      trigger: (
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "hover:bg-border hover:text-primary rounded-full",
+            showAudioPlayer ? "bg-secondary border" : "",
+          )}
+          onClick={() => setShowAudioPlayer((prev) => !prev)}
+        >
+          <Play className="h-5 w-5" />
+        </Button>
+      ),
+      content: t("Show Audio"),
+    },
+    {
+      action: "surah",
+      trigger: (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-border hover:text-primary rounded-full"
+          onClick={() => router.push(`/${locale}/surah/${ayah.surah_id}`)}
+        >
+          <GalleryVerticalEnd className="h-5 w-5" />
+        </Button>
+      ),
+      content: t("Go to surah"),
+    },
+  ].filter((item) => !ignoredActions.includes(item.action as AyahAction));
 
   const sidebarBtns = sidebarItems.map((item, index) => {
     return (
@@ -210,10 +227,9 @@ export default function AyahCard({
     );
   });
 
-  const fixedAyahTemplate = ayah.ayah_template.replace(
-    /﴾([\u0660-\u0669]+)﴿/g,
-    "<span>﴿$1﴾</span>"
-  );
+  const fixedAyahTemplate = ayah.ayah_template
+    ? ayah.ayah_template.replace(/﴾([\u0660-\u0669]+)﴿/g, "<span>﴿$1﴾</span>")
+    : ayah.text;
 
   if (isFocusMode) {
     return (
@@ -238,7 +254,7 @@ export default function AyahCard({
         }
         className={cn(
           "text-base sm:text-lg font-medium text-center w-[600px] bg-primary/60 text-primary-foreground",
-          ayah.number_in_surah == 0 ? "!hidden" : ""
+          ayah.number_in_surah == 0 ? "hidden!" : "",
         )}
         direction="top"
         content={ayah.translation}
@@ -250,7 +266,9 @@ export default function AyahCard({
     <Card>
       <CardContent className="flex flex-col justify-between ">
         <div className="flex justify-between gap-4 ">
-          <div className="flex flex-col items-center gap-1 rtl:order-last">{sidebarBtns}</div>
+          <div className="flex flex-col items-center gap-1 rtl:order-last">
+            {sidebarBtns}
+          </div>
           <div className="w-full flex flex-col items-center gap-4">
             <div
               dir="rtl"

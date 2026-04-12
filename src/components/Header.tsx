@@ -30,8 +30,7 @@ function Header() {
     setIsClient(true);
   }, []);
 
-  const { t, i18n } = useTranslation("global");
-  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
+  const { t } = useTranslation("global");
 
   useEffect(() => {
     const onScroll = () => {
@@ -73,13 +72,14 @@ function Header() {
           <nav className="gap-5 items-center hidden sm:flex">
             {navLinks.map((link, i) => {
               const href = `/${locale}${link.href === "/" ? "" : link.href}`;
-              const isActive = pathname === href;
+              const activePath = link.activePath || link.href;
+              const localizedActivePath = `/${locale}${activePath === "/" ? "" : activePath}`;
+              const isActive = link.exact ? pathname === href : pathname.startsWith(localizedActivePath);
               return (
                 <Link
                   key={i}
                   href={href}
                   className={cn(
-                    fontClass,
                     "relative px-3 py-1.5 transition-colors duration-200 font-medium text-sm",
                     isActive
                       ? "text-primary"
@@ -112,7 +112,7 @@ function Header() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={cn(fontClass, "flex items-center gap-2")}
+                    className={cn("font-main flex items-center gap-2")}
                   >
                     <LogIn className="w-4 h-4" />
                     {t("Login")}
@@ -121,7 +121,7 @@ function Header() {
                 <Link href={`/${locale}/signup`}>
                   <Button
                     size="sm"
-                    className={cn(fontClass, "flex items-center gap-2")}
+                    className={cn("font-main flex items-center gap-2")}
                   >
                     <UserPlus className="w-4 h-4" />
                     {t("Sign Up")}

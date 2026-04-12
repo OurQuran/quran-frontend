@@ -18,7 +18,7 @@ export function useSurahInfinite(
 ) {
   return useInfiniteQuery({
     queryKey: ["surah", surahId, filters],
-    enabled: !!surahId && !!filters.audio_edition && !!filters.text_edition,
+    enabled: !!surahId && !!filters.audio_edition && !!filters.text_edition && !!filters.qiraat_reading_id,
     initialPageParam: 1,
     queryFn: async ({ pageParam }) => {
       const res = await api.get<SurahResponse>(`surahs/${surahId}`, {

@@ -20,16 +20,26 @@ export async function generateMetadata({
     const response = await api.get(`/surahs/${id}`);
     const surah = response.data.data;
 
+    const title = t("Surah {{name}} - Our Quran", { name: surah.name });
+    const description = t(
+      "Read and listen to Surah {{name}} with translations and audio.",
+      { name: surah.name }
+    );
+
     return {
-      title: t("Surah {{name}} - Our Quran", { name: surah.name }),
-      description: t(
-        "Read and listen to Surah {{name}} with translations and audio.",
-        { name: surah.name },
-      ),
+      title,
+      description,
+      openGraph: { title, description, type: "website" },
+      twitter: { card: "summary_large_image", title, description }
     };
   } catch (error) {
+    const title = `${t("Surah")} - ${t("Our quran")}`;
+    const description = t("Home_Page_Description", { defaultValue: "Read and listen to the Holy Quran with translations and interactive features." });
     return {
-      title: t("Surah - Our Quran"),
+      title,
+      description,
+      openGraph: { title, description, type: "website" },
+      twitter: { card: "summary_large_image", title, description }
     };
   }
 }

@@ -17,11 +17,10 @@ import { useAuthStore } from "@/store/authStore";
 import { isLoggedIn } from "@/helpers/authGuards";
 
 export function NavDrawer() {
-  const { t, i18n } = useTranslation("global");
+  const { t } = useTranslation("global");
   const pathname = usePathname();
   const { locale } = useParams();
   const { user } = useAuthStore();
-  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   return (
     <Drawer>
@@ -51,24 +50,26 @@ export function NavDrawer() {
             {/* Navigation Links */}
             <nav className="flex flex-col gap-2">
               {navLinks.map((link, i) => {
-                const localizedHref = link.href.startsWith("/") ? `/${locale}${link.href}` : `/${locale}/${link.href}`;
-                const isActive = pathname === localizedHref;
+                const localizedHref = `/${locale}${link.href === "/" ? "" : link.href}`;
+                const activePath = link.activePath || link.href;
+                const localizedActivePath = `/${locale}${activePath === "/" ? "" : activePath}`;
+                const isActive = link.exact ? pathname === localizedHref : pathname.startsWith(localizedActivePath);
                 
                 return (
-                  <Link
-                    key={i}
-                    href={localizedHref}
-                    className={cn(
-                      fontClass,
-                      buttonVariants({
-                        variant: isActive ? "default" : "ghost",
-                        className: "w-full justify-start text-base font-medium",
-                      }),
-                      isActive ? "shadow-md" : "hover:bg-accent/50"
-                    )}
-                  >
-                    <DrawerClose className="w-full text-start">{t(link.label)}</DrawerClose>
-                  </Link>
+                  <DrawerClose asChild key={i}>
+                    <Link
+                      href={localizedHref}
+                      className={cn(
+                        buttonVariants({
+                          variant: isActive ? "default" : "ghost",
+                          className: "w-full justify-start text-base font-medium",
+                        }),
+                        isActive ? "shadow-md" : "hover:bg-accent/50"
+                      )}
+                    >
+                      <span className="w-full text-start">{t(link.label)}</span>
+                    </Link>
+                  </DrawerClose>
                 );
               })}
             </nav>
@@ -78,18 +79,24 @@ export function NavDrawer() {
               <>
                 <div className="h-px bg-border/40" />
                 <div className="flex flex-col gap-3">
-                  <Link href={`/${locale}/login`} className="w-full">
-                    <Button variant="outline" className={cn(fontClass, "w-full h-11 gap-2 border-primary/20 hover:bg-primary/5")}>
+                  <DrawerClose asChild>
+                    <Link 
+                      href={`/${locale}/login`} 
+                      className={cn(buttonVariants({ variant: "outline" }), "w-full h-11 gap-2 border-primary/20 hover:bg-primary/5")}
+                    >
                       <LogIn className="w-4 h-4" />
-                      <DrawerClose>{t("Login")}</DrawerClose>
-                    </Button>
-                  </Link>
-                  <Link href={`/${locale}/signup`} className="w-full">
-                    <Button className={cn(fontClass, "w-full h-11 gap-2 shadow-md")}>
+                      {t("Login")}
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link 
+                      href={`/${locale}/signup`} 
+                      className={cn(buttonVariants({ variant: "default" }), "w-full h-11 gap-2 shadow-md")}
+                    >
                       <UserPlus className="w-4 h-4" />
-                      <DrawerClose>{t("Sign Up")}</DrawerClose>
-                    </Button>
-                  </Link>
+                      {t("Sign Up")}
+                    </Link>
+                  </DrawerClose>
                 </div>
               </>
             )}

@@ -67,7 +67,7 @@ export default function AdvancedSearchClient() {
             <Loading />
           ) : (
             data?.result.map((item) => (
-              <AyahCard key={item.id + "ayah-card"} ayah={item} />
+              <AyahCard key={item.id + "ayah-card"} ayah={item} ignoredActions={["surah"]} />
             ))
           )}
         </FadeInUp>

@@ -8,6 +8,8 @@ import { I18nextProvider } from "react-i18next";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import i18next, { createI18nInstance, initI18n } from "@/translation/i18n";
 
+import { arkanGraphik } from "@/lib/fonts";
+
 export default function Providers({
   children,
   locale,
@@ -16,7 +18,7 @@ export default function Providers({
   locale: string;
 }) {
   const [queryClient] = useState(() => new QueryClient());
-  
+
   // Create a stable isolated instance for this request/render tree
   const [i18nInstance] = useState(() => createI18nInstance(locale));
 
@@ -26,26 +28,23 @@ export default function Providers({
   }, [locale]);
 
   const dir = locale === "ar" || locale === "ku" ? "rtl" : "ltr";
-  const fontClass = locale === "en" ? "font-poppins" : "font-kurdish";
-
   // Sync attributes to body for Portals (Dialogs, Sheets, etc.)
   useEffect(() => {
     if (typeof document !== "undefined") {
       document.body.dir = dir;
-      document.body.classList.remove("font-poppins", "font-kurdish");
-      document.body.classList.add(fontClass);
     }
-  }, [dir, fontClass]);
+  }, [dir]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <I18nextProvider i18n={i18nInstance}>
           <DirectionProvider dir={dir}>
-            <div dir={dir} className={fontClass}>
-              {children}
-              <Toaster toastOptions={{ className: fontClass }} dir={dir} />
-            </div>
+            {children}
+            <Toaster
+              dir={dir}
+              toastOptions={{ className: arkanGraphik.className }}
+            />
           </DirectionProvider>
         </I18nextProvider>
       </ThemeProvider>

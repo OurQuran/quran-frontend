@@ -12,6 +12,24 @@ interface PageProps {
 export const dynamic = "force-dynamic";
 
 import { Suspense } from "react";
+import { getLocalizedMetadata } from "@/helpers/metadataHelper";
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const { t } = getLocalizedMetadata(locale);
+
+  const title = `${t("Home")} - ${t("Our quran")}`;
+  const description = t("Home_Page_Description", { defaultValue: "Read and listen to the Holy Quran with translations and interactive features." });
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
+    twitter: { card: "summary_large_image", title, description }
+  };
+}
 
 async function getSurahs(filters: any) {
   try {

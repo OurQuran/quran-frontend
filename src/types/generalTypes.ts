@@ -1,5 +1,18 @@
 import { SurahsType } from "./enums";
 
+export interface ITranslation {
+  ar: string;
+  en: string;
+  ku: string;
+}
+
+export interface IQiraat {
+  id: number;
+  imam: ITranslation;
+  riwaya: ITranslation;
+  name: ITranslation;
+}
+
 export interface IBookmark {
   id: number;
   ayah_id: number;
@@ -17,6 +30,7 @@ export interface IAayh {
   juz_id: number;
   sajda: number;
   ayah_template: string;
+  template: string;
   bookmarked: boolean;
   translation: string;
   audio?: string;
@@ -77,10 +91,12 @@ export interface IFilter {
   surah?: string;
   text_edition?: number;
   audio_edition?: number;
+  qiraat_reading_id?: number;
   page?: number;
   per_page?: number;
   sort_by?: string;
   q?: string;
+  with_images?: string;
 }
 
 export interface IUser {
@@ -90,4 +106,30 @@ export interface IUser {
   role: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface IBook {
+  id: number;
+  name: string;
+  section_count: number;
+}
+
+export interface IBookSection {
+  order_no: number;
+  header_text: string;
+  body_text: string;
+  image_count: number;
+}
+
+export interface IBookSectionContent {
+  section: {
+    order_no: number;
+    header_text: string;
+    body_text: string;
+    images?: { order: number; mime: string; data: string; filename: string }[];
+    refs?: { ref_no: number; ref_text: string }[];
+  };
+  book: {
+    name: string;
+  };
 }

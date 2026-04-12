@@ -44,20 +44,20 @@
 }
 
 .dark {
-  --background: oklch(0.10 0.01 60);
+  --background: oklch(0.1 0.01 60);
   --foreground: oklch(0.95 0.01 60);
   --card: oklch(0.12 0.01 60);
   --card-foreground: oklch(0.95 0.01 60);
   --popover: oklch(0.12 0.01 60);
   --popover-foreground: oklch(0.95 0.01 60);
   --primary: oklch(0.82 0.08 75);
-  --primary-foreground: oklch(0.10 0.01 60);
+  --primary-foreground: oklch(0.1 0.01 60);
   --secondary: oklch(0.18 0.01 60);
   --secondary-foreground: oklch(0.95 0.01 60);
   --muted: oklch(0.18 0.01 60);
   --muted-foreground: oklch(0.75 0.02 65);
   --accent: oklch(0.78 0.06 70);
-  --accent-foreground: oklch(0.10 0.01 60);
+  --accent-foreground: oklch(0.1 0.01 60);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.35 0.01 80);
   --input: oklch(0.35 0.01 80);
@@ -67,9 +67,9 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.20 0.01 80);
+  --sidebar: oklch(0.2 0.01 80);
   --sidebar-foreground: oklch(0.985 0.01 80);
-  --sidebar-primary: oklch(0.40 0.05 40);
+  --sidebar-primary: oklch(0.4 0.05 40);
   --sidebar-primary-foreground: oklch(0.985 0.01 80);
   --sidebar-accent: oklch(0.28 0.01 80);
   --sidebar-accent-foreground: oklch(0.985 0.01 80);
@@ -123,23 +123,19 @@
     @apply bg-background text-foreground;
   }
   html[lang="en"] body {
-    font-family: var(--font-kurdish), sans-serif;
     font-weight: 400;
     direction: ltr;
   }
 
   html[lang="ar"] body {
-    font-family: var(--font-kurdish), sans-serif;
     direction: rtl;
   }
   html[lang="ku"] body {
-    font-family: var(--font-kurdish), sans-serif;
     direction: rtl;
   }
 
   .ayah span:hover {
     border-bottom: 2px solid var(--primary);
-    background-color: var(--secondary);
   }
 
   .dark * {
@@ -154,5 +150,5 @@
   --font-quran-4: var(--font-quran-4), sans-serif;
   --font-quran-5: var(--font-quran-5), sans-serif;
   --font-poppins: "Poppins", sans-serif;
-  --font-kurdish: var(--font-kurdish), sans-serif;
+  --font-main: var(--font-main);
 }

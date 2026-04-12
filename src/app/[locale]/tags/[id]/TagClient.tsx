@@ -30,8 +30,7 @@ export default function TagClient({ id }: { id: string }) {
             <AyahCard
               key={item.id + "ayah-card"}
               ayah={item}
-              hasAudio={false}
-              surahLink={true}
+              ignoredActions={["audio"]}
             />
           ))
         )}

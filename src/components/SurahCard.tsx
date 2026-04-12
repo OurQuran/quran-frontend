@@ -36,7 +36,7 @@ export default function SurahCard({
           </div>
 
           <div className="flex-1 px-4 ">
-            <div className="text-lg font-bold font-poppins">
+            <div className="text-lg font-bold">
               {surah.name_en}
             </div>
             <div className="text-sm text-muted-foreground font-semibold">

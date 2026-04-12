@@ -66,7 +66,7 @@ function UpsertUser({
   const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
   const roleOptions = Object.values(RoleTypeEnum).filter(
-    (role) => role != RoleTypeEnum.SUPERADMIN
+    (role) => role != RoleTypeEnum.SUPERADMIN,
   ) as [string, ...string[]];
   const formSchema = z
     .object({
@@ -88,9 +88,9 @@ function UpsertUser({
                   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(val)),
               {
                 message: t(
-                  "Password must be at least 8 characters and include uppercase, lowercase, and a number"
+                  "Password must be at least 8 characters and include uppercase, lowercase, and a number",
                 ),
-              }
+              },
             )
         : z
             .string()
@@ -101,9 +101,9 @@ function UpsertUser({
                   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(val)),
               {
                 message: t(
-                  "Password must be at least 8 characters and include uppercase, lowercase, and a number"
+                  "Password must be at least 8 characters and include uppercase, lowercase, and a number",
                 ),
-              }
+              },
             ),
       confirmPassword: selectedRecord ? z.string().optional() : z.string(),
     })
@@ -112,7 +112,7 @@ function UpsertUser({
       {
         message: t("Passwords must match"),
         path: ["confirmPassword"],
-      }
+      },
     );
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -136,7 +136,7 @@ function UpsertUser({
       setIsOpen(false);
       form.reset();
     },
-    () => onError(t("There was an error adding the user"))
+    () => onError(t("There was an error adding the user")),
   );
 
   const updateTagMutation = useUpdate(
@@ -150,7 +150,7 @@ function UpsertUser({
       });
       form.reset();
     },
-    () => onError(t("There was an error updating the user"))
+    () => onError(t("There was an error updating the user")),
   );
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {

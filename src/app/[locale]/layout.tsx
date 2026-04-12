@@ -2,14 +2,28 @@ import { ReactNode } from "react";
 import { i18nConfig } from "@/i18n-config";
 import MainLayout from "@/layout/MainLayout";
 import Providers from "../providers";
+import {
+  arkanGraphik,
+  quranFont1,
+  quranFont2,
+  quranFont3,
+  quranFont4,
+  quranFont5,
+} from "@/lib/fonts";
 
 import { getLocalizedMetadata } from "@/helpers/metadataHelper";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
   const { t } = getLocalizedMetadata(locale);
   const title = t("Our Quran - Read, Listen, and Search");
-  const description = t("A modern Quranic platform for reading, listening, and semantic search.");
+  const description = t(
+    "A modern Quranic platform for reading, listening, and semantic search.",
+  );
   const url = `https://ourquran.com/${locale}`;
 
   return {
@@ -60,10 +74,25 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
+
   return (
-    <Providers locale={locale}>
-      <MainLayout>{children}</MainLayout>
-    </Providers>
+    <html lang={locale} suppressHydrationWarning>
+      <body
+        className={`
+          ${arkanGraphik.className}
+          ${arkanGraphik.variable} 
+          ${quranFont1.variable} 
+          ${quranFont2.variable} 
+          ${quranFont3.variable} 
+          ${quranFont4.variable} 
+          ${quranFont5.variable} 
+          antialiased
+        `}
+      >
+        <Providers locale={locale}>
+          <MainLayout>{children}</MainLayout>
+        </Providers>
+      </body>
+    </html>
   );
 }

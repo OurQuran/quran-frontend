@@ -51,9 +51,8 @@ function HeaderProfile() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const authStore = useAuthStore();
-  const { t, i18n } = useTranslation("global");
+  const { t } = useTranslation("global");
   const { locale } = useParams();
-  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   const menuItems: MenuItem[] = [
     {
@@ -145,7 +144,6 @@ function HeaderProfile() {
         <DropdownMenuItem
           className={cn(
             item.className,
-            fontClass,
             "flex items-center gap-2 cursor-pointer transition-colors duration-200",
           )}
           variant={item.variant || "default"}
@@ -163,7 +161,6 @@ function HeaderProfile() {
               <DropdownMenuLabel
                 className={cn(
                   item.className,
-                  fontClass,
                   "px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-2",
                 )}
               >
@@ -197,7 +194,6 @@ function HeaderProfile() {
             variant="ghost"
             className={cn(
               "flex items-center gap-2 p-2 sm:px-3 sm:py-2 text-primary bg-accent/20 hover:bg-accent/40 backdrop-blur-sm border border-border/50 shadow-xs",
-              fontClass,
             )}
           >
             <User className="h-4 w-4 text-primary" />

@@ -4,8 +4,10 @@ import { cn } from "@/lib/utils";
 
 const ScrollArea = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Viewport>
->(({ className, children, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Viewport> & {
+    orientation?: "vertical" | "horizontal" | "both";
+  }
+>(({ className, children, orientation = "vertical", ...props }, ref) => {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
@@ -14,13 +16,21 @@ const ScrollArea = React.forwardRef<
       <ScrollAreaPrimitive.Viewport
         ref={ref}
         data-slot="scroll-area-viewport"
-        className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 overflow-y-auto"
+        className={cn(
+          "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
+          orientation === "horizontal" ? "overflow-x-auto" : "overflow-y-auto"
+        )}
         {...props}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
       <ScrollAreaPrimitive.Corner />
-      <ScrollBar />
+      {(orientation === "vertical" || orientation === "both") && (
+        <ScrollBar orientation="vertical" />
+      )}
+      {(orientation === "horizontal" || orientation === "both") && (
+        <ScrollBar orientation="horizontal" />
+      )}
     </ScrollAreaPrimitive.Root>
   );
 });

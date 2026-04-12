@@ -19,12 +19,14 @@ import { useSurahInfinite } from "@/hooks/useSurahInfinite";
 import useGet from "@/react-query/useGet";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { useRouter, useParams } from "next/navigation";
+import { useQiraatStore } from "@/store/qiraatStore";
 
 export default function SurahClient({ id }: { id: string }) {
   const { t, i18n } = useTranslation("global");
   const router = useRouter();
   const { locale } = useParams();
-  const { audioEditions, textEditions } = useEditionStore();
+  const { audioEditions, textEditions, fetchEditions } = useEditionStore();
+  const { qiraats, fetchQiraats } = useQiraatStore();
   const {
     getNextId,
     getPreviousId,
@@ -38,6 +40,7 @@ export default function SurahClient({ id }: { id: string }) {
   const [filters, setFilters] = useState<IFilter>({
     audio_edition: 0,
     text_edition: 0,
+    qiraat_reading_id: 0,
   });
   const [isFocusMode, setIsFocusMode] = useState(false);
 
@@ -45,12 +48,14 @@ export default function SurahClient({ id }: { id: string }) {
   useEffect(() => {
     const savedAudio = getItem("audio_edition");
     const savedText = getItem("text_edition");
+    const savedQiraat = getItem("qiraat_reading_id");
     const savedFocus = getItem("focus_mode");
 
     setFilters((prev) => ({
       ...prev,
       audio_edition: savedAudio ? parseInt(savedAudio) : prev.audio_edition,
       text_edition: savedText ? parseInt(savedText) : prev.text_edition,
+      qiraat_reading_id: savedQiraat ? parseInt(savedQiraat) : prev.qiraat_reading_id,
     }));
 
     if (savedFocus === "true") {
@@ -78,29 +83,38 @@ export default function SurahClient({ id }: { id: string }) {
     if (allSurahs?.length) {
       setSurahIds(allSurahs.map((s) => s.id));
     }
-  }, [allSurahs, setSurahIds]);
+    fetchEditions();
+    fetchQiraats();
+  }, [allSurahs, setSurahIds, fetchEditions, fetchQiraats]);
 
   const ayahs = data?.pages.flatMap((page) => page.ayahs) ?? [];
 
   useEffect(() => {
-    if (
-      (audioEditions.length || textEditions.length) &&
-      isNaN(filters.audio_edition || NaN)
-    ) {
-      setFilters({
-        ...filters,
-        audio_edition: audioEditions[0].id,
-        text_edition: textEditions[0].id,
+    if (audioEditions.length || textEditions.length || qiraats.length) {
+      setFilters((prev) => {
+        const needsAudio = isNaN(prev.audio_edition || NaN);
+        const needsText = isNaN(prev.text_edition || NaN);
+        const needsQiraat = isNaN(prev.qiraat_reading_id || NaN);
+
+        if (needsAudio || needsText || needsQiraat) {
+          return {
+            ...prev,
+            audio_edition: prev.audio_edition || audioEditions[0]?.id || 0,
+            text_edition: prev.text_edition || textEditions[0]?.id || 0,
+            qiraat_reading_id: prev.qiraat_reading_id || qiraats[0]?.id || 0,
+          };
+        }
+        return prev;
       });
     }
-  }, [audioEditions.length, textEditions.length, filters]);
+  }, [audioEditions, textEditions, qiraats]);
 
   return (
     <div>
       <Card className="w-full">
         <CardContent>
           <div className="space-y-5">
-            <div className="flex flex-col md:flex-row items-center gap-2 justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2 justify-between">
               <div className=" w-full">
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   {t("Audio Edition")}
@@ -121,6 +135,17 @@ export default function SurahClient({ id }: { id: string }) {
                   setFilters={setFilters}
                   editions={textEditions}
                   accessor="text_edition"
+                />
+              </div>
+              <div className="w-full">
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  {t("Readings")}
+                </span>
+                <EditionSelector
+                  filters={filters}
+                  setFilters={setFilters}
+                  editions={qiraats}
+                  accessor="qiraat_reading_id"
                 />
               </div>
             </div>
@@ -155,11 +180,12 @@ export default function SurahClient({ id }: { id: string }) {
         {isLoading ? (
           <Loading />
         ) : (
-          ayahs?.map((item) => (
+          ayahs?.map((item, index) => (
             <AyahCard
-              key={item.id + "ayah-card"}
+              key={item.id + index + "ayah-card"}
               ayah={item}
               isFocusMode={isFocusMode}
+              ignoredActions={["surah"]}
             />
           ))
         )}

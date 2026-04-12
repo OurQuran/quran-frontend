@@ -55,8 +55,7 @@ export default function BookmarksClient() {
             <AyahCard
               key={item.id + "ayah-card"}
               ayah={item}
-              hasAudio={false}
-              surahLink={true}
+              ignoredActions={["audio"]}
             />
           ))
         )}

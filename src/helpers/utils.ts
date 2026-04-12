@@ -48,13 +48,27 @@ export const navLinks = [
   {
     label: "Home",
     href: "/",
+    exact: true,
   },
   {
     label: "Tags",
     href: "/tags",
   },
   {
+    label: "Books",
+    href: "/books",
+  },
+  {
+    label: "Qira'ats",
+    href: "/qiraats",
+  },
+  {
     label: "Advanced Search",
     href: "/advanced-search",
+  },
+  {
+    label: "Mushaf",
+    href: "/surahs/page/1",
+    activePath: "/surahs/page",
   },
 ];

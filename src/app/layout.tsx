@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import { arkanGraphik, quranFont1, quranFont2, quranFont3, quranFont4, quranFont5 } from "@/lib/fonts";
+import {
+  arkanGraphik,
+  quranFont1,
+  quranFont2,
+  quranFont3,
+  quranFont4,
+  quranFont5,
+} from "@/lib/fonts";
 import "@/index.css";
-import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "OurQuran",
@@ -13,36 +19,22 @@ export const metadata: Metadata = {
       { url: "/web-icon/favicon.ico", sizes: "any" },
     ],
     apple: [
-      { url: "/web-icon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      {
+        url: "/web-icon/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
   },
   manifest: "/web-icon/site.webmanifest",
 };
 
 import { ReactNode } from "react";
-import { i18nConfig } from "@/i18n-config";
 
-
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  return (
-    <html suppressHydrationWarning>
-      <body
-        className={`
-          ${arkanGraphik.variable} 
-          ${quranFont1.variable} 
-          ${quranFont2.variable} 
-          ${quranFont3.variable} 
-          ${quranFont4.variable} 
-          ${quranFont5.variable} 
-          antialiased
-        `}
-      >
-        {children}
-      </body>
-    </html>
-  );
+  return children;
 }

@@ -15,11 +15,25 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { IEdition, IFilter } from "@/types/generalTypes";
+import { IEdition, IFilter, IQiraat, ITranslation } from "@/types/generalTypes";
 import { ScrollArea } from "./ui/scroll-area";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "@/helpers/utils";
 import { setItem } from "@/helpers/localStorage";
+
+type SelectorItem = IEdition | IQiraat;
+
+function isTranslation(obj: any): obj is ITranslation {
+  return obj && typeof obj === "object" && ("ar" in obj || "en" in obj || "ku" in obj);
+}
+
+function getLabel(item: SelectorItem, language: string): string {
+  if (isTranslation(item.name)) {
+    return item.name[language as keyof ITranslation] || item.name.en;
+  }
+  return item.name as string;
+}
+
 
 export default function EditionSelector({
   filters,
@@ -29,11 +43,13 @@ export default function EditionSelector({
 }: {
   filters: IFilter;
   setFilters: (filters: IFilter) => void;
-  editions: IEdition[];
+  editions: SelectorItem[];
   accessor: keyof IFilter;
 }) {
   const [open, setOpen] = useState(false);
-  const [t] = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
+  const currentLang = i18n.language;
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -45,7 +61,10 @@ export default function EditionSelector({
           className="w-full justify-between"
         >
           {filters[accessor]
-            ? editions.find((edition) => edition.id === filters[accessor])?.name
+            ? (() => {
+                const found = editions.find((e) => e.id === filters[accessor]);
+                return found ? getLabel(found, currentLang) : t("Select Edition");
+              })()
             : t("Select Edition")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -63,31 +82,34 @@ export default function EditionSelector({
             <ScrollArea className="h-[200px]">
               <CommandGroup>
                 <CommandEmpty>{t("No Edition found")}</CommandEmpty>
-                {editions.map((edition) => (
-                  <CommandItem
-                    key={edition.id + "edition-item"}
-                    value={edition.name}
-                    dir={getTextDirection(edition.name)}
-                    onSelect={() => {
-                      setFilters({
-                        ...filters,
-                        [accessor]: edition.id,
-                      });
-                      setItem(accessor, edition.id.toString());
-                      setOpen(false);
-                    }}
-                  >
-                    {edition.name}
-                    <Check
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        filters[accessor] === edition.id
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                  </CommandItem>
-                ))}
+                {editions.map((edition) => {
+                  const label = getLabel(edition, currentLang);
+                  return (
+                    <CommandItem
+                      key={edition.id + "edition-item" + accessor}
+                      value={label}
+                      dir={getTextDirection(label)}
+                      onSelect={() => {
+                        setFilters({
+                          ...filters,
+                          [accessor]: edition.id,
+                        });
+                        setItem(accessor, edition.id.toString());
+                        setOpen(false);
+                      }}
+                    >
+                      {label}
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          filters[accessor] === edition.id
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </ScrollArea>
           </CommandList>

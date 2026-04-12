@@ -78,6 +78,6 @@ export const arkanGraphik = localFont({
       style: "normal",
     },
   ],
-  variable: "--font-kurdish",
+  variable: "--font-main",
   display: "swap",
 });

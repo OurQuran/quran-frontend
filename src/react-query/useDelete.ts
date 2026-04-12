@@ -4,7 +4,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export default function useDelete<T>(
   path: string,
   onSuccess: (data: T) => void = () => {},
-  onError: (error: T) => void = () => {}
+  onError: (error: T) => void = () => {},
+  shouldInvalidate: boolean = true,
 ) {
   const queryClient = useQueryClient();
   function deleteData(id: string) {
@@ -14,7 +15,9 @@ export default function useDelete<T>(
   return useMutation({
     mutationFn: deleteData,
     onSuccess: (data) => {
-      queryClient.invalidateQueries();
+      if (shouldInvalidate) {
+        queryClient.invalidateQueries();
+      }
       onSuccess(data);
     },
     onError,

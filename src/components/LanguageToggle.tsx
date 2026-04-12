@@ -23,7 +23,6 @@ export function LanguageToggle() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const fontClass = i18n.language === "en" ? "font-poppins" : "font-kurdish";
 
   const handleLanguageChange = (code: string) => {
     // Basic localized routing change
@@ -59,7 +58,6 @@ export function LanguageToggle() {
               i18n.language === lang.code
                 ? "bg-accent/60 text-accent-foreground font-medium"
                 : "text-muted-foreground",
-              fontClass,
             )}
           >
             <span>{lang.label}</span>
