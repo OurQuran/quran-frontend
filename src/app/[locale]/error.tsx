@@ -19,9 +19,9 @@ export default function Error({
 
   return (
     <div className="flex flex-col items-center justify-center h-screen p-5 text-center">
-      <h2 className="text-3xl font-bold mb-4">{t("Something went wrong!")}</h2>
+      <h2 className="text-3xl font-bold mb-4">{t("Something Went Wrong")}</h2>
       <p className="text-muted-foreground mb-8">
-        {t("We apologize for the inconvenience. Please try again or contact support if the issue persists.")}
+        {t("Please try again later or refresh the page")}
       </p>
       <Button onClick={() => reset()}>
         {t("Try again")}

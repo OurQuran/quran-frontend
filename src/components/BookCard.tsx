@@ -16,7 +16,7 @@ export default function BookCard({
   const { locale } = useParams();
 
   return (
-    <Link href={`/${locale}/books/${book.id}`} className="block h-full">
+    <Link href={`/${locale}/reading-books/books/${book.id}`} className="block h-full">
       <Card className="h-full w-full transition-all duration-200 hover:border-primary flex flex-col justify-center bg-card">
         <CardContent 
           className="flex items-center p-4 gap-4 h-full"

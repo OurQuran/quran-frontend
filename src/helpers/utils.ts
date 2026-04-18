@@ -55,12 +55,8 @@ export const navLinks = [
     href: "/tags",
   },
   {
-    label: "Books",
-    href: "/books",
-  },
-  {
-    label: "Qira'ats",
-    href: "/qiraats",
+    label: "Reading Books",
+    href: "/reading-books",
   },
   {
     label: "Advanced Search",

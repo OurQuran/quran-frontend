@@ -7,6 +7,8 @@ type AuthStore = {
   setUser: (user: IUser | null) => void;
   fetchMe: () => Promise<void>;
   reset: () => void;
+  isAuthModalOpen: boolean;
+  setAuthModalOpen: (open: boolean) => void;
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -23,4 +25,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
   },
   reset: () => set({ user: null }),
+  isAuthModalOpen: false,
+  setAuthModalOpen: (open) => set({ isAuthModalOpen: open }),
 }));

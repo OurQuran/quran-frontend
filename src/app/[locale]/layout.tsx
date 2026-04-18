@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { i18nConfig } from "@/i18n-config";
+import { notFound } from "next/navigation";
+import { i18nConfig, Locale } from "@/i18n-config";
 import MainLayout from "@/layout/MainLayout";
 import Providers from "../providers";
 import {
@@ -74,6 +75,10 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+
+  if (!i18nConfig.locales.includes(locale as Locale)) {
+    notFound();
+  }
 
   return (
     <html lang={locale} suppressHydrationWarning>

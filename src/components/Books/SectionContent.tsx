@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { IBookSectionContent } from "@/types/generalTypes";
 import useGet from "@/react-query/useGet";
 import Loading from "@/components/Loading";
+import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
@@ -55,12 +56,18 @@ export default function SectionContent({
     setActiveFootnoteRef(null);
   }, [bookId, orderNo]);
 
-  const { data, isLoading } = useGet<IBookSectionContent, false>(
+  const { data, isLoading, isError, error } = useGet<IBookSectionContent, false>(
     `books/${bookId}/sections/${orderNo}`,
     { with_images: "1" as any },
     orderNo !== null,
     `book-${bookId}-section-${orderNo}`,
   );
+
+  useEffect(() => {
+    if (isError && (error as any)?.response?.status === 404) {
+      notFound();
+    }
+  }, [isError, error]);
 
   if (orderNo === null) {
     return (

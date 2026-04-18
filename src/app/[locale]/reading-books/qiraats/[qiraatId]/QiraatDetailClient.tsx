@@ -12,6 +12,7 @@ import {
   useParams,
   useSearchParams,
   usePathname,
+  notFound,
 } from "next/navigation";
 import Link from "next/link";
 import { useQiraatStore } from "@/store/qiraatStore";
@@ -33,99 +34,6 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
-
-function SearchableSelect({
-  value,
-  onChange,
-  options,
-  placeholder,
-  searchPlaceholder,
-  emptyText,
-  allowClear,
-}: {
-  value: number | string | null;
-  onChange: (val: number | null) => void;
-  options: { id: number; label: string }[];
-  placeholder: string;
-  searchPlaceholder: string;
-  emptyText: string;
-  allowClear?: boolean;
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="secondary"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-        >
-          <span className="truncate">
-            {value
-              ? options.find((o) => o.id === value)?.label || placeholder
-              : placeholder}
-          </span>
-          <div className="flex items-center">
-            {allowClear && value !== null && (
-              <div
-                className="p-1 hover:bg-muted-foreground/20 rounded-sm cursor-pointer mr-1 text-muted-foreground hover:text-foreground transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChange(null);
-                }}
-              >
-                <X className="h-3.5 w-3.5" />
-              </div>
-            )}
-            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-          </div>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="p-0"
-        align="start"
-        style={{ width: "var(--radix-popover-trigger-width)" }}
-        sideOffset={4}
-        data-lenis-prevent
-      >
-        <Command>
-          <CommandInput placeholder={searchPlaceholder} className="h-9" />
-          <CommandList>
-            <ScrollArea className="h-[200px]">
-              <CommandGroup>
-                <CommandEmpty>{emptyText}</CommandEmpty>
-                {options.map((option) => (
-                  <CommandItem
-                    key={option.id}
-                    value={option.label}
-                    onSelect={() => {
-                      if (allowClear && value === option.id) {
-                        onChange(null);
-                      } else {
-                        onChange(option.id);
-                      }
-                      setOpen(false);
-                    }}
-                  >
-                    {option.label}
-                    <Check
-                      className={cn(
-                        "ml-auto h-4 w-4",
-                        value === option.id ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </ScrollArea>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 export interface IQiraatDifference {
   id: number;
@@ -178,10 +86,16 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
     router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
   }, [filter, pathname, router]);
 
-  const { data, isLoading } = useGet<IQiraatDifference, true>(
+  const { data, isLoading, isError, error } = useGet<IQiraatDifference, true>(
     `qiraats/${qiraatId}/differences`,
     filter,
   );
+
+  useEffect(() => {
+    if (isError && (error as any)?.response?.status === 404) {
+      notFound();
+    }
+  }, [isError, error]);
 
   const qiraatOptions = useMemo(() => {
     return qiraats.map((q) => ({
@@ -252,6 +166,99 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
     },
   ];
 
+  function SearchableSelect({
+    value,
+    onChange,
+    options,
+    placeholder,
+    searchPlaceholder,
+    emptyText,
+    allowClear,
+  }: {
+    value: number | string | null;
+    onChange: (val: number | null) => void;
+    options: { id: number; label: string }[];
+    placeholder: string;
+    searchPlaceholder: string;
+    emptyText: string;
+    allowClear?: boolean;
+  }) {
+    const [open, setOpen] = useState(false);
+
+    return (
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="secondary"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between"
+          >
+            <span className="truncate">
+              {value
+                ? options.find((o) => o.id === value)?.label || placeholder
+                : placeholder}
+            </span>
+            <div className="flex items-center">
+              {allowClear && value !== null && (
+                <div
+                  className="p-1 hover:bg-muted-foreground/20 rounded-sm cursor-pointer mr-1 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChange(null);
+                  }}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </div>
+              )}
+              <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+            </div>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="p-0"
+          align="start"
+          style={{ width: "var(--radix-popover-trigger-width)" }}
+          sideOffset={4}
+          data-lenis-prevent
+        >
+          <Command>
+            <CommandInput placeholder={searchPlaceholder} className="h-9" />
+            <CommandList>
+              <ScrollArea className="h-[200px]">
+                <CommandGroup>
+                  <CommandEmpty>{emptyText}</CommandEmpty>
+                  {options.map((option) => (
+                    <CommandItem
+                      key={option.id}
+                      value={option.label}
+                      onSelect={() => {
+                        if (allowClear && value === option.id) {
+                          onChange(null);
+                        } else {
+                          onChange(option.id);
+                        }
+                        setOpen(false);
+                      }}
+                    >
+                      {option.label}
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          value === option.id ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </ScrollArea>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -271,7 +278,7 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
                 value={Number(qiraatId)}
                 onChange={(val) => {
                   if (val) {
-                    router.push(`/${locale}/qiraats/${val}`);
+                    router.push(`/${locale}/reading-books/qiraats/${val}`);
                   }
                 }}
                 options={qiraatOptions}

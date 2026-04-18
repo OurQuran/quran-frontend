@@ -24,7 +24,11 @@ import { setItem } from "@/helpers/localStorage";
 type SelectorItem = IEdition | IQiraat;
 
 function isTranslation(obj: any): obj is ITranslation {
-  return obj && typeof obj === "object" && ("ar" in obj || "en" in obj || "ku" in obj);
+  return (
+    obj &&
+    typeof obj === "object" &&
+    ("ar" in obj || "en" in obj || "ku" in obj)
+  );
 }
 
 function getLabel(item: SelectorItem, language: string): string {
@@ -33,7 +37,6 @@ function getLabel(item: SelectorItem, language: string): string {
   }
   return item.name as string;
 }
-
 
 export default function EditionSelector({
   filters,
@@ -50,7 +53,6 @@ export default function EditionSelector({
   const { t, i18n } = useTranslation("global");
   const currentLang = i18n.language;
 
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -63,7 +65,9 @@ export default function EditionSelector({
           {filters[accessor]
             ? (() => {
                 const found = editions.find((e) => e.id === filters[accessor]);
-                return found ? getLabel(found, currentLang) : t("Select Edition");
+                return found
+                  ? getLabel(found, currentLang)
+                  : t("Select Edition");
               })()
             : t("Select Edition")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -104,7 +108,7 @@ export default function EditionSelector({
                           "ml-auto h-4 w-4",
                           filters[accessor] === edition.id
                             ? "opacity-100"
-                            : "opacity-0"
+                            : "opacity-0",
                         )}
                       />
                     </CommandItem>

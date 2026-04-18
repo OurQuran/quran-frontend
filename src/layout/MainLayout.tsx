@@ -8,6 +8,7 @@ import { useEffect, ReactNode } from "react";
 import { useEditionStore } from "@/store/editionStore";
 import { useAuthStore } from "@/store/authStore";
 import { isLoggedIn } from "@/helpers/authGuards";
+import AuthDialog from "@/components/AuthDialog";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   const lenisRef = useLenis();
@@ -43,6 +44,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           <Footer />
         </div>
       </footer>
+
+      {/* Global Dialogs */}
+      <AuthDialog />
     </div>
   );
 }

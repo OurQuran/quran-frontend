@@ -33,6 +33,7 @@ import { useRouter, useParams } from "next/navigation";
 import useAdd from "@/react-query/useAdd";
 import useDelete from "@/react-query/useDelete";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/store/authStore";
 import { AyahAttachModal } from "./AyahAttachModal";
 
 export type AyahAction = "copy" | "bookmark" | "tag" | "audio" | "surah";
@@ -53,6 +54,8 @@ export default function AyahCard({
   const [tagModalOpen, setTagModalOpen] = useState(false);
   const router = useRouter();
   const { locale } = useParams();
+
+  const { setAuthModalOpen } = useAuthStore();
 
   const addBookmarkMutation = useAdd(
     "bookmarks",
@@ -109,7 +112,7 @@ export default function AyahCard({
         );
       }
     } else {
-      router.push(`/${locale}/login`);
+      setAuthModalOpen(true);
     }
   }
 
@@ -117,7 +120,7 @@ export default function AyahCard({
     if (requireAuth()) {
       setTagModalOpen(true);
     } else {
-      router.push(`/${locale}/login`);
+      setAuthModalOpen(true);
     }
   }
 

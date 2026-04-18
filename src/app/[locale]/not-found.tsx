@@ -10,7 +10,7 @@ export default function NotFound() {
   const { locale } = useParams();
 
   return (
-    <main className=" bg-white flex text-tan-500 justify-center items-center h-screen ">
+    <main className=" bg-background flex text-foreground justify-center items-center h-screen ">
       <div className="text-center p-5 font-medium">
         <p className=" text-8xl font-semibold text-primary ">404</p>
         <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-5xl">

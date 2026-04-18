@@ -25,10 +25,6 @@ export default function BooksClient() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{t("books", { defaultValue: "Books" })}</h1>
-      </div>
-      
       {isLoading ? (
         <Loading />
       ) : (

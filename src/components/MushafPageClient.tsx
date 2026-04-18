@@ -31,11 +31,6 @@ import { IAayh, ISurahs } from "@/types/generalTypes";
 import { Fragment } from "react";
 import AyahCard from "@/components/AyahCard";
 import AppDialog from "@/components/AppDialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 function MushafBorder() {
@@ -120,6 +115,8 @@ export default function MushafPageClient({
   });
   const [fontSize, setFontSize] = useState(36);
   const [jumpPage, setJumpPage] = useState("");
+  const clickTimeoutRef = typeof window !== "undefined" ? { current: null as any } : { current: null };
+  const longPressTimeoutRef = typeof window !== "undefined" ? { current: null as any } : { current: null };
 
   const pageInt = parseInt(pageNumber);
 
@@ -232,100 +229,85 @@ export default function MushafPageClient({
     return <div className="text-center p-10">{t("Something Went Wrong")}</div>;
 
   return (
-    <div className="flex flex-col w-full -mt-6 gap-0">
-      {/* Integrated Mushaf Header (Card Style) */}
-      <div className="max-w-5xl mx-auto w-full px-4 pt-6">
+    <div className="flex flex-col gap-5">
+      <div>
+        <Card className="w-full">
+          <CardContent>
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2 justify-between">
+                <div className=" w-full">
+                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {t("Audio Edition")}
+                  </span>
+                  <EditionSelector
+                    filters={filters}
+                    setFilters={setFilters}
+                    editions={audioEditions}
+                    accessor="audio_edition"
+                  />
+                </div>
+                <div className="w-full">
+                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {t("Text Edition")}
+                  </span>
+                  <EditionSelector
+                    filters={filters}
+                    setFilters={setFilters}
+                    editions={textEditions}
+                    accessor="text_edition"
+                  />
+                </div>
+                <div className="w-full">
+                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {t("Readings")}
+                  </span>
+                  <EditionSelector
+                    filters={filters}
+                    setFilters={setFilters}
+                    editions={qiraats}
+                    accessor="qiraat_reading_id"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div>
         <Card className="border-border shadow-sm">
           <CardContent className="flex justify-between items-center w-full px-4 sm:px-6 ">
             <div className="flex items-center gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
+              <div className="flex items-center gap-1 group">
+                <span className="text-[10px] font-bold uppercase text-muted-foreground mr-2 hidden lg:inline-block">
+                  {t("Font Size")}
+                </span>
+                <div className="flex items-center border rounded-md px-1 bg-background/50">
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="gap-2 h-8 rounded-md"
+                    size="icon"
+                    className="h-7 w-7 rounded-md"
+                    onClick={() =>
+                      handleFontSizeChange((f) => Math.max(16, f - 2))
+                    }
                   >
-                    <Settings2 className="w-4 h-4" />
-                    <span className="hidden sm:inline font-bold text-[11px] uppercase tracking-tighter">
-                      {t("Mushaf Settings")}
-                    </span>
+                    <Minus className="w-3 h-3" />
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-80 p-4 space-y-4 rounded-md"
-                  side="bottom"
-                  align="start"
-                >
-                  <h4 className="font-bold border-b pb-2 mb-2">
-                    {t("Mushaf Settings")}
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-muted-foreground">
-                        {t("Audio Edition")}
-                      </span>
-                      <EditionSelector
-                        filters={filters}
-                        setFilters={setFilters}
-                        editions={audioEditions}
-                        accessor="audio_edition"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-muted-foreground">
-                        {t("Text Edition")}
-                      </span>
-                      <EditionSelector
-                        filters={filters}
-                        setFilters={setFilters}
-                        editions={textEditions}
-                        accessor="text_edition"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold uppercase text-muted-foreground">
-                        {t("Readings")}
-                      </span>
-                      <EditionSelector
-                        filters={filters}
-                        setFilters={setFilters}
-                        editions={qiraats}
-                        accessor="qiraat_reading_id"
-                      />
-                    </div>
-                    <div className="pt-2 border-t flex items-center justify-between">
-                      <span className="text-xs font-semibold">
-                        {t("Font Size")}
-                      </span>
-                      <div className="flex items-center border rounded-md px-1 bg-background">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 rounded-md"
-                          onClick={() =>
-                            handleFontSizeChange((f) => Math.max(16, f - 2))
-                          }
-                        >
-                          <Minus className="w-3 h-3" />
-                        </Button>
-                        <span className="text-xs font-bold w-6 text-center">
-                          {fontSize}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 rounded-md"
-                          onClick={() =>
-                            handleFontSizeChange((f) => Math.min(80, f + 2))
-                          }
-                        >
-                          <Plus className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
+                  <span className="text-xs font-bold w-6 text-center">
+                    {fontSize}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 rounded-md"
+                    onClick={() =>
+                      handleFontSizeChange((f) => Math.min(80, f + 2))
+                    }
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
               <div className="h-4 w-[1px] bg-border mx-1" />
               <div className="flex items-center gap-3 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                 <span className="text-primary">
@@ -390,7 +372,7 @@ export default function MushafPageClient({
         </Card>
       </div>
 
-      <div className="px-4 py-8 max-w-5xl mx-auto w-full">
+      <div>
         <AnimatePresence mode="wait">
           <motion.div
             key={pageNumber}
@@ -450,6 +432,59 @@ export default function MushafPageClient({
                     (s) => s.id === ayah.surah_id,
                   );
 
+                  const handleAyahInteraction = (
+                    e: React.MouseEvent | React.TouchEvent | React.PointerEvent,
+                    ayah: IAayh,
+                  ) => {
+                    const target = e.target as HTMLElement;
+                    const isWordClick = target.tagName === "SPAN" && target.id;
+
+                    // Manual differentiation between single/double click and long press
+                    if (e.type === "pointerdown") {
+                      // START LONG PRESS TIMER (Mobile focused)
+                      longPressTimeoutRef.current = setTimeout(() => {
+                        setSelectedAyah(ayah);
+                        longPressTimeoutRef.current = null;
+                      }, 600);
+                      return;
+                    }
+
+                    if (e.type === "pointerup") {
+                      if (longPressTimeoutRef.current) {
+                        // If we are here, long press didn't finish
+                        clearTimeout(longPressTimeoutRef.current);
+                        longPressTimeoutRef.current = null;
+
+                        // Now handle single vs double click
+                        if (clickTimeoutRef.current) {
+                          // DOUBLE CLICK
+                          clearTimeout(clickTimeoutRef.current);
+                          clickTimeoutRef.current = null;
+                          setSelectedAyah(ayah);
+                        } else {
+                          // SINGLE CLICK (Wait to see if it's a double)
+                          clickTimeoutRef.current = setTimeout(() => {
+                            clickTimeoutRef.current = null;
+                            if (isWordClick) {
+                              toast.info(`${t("Word")}: ${target.id}`, {
+                                icon: "📖",
+                                duration: 2000,
+                              });
+                            }
+                          }, 250);
+                        }
+                      }
+                      return;
+                    }
+
+                    if (e.type === "pointercancel" || e.type === "pointerleave") {
+                      if (longPressTimeoutRef.current) {
+                        clearTimeout(longPressTimeoutRef.current);
+                        longPressTimeoutRef.current = null;
+                      }
+                    }
+                  };
+
                   return (
                     <Fragment key={ayah.id}>
                       {isSurahStart && (
@@ -481,37 +516,15 @@ export default function MushafPageClient({
                           {ayah.text}
                         </div>
                       ) : (
-                        <AppTooltip
-                          className="bg-transparent backdrop-blur-none border-none"
-                          trigger={
-                            <div
-                              className="inline transition-all duration-300 px-1 hover:bg-primary/5 hover:text-primary cursor-pointer active:scale-95 rounded-sm"
-                              onClick={(e) => {
-                                const target = e.target as HTMLElement;
-                                if (target.tagName === "SPAN" && target.id) {
-                                  toast.success(`Word Clicked: ${target.id}`);
-                                } else {
-                                  setSelectedAyah(ayah);
-                                }
-                              }}
-                              dangerouslySetInnerHTML={{
-                                __html: fixedTemplate + " ",
-                              }}
-                            />
-                          }
-                          content={
-                            <Button
-                              size="icon"
-                              className="rounded-full shadow-lg h-8 w-8"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedAyah(ayah);
-                              }}
-                            >
-                              <Info className="w-4 h-4 cursor-pointer" />
-                            </Button>
-                          }
-                          direction="top"
+                        <div
+                          className="inline transition-all duration-300 px-1 hover:bg-primary/5 hover:text-primary cursor-pointer rounded-sm"
+                          onPointerDown={(e) => handleAyahInteraction(e, ayah)}
+                          onPointerUp={(e) => handleAyahInteraction(e, ayah)}
+                          onPointerCancel={(e) => handleAyahInteraction(e, ayah)}
+                          onPointerLeave={(e) => handleAyahInteraction(e, ayah)}
+                          dangerouslySetInnerHTML={{
+                            __html: fixedTemplate + " ",
+                          }}
                         />
                       )}
                     </Fragment>
@@ -523,9 +536,19 @@ export default function MushafPageClient({
         </AnimatePresence>
       </div>
 
-      {/* Navigation Help */}
-      <div className="flex justify-center text-[10px] text-muted-foreground uppercase tracking-widest py-8 opacity-50">
-        {t("Use arrows or keyboard to navigate")}
+      {/* Interaction Hints */}
+      <div className="flex flex-col items-center gap-1 py-4 opacity-60">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
+          <span className="hidden md:inline">
+            {t("Double click for details")} • {t("Single click for word info")}
+          </span>
+          <span className="md:hidden">
+            {t("Long tap for details")} • {t("Single tap for word info")}
+          </span>
+        </div>
+        <div className="hidden md:flex justify-center text-[10px] text-muted-foreground uppercase tracking-widest py-2">
+          {t("Use arrows or keyboard to navigate")}
+        </div>
       </div>
 
       {/* Ayah Interaction Modal */}

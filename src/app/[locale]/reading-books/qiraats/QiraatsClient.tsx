@@ -24,10 +24,6 @@ export default function QiraatsClient() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{t("Qira'ats", { defaultValue: "Qira'ats" })}</h1>
-      </div>
-      
       {isLoading ? (
         <Loading />
       ) : qiraats.length === 0 ? (

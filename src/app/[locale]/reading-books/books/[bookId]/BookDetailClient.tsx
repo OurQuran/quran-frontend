@@ -8,36 +8,28 @@ import SectionContent from "@/components/Books/SectionContent";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function BookDetailClient() {
+export default function BookDetailClient({ bookId }: { bookId: number }) {
   const { t } = useTranslation("global");
   const params = useParams();
-  const bookId = parseInt(params.bookId as string);
   const isRTL = params.locale === "ar" || params.locale === "ku";
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
+
   const sectionParam = searchParams.get("section");
-  const activeOrderNo = sectionParam && !isNaN(parseInt(sectionParam)) 
-    ? parseInt(sectionParam) 
-    : null;
+  const activeOrderNo =
+    sectionParam && !isNaN(parseInt(sectionParam))
+      ? parseInt(sectionParam)
+      : null;
 
   const setActiveOrderNo = (orderNo: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("section", orderNo.toString());
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-
-  if (isNaN(bookId)) {
-    return (
-      <div className="p-8 text-center text-destructive">
-        {t("invalid_book_id", { defaultValue: "Invalid Book ID" })}
-      </div>
-    );
-  }
 
   return (
     <div className="flex h-[calc(100vh-8rem)] bg-background rounded-lg border overflow-hidden relative">

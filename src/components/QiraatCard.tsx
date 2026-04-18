@@ -14,7 +14,7 @@ export default function QiraatCard({ qiraat }: { qiraat: IQiraat }) {
   const currentLocale = (locale as "ar" | "en" | "ku") || "en";
 
   return (
-    <Link href={`/${locale}/qiraats/${qiraat.id}`} className="block h-full group">
+    <Link href={`/${locale}/reading-books/qiraats/${qiraat.id}`} className="block h-full group">
       <Card className="h-full w-full transition-all duration-200 hover:border-primary flex flex-col justify-center bg-card">
         <CardContent
           className="flex items-center p-4 gap-4 h-full"
