@@ -28,6 +28,7 @@ export async function generateMetadata({
   const url = `https://ourquran.com/${locale}`;
 
   return {
+    metadataBase: new URL("https://ourquran.com"),
     title,
     description,
     openGraph: {

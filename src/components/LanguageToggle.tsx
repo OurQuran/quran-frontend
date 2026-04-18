@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const languages = [
   { code: "en", label: "English" },
@@ -18,7 +19,7 @@ const languages = [
   { code: "ku", label: "کوردی" },
 ];
 
-export function LanguageToggle() {
+function LanguageToggleContent() {
   const { i18n } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -66,5 +67,23 @@ export function LanguageToggle() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function LanguageToggle() {
+  return (
+    <Suspense
+      fallback={
+        <Button
+          variant="ghost"
+          size="icon"
+          className="shrink-0 text-primary bg-accent/20 hover:bg-accent/40 backdrop-blur-sm border border-border/50 shadow-xs"
+        >
+          <Globe className="h-[1.1rem] w-[1.1rem] shrink-0" />
+        </Button>
+      }
+    >
+      <LanguageToggleContent />
+    </Suspense>
   );
 }
