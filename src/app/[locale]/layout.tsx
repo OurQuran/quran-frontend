@@ -12,7 +12,16 @@ import {
   quranFont5,
 } from "@/lib/fonts";
 
-import { getLocalizedMetadata } from "@/helpers/metadataHelper";
+import { Metadata, Viewport } from "next";
+import {
+  getLocalizedMetadata,
+  generateCompleteMetadata,
+  generateViewportConfig,
+} from "@/helpers/metadataHelper";
+
+export function generateViewport(): Viewport {
+  return generateViewportConfig();
+}
 
 export async function generateMetadata({
   params,
@@ -21,47 +30,14 @@ export async function generateMetadata({
 }) {
   const { locale } = await params;
   const { t } = getLocalizedMetadata(locale);
-  const title = t("Our Quran - Read, Listen, and Search");
-  const description = t(
-    "A modern Quranic platform for reading, listening, and semantic search.",
-  );
-  const url = `https://ourquran.com/${locale}`;
 
-  return {
-    metadataBase: new URL("https://ourquran.com"),
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: "Our Quran",
-      images: [
-        {
-          url: "/web-icon/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: "Our Quran",
-        },
-      ],
-      locale: locale === "ar" ? "ar_SA" : locale === "ku" ? "ckb_IQ" : "en_US",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["/web-icon/og-image.png"],
-    },
-    alternates: {
-      canonical: url,
-      languages: {
-        en: "https://ourquran.com/en",
-        ar: "https://ourquran.com/ar",
-        ku: "https://ourquran.com/ku",
-      },
-    },
-  };
+  return generateCompleteMetadata({
+    locale,
+    title: t("Our Quran - Read, Listen, and Search"),
+    description: t(
+      "A modern Quranic platform for reading, listening, and semantic search.",
+    ),
+  });
 }
 
 export async function generateStaticParams() {

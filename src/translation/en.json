@@ -245,5 +245,19 @@
   "Enter your password": "Enter your password",
   "Logging in...": "Logging in...",
   "Creating account...": "Creating account...",
-  "Create Account": "Create Account"
+  "Create Account": "Create Account",
+  "Search the Holy Quran with advanced filters and semantic search.": "Search the Holy Quran with advanced filters and semantic search.",
+  "Read the book {{name}} on Our Quran platform.": "Read the book {{name}} on Our Quran platform.",
+  "Explore various Quranic qira'ats and reading books.": "Explore various Quranic qira'ats and reading books.",
+  "Advanced Search - Our Quran": "Advanced Search - Our Quran",
+  "Reading Books - Our Quran": "Reading Books - Our Quran",
+  "Meta_Book_Title": "Book: {{name}} - Our Quran",
+  "Meta_Book_Description": "Read the book {{name}} on Our Quran platform.",
+  "Meta_Qiraat_Title": "{{name}} - Our Quran",
+  "Meta_Qiraat_Description": "Read the differences and explanation for this Qira'at.",
+  "Login - Our Quran": "Login - Our Quran",
+  "Sign Up - Our Quran": "Sign Up - Our Quran",
+  "Site Index - Our Quran": "Site Index - Our Quran",
+  "Login_Description": "Login to your Our Quran account to access your bookmarks and settings.",
+  "SignUp_Description": "Create a new account on Our Quran to join our community."
 }

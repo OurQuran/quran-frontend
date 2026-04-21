@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   arkanGraphik,
   quranFont1,
@@ -9,9 +9,20 @@ import {
 } from "@/lib/fonts";
 import "@/index.css";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "OurQuran",
   description: "A comprehensive Quran application",
+  robots: "index, follow",
   icons: {
     icon: [
       { url: "/web-icon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -31,10 +42,6 @@ export const metadata: Metadata = {
 
 import { ReactNode } from "react";
 
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return children;
 }

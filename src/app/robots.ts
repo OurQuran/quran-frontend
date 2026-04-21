@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard/', '/api/'],
     },
-    sitemap: 'https://ourquran.com/sitemap.xml',
+    sitemap: 'https://ourquran.org/sitemap.xml',
   }
 }

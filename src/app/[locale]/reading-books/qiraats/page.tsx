@@ -1,8 +1,16 @@
-import { Metadata } from "next";
-import { getLocalizedMetadata } from "@/helpers/metadataHelper";
+import { Metadata, Viewport } from "next";
+import {
+  getLocalizedMetadata,
+  generateCompleteMetadata,
+  generateViewportConfig,
+} from "@/helpers/metadataHelper";
 import QiraatsClient from "./QiraatsClient";
 import { Suspense } from "react";
 import Loading from "@/components/Loading";
+
+export function generateViewport(): Viewport {
+  return generateViewportConfig();
+}
 
 export const dynamic = "force-dynamic";
 
@@ -14,15 +22,12 @@ export async function generateMetadata({
   const { locale } = await params;
   const { t } = getLocalizedMetadata(locale);
 
-  const title = `${t("Qira'ats")} - ${t("Our quran")}`;
-  const description = t("Qiraats_Description", { defaultValue: "Explore the different Qira'ats and their readings." });
-
-  return {
-    title,
-    description,
-    openGraph: { title, description, type: "website" },
-    twitter: { card: "summary_large_image", title, description }
-  };
+  return generateCompleteMetadata({
+    locale,
+    title: t("Reading Books - Our Quran"),
+    description: t("Explore various Quranic qira'ats and reading books."),
+    path: "/reading-books/qiraats",
+  });
 }
 
 export default function QiraatsPage() {

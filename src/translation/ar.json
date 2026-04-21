@@ -245,5 +245,20 @@
   "Enter your password": "أدخل كلمة المرور",
   "Logging in...": "جاري تسجيل الدخول...",
   "Creating account...": "جاري إنشاء الحساب...",
-  "Create Account": "إنشاء حساب"
+  "Create Account": "إنشاء حساب",
+  "Search the Holy Quran with advanced filters and semantic search.": "ابحث في القرآن الكريم بمرشحات متقدمة وبحث دلالي.",
+  "Read the book {{name}} on Our Quran platform.": "اقرأ كتاب {{name}} على منصة قرآننا.",
+  "Explore various Quranic qira'ats and reading books.": "استكشف مختلف القراءات القرآنية وكتب القراءة.",
+  "Advanced Search - Our Quran": "بحث متقدم - قرآننا",
+  "Reading Books - Our Quran": "كتب القراءات - قرآننا",
+  "Meta_Book_Title": "كتاب: {{name}} - قرآننا",
+  "Meta_Book_Description": "اقرأ كتاب {{name}} على منصة قرآننا.",
+  "Meta_Qiraat_Title": "{{name}} - قرآننا",
+  "Meta_Qiraat_Description": "اقرأ الاختلافات والشرح لهذه القراءة.",
+  "Login - Our Quran": "تسجيل الدخول - قرآننا",
+  "Sign Up - Our Quran": "إنشاء حساب - قرآننا",
+  "Site Index - Our Quran": "فهرس الموقع - قرآننا",
+  "Login_Description": "قم بتسجيل الدخول إلى حسابك في قرآننا للوصول إلى إشاراتك المرجعية وإعداداتك.",
+  "SignUp_Description": "قم بإنشاء حساب جديد في قرآننا للانضمام إلى مجتمعنا.",
+  "SiteIndex_Description": "قائمة شاملة لجميع الأقسام والسور والكتب والوسوم في قرآننا."
 }

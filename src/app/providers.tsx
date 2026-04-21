@@ -6,7 +6,10 @@ import { ReactNode, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { I18nextProvider } from "react-i18next";
 import { DirectionProvider } from "@radix-ui/react-direction";
-import i18next, { createI18nInstance, initI18n } from "@/translation/i18n";
+import i18next, {
+  createClientI18nInstance,
+  initI18n,
+} from "@/translation/i18n";
 
 import { arkanGraphik } from "@/lib/fonts";
 
@@ -20,7 +23,7 @@ export default function Providers({
   const [queryClient] = useState(() => new QueryClient());
 
   // Create a stable isolated instance for this request/render tree
-  const [i18nInstance] = useState(() => createI18nInstance(locale));
+  const [i18nInstance] = useState(() => createClientI18nInstance(locale));
 
   // Sync global i18next instance on client mount for legacy code
   useEffect(() => {

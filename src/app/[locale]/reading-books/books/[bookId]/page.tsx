@@ -1,5 +1,4 @@
-import { Metadata } from "next";
-import { getLocalizedMetadata } from "@/helpers/metadataHelper";
+import { Metadata, Viewport } from "next";
 import api from "@/api/axiosInstance";
 import BookDetailClient from "./BookDetailClient";
 import { Suspense } from "react";
@@ -7,6 +6,21 @@ import Loading from "@/components/Loading";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
+import JsonLd from "@/components/JsonLd";
+import {
+  getLocalizedMetadata,
+  generateCompleteMetadata,
+  generateBookSchema,
+  generateBreadcrumbSchema,
+  generateViewportConfig,
+} from "@/helpers/metadataHelper";
+
+export function generateViewport(): Viewport {
+  return generateViewportConfig();
+}
+
+import { getBookData } from "@/services/dataService";
 
 export async function generateMetadata({
   params,
@@ -20,47 +34,60 @@ export async function generateMetadata({
     return { title: t("Page Not Found") };
   }
 
-  try {
-    const response = await api.get(`/books/${bookId}`);
-    const book = response.data?.data;
-    const title = `${book?.name || t("Book")} - ${t("Our quran")}`;
-    const description = t("Book_Description", {
-      defaultValue: "Read this book on Our Quran.",
+  const book = await getBookData(bookId);
+  if (book) {
+    const title = t("Meta_Book_Title", { name: book?.name || t("Book") });
+    const description = t("Meta_Book_Description", {
+      name: book?.name || t("Book"),
     });
-    return {
+
+    return generateCompleteMetadata({
+      locale,
       title,
       description,
-      openGraph: { title, description, type: "book" },
-      twitter: { card: "summary_large_image", title, description },
-    };
-  } catch (error) {
-    const title = `${t("Book")} - ${t("Our quran")}`;
-    const description = t("Book_Description", {
-      defaultValue: "Read this book on Our Quran.",
+      path: `/reading-books/books/${bookId}`,
+      type: "book",
     });
-    return {
-      title,
-      description,
-      openGraph: { title, description, type: "book" },
-      twitter: { card: "summary_large_image", title, description },
-    };
   }
+
+  return generateCompleteMetadata({
+    locale,
+    title: `${t("Book")} - ${t("Our quran")}`,
+    description: t("Read the book on Our Quran platform."),
+    path: `/reading-books/books/${bookId}`,
+  });
 }
 
 export default async function BookDetailPage({
   params,
 }: {
-  params: Promise<{ bookId: string }>;
+  params: Promise<{ bookId: string; locale: string }>;
 }) {
-  const { bookId } = await params;
+  const { bookId, locale } = await params;
 
   if (isNaN(parseInt(bookId))) {
     notFound();
   }
 
+  const bookData = await getBookData(bookId);
+
+  const jsonLd = bookData ? generateBookSchema(bookData, locale) : null;
+  const breadcrumbLd = generateBreadcrumbSchema([
+    { name: "Home", url: `/${locale}` },
+    { name: "Books", url: `/${locale}/reading-books/books` },
+    {
+      name: bookData?.name || "Book",
+      url: `/${locale}/reading-books/books/${bookId}`,
+    },
+  ]);
+
   return (
-    <Suspense fallback={<Loading />}>
-      <BookDetailClient bookId={parseInt(bookId)} />
-    </Suspense>
+    <>
+      {jsonLd && <JsonLd data={jsonLd} />}
+      <JsonLd data={breadcrumbLd} />
+      <Suspense fallback={<Loading />}>
+        <BookDetailClient bookId={parseInt(bookId)} />
+      </Suspense>
+    </>
   );
 }

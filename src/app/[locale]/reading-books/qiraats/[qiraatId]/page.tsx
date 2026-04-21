@@ -1,10 +1,18 @@
-import { Metadata } from "next";
-import { getLocalizedMetadata } from "@/helpers/metadataHelper";
+import { Metadata, Viewport } from "next";
+import {
+  getLocalizedMetadata,
+  generateViewportConfig,
+  generateCompleteMetadata,
+} from "@/helpers/metadataHelper";
 import api from "@/api/axiosInstance";
 import QiraatDetailClient from "./QiraatDetailClient";
 import { Suspense } from "react";
 import Loading from "@/components/Loading";
 import { notFound } from "next/navigation";
+
+export function generateViewport(): Viewport {
+  return generateViewportConfig();
+}
 
 export const dynamic = "force-dynamic";
 
@@ -29,28 +37,24 @@ export async function generateMetadata({
       ? qiraat.name[locale] || qiraat.name.en || qiraat.name
       : t("Qira'at");
 
-    const title = `${qiraatName} - ${t("Our quran")}`;
-    const description = t("Qiraat_Description", {
-      defaultValue: "Read the differences and explanation for this Qira'at.",
-    });
+    const title = t("Meta_Qiraat_Title", { name: qiraatName });
+    const description = t("Meta_Qiraat_Description");
 
-    return {
+    return generateCompleteMetadata({
+      locale,
       title,
       description,
-      openGraph: { title, description, type: "website" },
-      twitter: { card: "summary_large_image", title, description },
-    };
-  } catch (error) {
-    const title = `${t("Qira'at")} - ${t("Our quran")}`;
-    const description = t("Qiraat_Description", {
-      defaultValue: "Read the differences and explanation for this Qira'at.",
+      path: `/reading-books/qiraats/${qiraatId}`,
     });
-    return {
+  } catch (error) {
+    const title = t("Meta_Qiraat_Title", { name: t("Qira'at") });
+    const description = t("Meta_Qiraat_Description");
+    return generateCompleteMetadata({
+      locale,
       title,
       description,
-      openGraph: { title, description, type: "website" },
-      twitter: { card: "summary_large_image", title, description },
-    };
+      path: `/reading-books/qiraats/${qiraatId}`,
+    });
   }
 }
 

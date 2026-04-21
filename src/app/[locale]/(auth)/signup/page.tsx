@@ -1,15 +1,29 @@
+import { Metadata, Viewport } from "next";
 import SignUpClient from "./SignUpClient";
-import { getLocalizedMetadata } from "@/helpers/metadataHelper";
-import { Metadata } from "next";
+import {
+  getLocalizedMetadata,
+  generateCompleteMetadata,
+  generateViewportConfig,
+} from "@/helpers/metadataHelper";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+export function generateViewport(): Viewport {
+  return generateViewportConfig();
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
   const { locale } = await params;
   const { t } = getLocalizedMetadata(locale);
 
-  return {
+  return generateCompleteMetadata({
+    locale,
     title: t("Sign Up - Our Quran"),
-    description: t("Create a new account on Our Quran."),
-  };
+    description: t("SignUp_Description"),
+    path: "/signup",
+  });
 }
 
 export const dynamic = "force-dynamic";

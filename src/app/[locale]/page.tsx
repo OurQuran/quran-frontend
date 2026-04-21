@@ -1,8 +1,6 @@
-import { Metadata } from "next";
 import HomeClient from "./HomeClient";
 import api from "@/api/axiosInstance";
 import { ISurahs } from "@/types/generalTypes";
-import { initI18n } from "@/translation/i18n";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -12,7 +10,16 @@ interface PageProps {
 export const dynamic = "force-dynamic";
 
 import { Suspense } from "react";
-import { getLocalizedMetadata } from "@/helpers/metadataHelper";
+import { Metadata, Viewport } from "next";
+import {
+  getLocalizedMetadata,
+  generateCompleteMetadata,
+  generateViewportConfig,
+} from "@/helpers/metadataHelper";
+
+export function generateViewport(): Viewport {
+  return generateViewportConfig();
+}
 
 export async function generateMetadata({
   params,
@@ -20,15 +27,13 @@ export async function generateMetadata({
   const { locale } = await params;
   const { t } = getLocalizedMetadata(locale);
 
-  const title = `${t("Home")} - ${t("Our quran")}`;
-  const description = t("Home_Page_Description", { defaultValue: "Read and listen to the Holy Quran with translations and interactive features." });
-
-  return {
-    title,
-    description,
-    openGraph: { title, description, type: "website" },
-    twitter: { card: "summary_large_image", title, description }
-  };
+  return generateCompleteMetadata({
+    locale,
+    title: t("Our Quran - Read, Listen, and Search"),
+    description: t(
+      "A modern Quranic platform for reading, listening, and semantic search.",
+    ),
+  });
 }
 
 async function getSurahs(filters: any) {

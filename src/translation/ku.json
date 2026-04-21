@@ -245,5 +245,20 @@
   "Enter your password": "تێپەڕوشەکەت بنووسە",
   "Logging in...": "چوونە ژوورەوە...",
   "Creating account...": "دروستکردنی هەژمار...",
-  "Create Account": "دروستکردنی هەژمار"
+  "Create Account": "دروستکردنی هەژمار",
+  "Search the Holy Quran with advanced filters and semantic search.": "گەڕان لە قورئانی پیرۆزدا بە بەکارهێنانی فلتەری پێشکەوتوو و گەڕانی واتایی.",
+  "Read the book {{name}} on Our Quran platform.": "پەرتووکی {{name}} بخوێنەرەوە لە پلاتفۆرمی قورئانەکەمان.",
+  "Explore various Quranic qira'ats and reading books.": "گەڕان بەدوای قیڕائاتە جیاوازەکان و پەرتووکەکانی خوێندنەوەی قورئان.",
+  "Advanced Search - Our Quran": "گەڕانی پێشکەوتوو - قورئانەکەمان",
+  "Reading Books - Our Quran": "کتێبەکانی قیرائات - قورئانەکەمان",
+  "Meta_Book_Title": "پەرتووک: {{name}} - قورئانەکەمان",
+  "Meta_Book_Description": "پەرتووکی {{name}} بخوێنەرەوە لە پلاتفۆرمی قورئانەکەمان.",
+  "Meta_Qiraat_Title": "{{name}} - قورئانەکەمان",
+  "Meta_Qiraat_Description": "خوێندنەوەی جیاوازییەکان و ڕوونکردنەوەی ئەم قیڕائاتە.",
+  "Login - Our Quran": "چوونە ژوورەوە - قورئانەکەمان",
+  "Sign Up - Our Quran": "خۆتۆمارکردن - قورئانەکەمان",
+  "Site Index - Our Quran": "فهرستی ماڵپەڕ - قورئانەکەمان",
+  "Login_Description": "بچۆ ناو هەژمارەکەت لە قورئانەکەمان بۆ بینینی نیشانەکراوەکان و ڕێکخستنەکانت.",
+  "SignUp_Description": "هەژمارێکی نوێ دروست بکە لە قورئانەکەمان بۆ ئەوەی ببیتە ئەندام لە کۆمەڵگەکەمان.",
+  "SiteIndex_Description": "لیستێکی گشتگیر لە هەموو بەشەکان، سوورەتەکان، پەرتووکەکان، و تاگەکان لە قورئانەکەماندا."
 }
