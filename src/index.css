@@ -152,3 +152,17 @@
   --font-poppins: "Poppins", sans-serif;
   --font-main: var(--font-main);
 }
+
+.search-match {
+  color: oklch(0.55 0.22 27);
+  font-weight: 700;
+}
+
+.dark .search-match {
+  color: oklch(0.72 0.19 27);
+}
+
+/* Keep the word's hover underline consistent with the highlight colour. */
+.ayah .search-match:hover {
+  border-bottom-color: currentColor;
+}
