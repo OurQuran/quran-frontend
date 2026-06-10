@@ -43,6 +43,7 @@ export default function SurahClient({ id }: { id: string }) {
     qiraat_reading_id: 0,
   });
   const [isFocusMode, setIsFocusMode] = useState(false);
+  const [showQiraatDiffs, setShowQiraatDiffs] = useState(true);
 
   // Initial load from localStorage
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function SurahClient({ id }: { id: string }) {
     const savedText = getItem("text_edition");
     const savedQiraat = getItem("qiraat_reading_id");
     const savedFocus = getItem("focus_mode");
+    const savedShowQiraatDiffs = getItem("show_qiraat_diffs");
 
     setFilters((prev) => ({
       ...prev,
@@ -61,11 +63,20 @@ export default function SurahClient({ id }: { id: string }) {
     if (savedFocus === "true") {
       setIsFocusMode(true);
     }
+
+    if (savedShowQiraatDiffs === false) {
+      setShowQiraatDiffs(false);
+    }
   }, []);
 
   const handleFocusModeChange = (checked: boolean) => {
     setIsFocusMode(checked);
     setItem("focus_mode", checked.toString());
+  };
+
+  const handleShowQiraatDiffsChange = (checked: boolean) => {
+    setShowQiraatDiffs(checked);
+    setItem("show_qiraat_diffs", checked);
   };
 
   const {
@@ -153,8 +164,8 @@ export default function SurahClient({ id }: { id: string }) {
         </CardContent>
       </Card>
       <div className="w-full mt-5">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
             <Switch
               id="focus-mode"
               checked={isFocusMode}
@@ -166,6 +177,20 @@ export default function SurahClient({ id }: { id: string }) {
               className="text-sm font-medium leading-none cursor-pointer"
             >
               {t("Focus Mode")}
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="qiraat-diff-mode"
+              checked={showQiraatDiffs}
+              onCheckedChange={handleShowQiraatDiffsChange}
+              className="cursor-pointer"
+            />
+            <label
+              htmlFor="qiraat-diff-mode"
+              className="text-sm font-medium leading-none cursor-pointer"
+            >
+              {t("Show Qiraat Differences")}
             </label>
           </div>
         </div>
@@ -185,6 +210,7 @@ export default function SurahClient({ id }: { id: string }) {
               key={item.id + index + "ayah-card"}
               ayah={item}
               isFocusMode={isFocusMode}
+              showQiraatDiffs={showQiraatDiffs}
               ignoredActions={["surah"]}
             />
           ))

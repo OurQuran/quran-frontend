@@ -12,6 +12,7 @@ import Loading from "@/components/Loading";
 import { Card, CardContent } from "@/components/ui/card";
 import EditionSelector from "@/components/EditionSelector";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   ChevronLeft,
   ChevronRight,
@@ -115,8 +116,15 @@ export default function MushafPageClient({
   });
   const [fontSize, setFontSize] = useState(36);
   const [jumpPage, setJumpPage] = useState("");
-  const clickTimeoutRef = typeof window !== "undefined" ? { current: null as any } : { current: null };
-  const longPressTimeoutRef = typeof window !== "undefined" ? { current: null as any } : { current: null };
+  const [showQiraatDiffs, setShowQiraatDiffs] = useState(true);
+  const clickTimeoutRef =
+    typeof window !== "undefined"
+      ? { current: null as any }
+      : { current: null };
+  const longPressTimeoutRef =
+    typeof window !== "undefined"
+      ? { current: null as any }
+      : { current: null };
 
   const pageInt = parseInt(pageNumber);
 
@@ -125,6 +133,7 @@ export default function MushafPageClient({
     const savedText = getItem("text_edition");
     const savedQiraat = getItem("qiraat_reading_id");
     const savedFontSize = getItem("mushaf_font_size");
+    const savedShowQiraatDiffs = getItem("show_qiraat_diffs");
 
     setFilters((prev) => ({
       ...prev,
@@ -142,6 +151,10 @@ export default function MushafPageClient({
       setFontSize(isMobile ? 28 : 36);
     }
 
+    if (savedShowQiraatDiffs === false) {
+      setShowQiraatDiffs(false);
+    }
+
     fetchEditions();
     fetchQiraats();
   }, [fetchEditions, fetchQiraats]);
@@ -152,6 +165,11 @@ export default function MushafPageClient({
       setItem("mushaf_font_size", newSize.toString());
       return newSize;
     });
+  };
+
+  const handleShowQiraatDiffsChange = (checked: boolean) => {
+    setShowQiraatDiffs(checked);
+    setItem("show_qiraat_diffs", checked);
   };
 
   const { data, isLoading, isError } = useMushafPage(pageNumber, filters);
@@ -309,6 +327,21 @@ export default function MushafPageClient({
                 </div>
               </div>
               <div className="h-4 w-[1px] bg-border mx-1" />
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="mushaf-qiraat-diff-mode"
+                  checked={showQiraatDiffs}
+                  onCheckedChange={handleShowQiraatDiffsChange}
+                  className="cursor-pointer"
+                />
+                <label
+                  htmlFor="mushaf-qiraat-diff-mode"
+                  className="hidden sm:inline text-[10px] font-bold uppercase text-muted-foreground cursor-pointer"
+                >
+                  {t("Differences")}
+                </label>
+              </div>
+              <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
               <div className="flex items-center gap-3 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                 <span className="text-primary">
                   {t("Juz")} {meta.juz_id}
@@ -410,7 +443,10 @@ export default function MushafPageClient({
 
               <div
                 dir="rtl"
-                className="font-quran-4 ayah text-justify ayah-flow w-full text-foreground/90 select-none"
+                className={cn(
+                  "font-quran-4 ayah text-justify ayah-flow w-full text-foreground/90 select-none",
+                  !showQiraatDiffs && "qiraat-diffs-hidden",
+                )}
                 style={{ fontSize: `${fontSize}px`, lineHeight: 2.3 }}
               >
                 {ayahs.map((ayah, index) => {
@@ -477,7 +513,10 @@ export default function MushafPageClient({
                       return;
                     }
 
-                    if (e.type === "pointercancel" || e.type === "pointerleave") {
+                    if (
+                      e.type === "pointercancel" ||
+                      e.type === "pointerleave"
+                    ) {
                       if (longPressTimeoutRef.current) {
                         clearTimeout(longPressTimeoutRef.current);
                         longPressTimeoutRef.current = null;
@@ -520,7 +559,9 @@ export default function MushafPageClient({
                           className="inline transition-all duration-300 px-1 hover:bg-primary/5 hover:text-primary cursor-pointer rounded-sm"
                           onPointerDown={(e) => handleAyahInteraction(e, ayah)}
                           onPointerUp={(e) => handleAyahInteraction(e, ayah)}
-                          onPointerCancel={(e) => handleAyahInteraction(e, ayah)}
+                          onPointerCancel={(e) =>
+                            handleAyahInteraction(e, ayah)
+                          }
                           onPointerLeave={(e) => handleAyahInteraction(e, ayah)}
                           dangerouslySetInnerHTML={{
                             __html: fixedTemplate + " ",
@@ -562,6 +603,7 @@ export default function MushafPageClient({
           <AyahCard
             ayah={selectedAyah}
             isFocusMode={false}
+            showQiraatDiffs={showQiraatDiffs}
             ignoredActions={["tag"]}
           />
         )}

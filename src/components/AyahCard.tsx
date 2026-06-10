@@ -41,10 +41,12 @@ export type AyahAction = "copy" | "bookmark" | "tag" | "audio" | "surah";
 export default function AyahCard({
   ayah,
   isFocusMode = false,
+  showQiraatDiffs = true,
   ignoredActions = [],
 }: {
   ayah: IAayh;
   isFocusMode?: boolean;
+  showQiraatDiffs?: boolean;
   ignoredActions?: AyahAction[];
 }) {
   const queryClient = useQueryClient();
@@ -240,16 +242,10 @@ export default function AyahCard({
         trigger={
           <div
             dir="rtl"
-            className="text-2xl 
-            sm:text-3xl 
-            leading-loose  
-            hover:bg-secondary 
-            text-center 
-            font-quran-4 
-            p-2
-            ayah 
-            font-semibold 
-            text-foreground"
+            className={cn(
+              "text-2xl sm:text-3xl leading-loose hover:bg-secondary text-center font-quran-4 p-2 ayah font-semibold text-foreground",
+              !showQiraatDiffs && "qiraat-diffs-hidden",
+            )}
             dangerouslySetInnerHTML={{
               __html: ayah.number_in_surah == 0 ? ayah.text : fixedAyahTemplate,
             }}
@@ -275,7 +271,10 @@ export default function AyahCard({
           <div className="w-full flex flex-col items-center gap-4">
             <div
               dir="rtl"
-              className="text-2xl sm:text-3xl leading-relaxed font-quran-4 ayah  text-foreground"
+              className={cn(
+                "text-2xl sm:text-3xl leading-relaxed font-quran-4 ayah text-foreground",
+                !showQiraatDiffs && "qiraat-diffs-hidden",
+              )}
               dangerouslySetInnerHTML={{
                 __html:
                   ayah.number_in_surah == 0 ? ayah.text : fixedAyahTemplate,
