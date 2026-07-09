@@ -10,11 +10,17 @@ interface MushafResponse {
 
 export function useMushafPage(
   pageNumber: string | number,
-  filters: IFilter
+  filters: IFilter,
+  options?: { enabled?: boolean; queryKeyPrefix?: string }
 ) {
   return useQuery({
-    queryKey: ["mushaf", pageNumber, filters],
-    enabled: !!pageNumber && !!filters.audio_edition && !!filters.text_edition && !!filters.qiraat_reading_id,
+    queryKey: [options?.queryKeyPrefix || "mushaf", pageNumber, filters],
+    enabled:
+      (options?.enabled ?? true) &&
+      !!pageNumber &&
+      !!filters.audio_edition &&
+      !!filters.text_edition &&
+      !!filters.qiraat_reading_id,
     placeholderData: keepPreviousData,
     queryFn: async () => {
       const res = await api.get<MushafResponse>(`surahs/page/${pageNumber}`, {

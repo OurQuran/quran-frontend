@@ -209,3 +209,313 @@
 .dark .ayah.qiraat-diffs-hidden .search-match.qiraat-diff {
   color: oklch(0.72 0.19 27);
 }
+
+.tajweed-text {
+  line-height: 2.05;
+}
+
+.tajweed-legend-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.tajweed-legend-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.tajweed-legend-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  align-items: center;
+  text-align: center;
+}
+
+.tajweed-legend-subtitle {
+  font-size: 0.76rem;
+  color: color-mix(in oklab, var(--muted-foreground) 90%, transparent);
+}
+
+.tajweed-legend-dropdown {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  left: 0;
+  right: 0;
+  z-index: 5;
+}
+
+.tajweed-legend-bar {
+  width: 100%;
+  border-top: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  border-left: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  border-right: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  border-radius: 0.9rem;
+  background: color-mix(in oklab, var(--background) 96%, var(--card));
+  padding: 0.65rem 0.5rem 0.55rem;
+  overflow: visible;
+  box-shadow: 0 10px 24px color-mix(in oklab, black 10%, transparent);
+}
+
+.tajweed-legend-toggle {
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
+  background: color-mix(in oklab, var(--card) 94%, var(--background));
+  color: color-mix(in oklab, var(--foreground) 84%, transparent);
+}
+
+.tajweed-legend-toggle-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.tajweed-legend-note {
+  padding-inline: 0.25rem;
+  text-align: center;
+  margin-top: 0.15rem;
+}
+
+.tajweed-mark {
+  transition: color 160ms ease, text-shadow 160ms ease;
+  text-shadow: 0 0 0.01em currentColor;
+}
+
+.tajweed-legend-compact {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.4rem;
+  width: 100%;
+  flex-wrap: wrap;
+  white-space: normal;
+  row-gap: 0.75rem;
+}
+
+.tajweed-legend-item {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  background-color: color-mix(in oklab, var(--card) 92%, currentColor 8%);
+  border-color: color-mix(in oklab, currentColor 20%, var(--border));
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 45%, transparent);
+}
+
+.tajweed-legend-item::before {
+  content: "";
+  width: 0.26rem;
+  align-self: stretch;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.8;
+}
+
+.tajweed-legend-item-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 0 0 auto;
+  color: color-mix(in oklab, var(--foreground) 86%, transparent);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.tajweed-legend-item-compact::before {
+  display: none;
+}
+
+.tajweed-legend-label {
+  color: currentColor;
+  line-height: 1.2;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.tajweed-swatch {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 999px;
+  display: inline-block;
+  flex-shrink: 0;
+  background: currentColor;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, currentColor 18%, transparent),
+    0 0 0 4px color-mix(in oklab, currentColor 12%, transparent);
+}
+
+.tajweed-legend-item-compact .tajweed-swatch {
+  width: 0.78rem;
+  height: 0.78rem;
+  box-shadow: none;
+}
+
+.tajweed-secondary-text {
+  color: color-mix(in oklab, var(--foreground) 72%, var(--muted-foreground));
+}
+
+.tajweed-h {
+  color: oklch(0.62 0.18 50);
+}
+
+.tajweed-l {
+  color: oklch(0.55 0.18 10);
+}
+
+.tajweed-n,
+.tajweed-p {
+  color: oklch(0.6 0.16 250);
+}
+
+.tajweed-o {
+  color: oklch(0.63 0.19 300);
+}
+
+.tajweed-m {
+  color: oklch(0.53 0.22 325);
+}
+
+.tajweed-q {
+  color: oklch(0.56 0.2 25);
+}
+
+.tajweed-g {
+  color: oklch(0.67 0.15 155);
+}
+
+.tajweed-i {
+  color: oklch(0.56 0.19 345);
+}
+
+.tajweed-f,
+.tajweed-c {
+  color: oklch(0.62 0.2 105);
+}
+
+.tajweed-w,
+.tajweed-a,
+.tajweed-u,
+.tajweed-d,
+.tajweed-b {
+  color: oklch(0.54 0.17 200);
+}
+
+.tajweed-s {
+  color: oklch(0.48 0.02 250);
+}
+
+.dark .tajweed-h {
+  color: oklch(0.78 0.14 65);
+}
+
+.dark .tajweed-l {
+  color: oklch(0.74 0.16 18);
+}
+
+.dark .tajweed-n,
+.dark .tajweed-p {
+  color: oklch(0.78 0.14 260);
+}
+
+.dark .tajweed-o {
+  color: oklch(0.78 0.17 310);
+}
+
+.dark .tajweed-m {
+  color: oklch(0.73 0.18 330);
+}
+
+.dark .tajweed-q {
+  color: oklch(0.76 0.16 35);
+}
+
+.dark .tajweed-g {
+  color: oklch(0.8 0.13 155);
+}
+
+.dark .tajweed-i {
+  color: oklch(0.78 0.15 350);
+}
+
+.dark .tajweed-f,
+.dark .tajweed-c {
+  color: oklch(0.82 0.16 115);
+}
+
+.dark .tajweed-w,
+.dark .tajweed-a,
+.dark .tajweed-u,
+.dark .tajweed-d,
+.dark .tajweed-b {
+  color: oklch(0.76 0.14 210);
+}
+
+.dark .tajweed-s {
+  color: oklch(0.7 0.02 250);
+}
+
+.dark .tajweed-legend-item {
+  background-color: color-mix(in oklab, var(--card) 84%, currentColor 16%);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 16%, transparent);
+}
+
+.dark .tajweed-legend-bar {
+  border-top-color: color-mix(in oklab, var(--border) 88%, transparent);
+  border-bottom-color: color-mix(in oklab, var(--border) 88%, transparent);
+}
+
+.dark .tajweed-legend-toggle {
+  background: color-mix(in oklab, var(--background) 74%, var(--card));
+  color: color-mix(in oklab, var(--foreground) 88%, transparent);
+}
+
+.dark .tajweed-legend-bar {
+  background: color-mix(in oklab, var(--background) 90%, var(--card));
+  border-color: color-mix(in oklab, var(--border) 78%, transparent);
+  box-shadow: 0 12px 26px color-mix(in oklab, black 22%, transparent);
+}
+
+@media (max-width: 767px) {
+  .tajweed-legend-shell {
+    padding-top: 0.45rem;
+  }
+
+  .tajweed-legend-header {
+    justify-content: center;
+  }
+
+  .tajweed-legend-toggle {
+    min-width: 9rem;
+  }
+
+  .tajweed-legend-bar {
+    padding: 0.55rem 0.4rem 0.5rem;
+  }
+
+  .tajweed-legend-compact {
+    gap: 0.85rem 1rem;
+    row-gap: 0.55rem;
+  }
+
+  .tajweed-legend-label {
+    font-size: 0.76rem;
+  }
+
+  .tajweed-legend-item-compact .tajweed-swatch {
+    width: 0.72rem;
+    height: 0.72rem;
+  }
+}

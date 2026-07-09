@@ -35,6 +35,7 @@ import useDelete from "@/react-query/useDelete";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { AyahAttachModal } from "./AyahAttachModal";
+import { renderTajweedText } from "@/helpers/tajweed";
 
 export type AyahAction = "copy" | "bookmark" | "tag" | "audio" | "surah";
 
@@ -42,11 +43,17 @@ export default function AyahCard({
   ayah,
   isFocusMode = false,
   showQiraatDiffs = true,
+  showTajweed = false,
+  tajweedText,
+  secondaryTextOverride,
   ignoredActions = [],
 }: {
   ayah: IAayh;
   isFocusMode?: boolean;
   showQiraatDiffs?: boolean;
+  showTajweed?: boolean;
+  tajweedText?: string;
+  secondaryTextOverride?: string;
   ignoredActions?: AyahAction[];
 }) {
   const queryClient = useQueryClient();
@@ -235,6 +242,16 @@ export default function AyahCard({
   const fixedAyahTemplate = ayah.ayah_template
     ? ayah.ayah_template.replace(/﴾([\u0660-\u0669]+)﴿/g, "<span>﴿$1﴾</span>")
     : ayah.text;
+  const isTajweedMode = showTajweed && !!tajweedText;
+  const renderedAyahHtml = isTajweedMode
+    ? renderTajweedText(tajweedText || ayah.text)
+    : ayah.number_in_surah == 0
+      ? ayah.text
+      : fixedAyahTemplate;
+  const secondaryText =
+    ayah.number_in_surah == 0
+      ? ""
+      : secondaryTextOverride || ayah.translation;
 
   if (isFocusMode) {
     return (
@@ -245,9 +262,10 @@ export default function AyahCard({
             className={cn(
               "text-2xl sm:text-3xl leading-loose hover:bg-secondary text-center font-quran-4 p-2 ayah font-semibold text-foreground",
               !showQiraatDiffs && "qiraat-diffs-hidden",
+              isTajweedMode && "tajweed-text",
             )}
             dangerouslySetInnerHTML={{
-              __html: ayah.number_in_surah == 0 ? ayah.text : fixedAyahTemplate,
+              __html: renderedAyahHtml,
             }}
           />
         }
@@ -256,7 +274,7 @@ export default function AyahCard({
           ayah.number_in_surah == 0 ? "hidden!" : "",
         )}
         direction="top"
-        content={ayah.translation}
+        content={secondaryText}
       />
     );
   }
@@ -274,19 +292,19 @@ export default function AyahCard({
               className={cn(
                 "text-2xl sm:text-3xl leading-relaxed font-quran-4 ayah text-foreground",
                 !showQiraatDiffs && "qiraat-diffs-hidden",
+                isTajweedMode && "tajweed-text",
               )}
               dangerouslySetInnerHTML={{
-                __html:
-                  ayah.number_in_surah == 0 ? ayah.text : fixedAyahTemplate,
+                __html: renderedAyahHtml,
               }}
             />
             <div>
-              {ayah.number_in_surah != 0 ? (
+              {secondaryText ? (
                 <p
-                  dir={getTextDirection(ayah.translation)}
+                  dir={getTextDirection(secondaryText)}
                   className="text-base sm:text-lg font-medium text-foreground"
                 >
-                  {ayah.translation}
+                  {secondaryText}
                 </p>
               ) : null}
             </div>

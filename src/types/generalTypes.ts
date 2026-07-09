@@ -55,6 +55,7 @@ export interface IEdition {
   englishName: string;
   format: string;
   type: string;
+  qiraat_reading_id?: number | null;
 }
 
 export interface ITag {

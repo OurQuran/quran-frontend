@@ -14,11 +14,17 @@ interface SurahResponse {
 
 export function useSurahInfinite(
   surahId: string | undefined,
-  filters: IFilter
+  filters: IFilter,
+  options?: { enabled?: boolean; queryKeyPrefix?: string }
 ) {
   return useInfiniteQuery({
-    queryKey: ["surah", surahId, filters],
-    enabled: !!surahId && !!filters.audio_edition && !!filters.text_edition && !!filters.qiraat_reading_id,
+    queryKey: [options?.queryKeyPrefix || "surah", surahId, filters],
+    enabled:
+      (options?.enabled ?? true) &&
+      !!surahId &&
+      !!filters.audio_edition &&
+      !!filters.text_edition &&
+      !!filters.qiraat_reading_id,
     initialPageParam: 1,
     queryFn: async ({ pageParam }) => {
       const res = await api.get<SurahResponse>(`surahs/${surahId}`, {

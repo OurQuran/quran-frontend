@@ -20,6 +20,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "@/helpers/utils";
 import { setItem } from "@/helpers/localStorage";
+import { isTajweedEdition } from "@/helpers/tajweed";
 
 type SelectorItem = IEdition | IQiraat;
 
@@ -99,6 +100,16 @@ export default function EditionSelector({
                           [accessor]: edition.id,
                         });
                         setItem(accessor, edition.id.toString());
+                        if (
+                          accessor === "text_edition" &&
+                          "identifier" in edition &&
+                          !isTajweedEdition(edition)
+                        ) {
+                          setItem(
+                            "preferred_translation_edition",
+                            edition.id.toString(),
+                          );
+                        }
                         setOpen(false);
                       }}
                     >

@@ -11,7 +11,7 @@ import { useEditionStore } from "@/store/editionStore";
 import Loading from "@/components/Loading";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { getItem, setItem } from "@/helpers/localStorage";
 import { Switch } from "@/components/ui/switch";
 import { useSurahIdsStore } from "@/store/surahsIdStore";
@@ -20,6 +20,12 @@ import useGet from "@/react-query/useGet";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { useRouter, useParams } from "next/navigation";
 import { useQiraatStore } from "@/store/qiraatStore";
+import TajweedLegend from "@/components/TajweedLegend";
+import {
+  canRenderTajweedForQiraat,
+  findTajweedEdition,
+  TAJWEED_DEFAULT_QIRAAT_ID,
+} from "@/helpers/tajweed";
 
 export default function SurahClient({ id }: { id: string }) {
   const { t, i18n } = useTranslation("global");
@@ -44,6 +50,8 @@ export default function SurahClient({ id }: { id: string }) {
   });
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showQiraatDiffs, setShowQiraatDiffs] = useState(true);
+  const [showTajweed, setShowTajweed] = useState(false);
+  const [showTajweedLegend, setShowTajweedLegend] = useState(true);
 
   // Initial load from localStorage
   useEffect(() => {
@@ -52,6 +60,8 @@ export default function SurahClient({ id }: { id: string }) {
     const savedQiraat = getItem("qiraat_reading_id");
     const savedFocus = getItem("focus_mode");
     const savedShowQiraatDiffs = getItem("show_qiraat_diffs");
+    const savedShowTajweed = getItem("show_tajweed");
+    const savedShowTajweedLegend = getItem("show_tajweed_legend");
 
     setFilters((prev) => ({
       ...prev,
@@ -67,6 +77,14 @@ export default function SurahClient({ id }: { id: string }) {
     if (savedShowQiraatDiffs === false) {
       setShowQiraatDiffs(false);
     }
+
+    if (savedShowTajweed === true || savedShowTajweed === "true") {
+      setShowTajweed(true);
+    }
+
+    if (savedShowTajweedLegend === false || savedShowTajweedLegend === "false") {
+      setShowTajweedLegend(false);
+    }
   }, []);
 
   const handleFocusModeChange = (checked: boolean) => {
@@ -77,6 +95,27 @@ export default function SurahClient({ id }: { id: string }) {
   const handleShowQiraatDiffsChange = (checked: boolean) => {
     setShowQiraatDiffs(checked);
     setItem("show_qiraat_diffs", checked);
+  };
+
+  const handleShowTajweedChange = (checked: boolean) => {
+    setShowTajweed(checked);
+    setItem("show_tajweed", checked);
+
+    if (checked) {
+      setFilters((prev) => ({
+        ...prev,
+        qiraat_reading_id: TAJWEED_DEFAULT_QIRAAT_ID,
+      }));
+      setItem("qiraat_reading_id", TAJWEED_DEFAULT_QIRAAT_ID.toString());
+    }
+  };
+
+  const handleShowTajweedLegendChange = () => {
+    setShowTajweedLegend((prev) => {
+      const next = !prev;
+      setItem("show_tajweed_legend", next);
+      return next;
+    });
   };
 
   const {
@@ -99,6 +138,42 @@ export default function SurahClient({ id }: { id: string }) {
   }, [allSurahs, setSurahIds, fetchEditions, fetchQiraats]);
 
   const ayahs = data?.pages.flatMap((page) => page.ayahs) ?? [];
+  const selectableTextEditions = textEditions.filter(
+    (edition) => edition.identifier !== "quran-tajweed",
+  );
+  const tajweedEdition = findTajweedEdition(textEditions);
+  const canRenderTajweed = canRenderTajweedForQiraat(
+    tajweedEdition,
+    filters.qiraat_reading_id,
+  );
+  const tajweedQuery = useSurahInfinite(
+    id,
+    {
+      ...filters,
+      text_edition: tajweedEdition?.id ?? 0,
+    },
+    {
+      enabled: showTajweed && !!tajweedEdition?.id,
+      queryKeyPrefix: "surah-tajweed",
+    },
+  );
+  const tajweedAyahs =
+    tajweedQuery.data?.pages.flatMap((page) => page.ayahs) ?? [];
+  const tajweedByAyahId = new Map(
+    tajweedAyahs.map((ayah) => [ayah.id, ayah.translation]),
+  );
+
+  useEffect(() => {
+    if (!showTajweed || filters.qiraat_reading_id === TAJWEED_DEFAULT_QIRAAT_ID) {
+      return;
+    }
+
+    setFilters((prev) => ({
+      ...prev,
+      qiraat_reading_id: TAJWEED_DEFAULT_QIRAAT_ID,
+    }));
+    setItem("qiraat_reading_id", TAJWEED_DEFAULT_QIRAAT_ID.toString());
+  }, [filters.qiraat_reading_id, showTajweed]);
 
   useEffect(() => {
     if (audioEditions.length || textEditions.length || qiraats.length) {
@@ -106,19 +181,26 @@ export default function SurahClient({ id }: { id: string }) {
         const needsAudio = isNaN(prev.audio_edition || NaN);
         const needsText = isNaN(prev.text_edition || NaN);
         const needsQiraat = isNaN(prev.qiraat_reading_id || NaN);
+        const textEditionIsTajweed = prev.text_edition === tajweedEdition?.id;
 
-        if (needsAudio || needsText || needsQiraat) {
+        if (needsAudio || needsText || needsQiraat || textEditionIsTajweed) {
           return {
             ...prev,
             audio_edition: prev.audio_edition || audioEditions[0]?.id || 0,
-            text_edition: prev.text_edition || textEditions[0]?.id || 0,
+            text_edition:
+              (textEditionIsTajweed
+                ? Number(getItem("preferred_translation_edition"))
+                : prev.text_edition) ||
+              selectableTextEditions[0]?.id ||
+              textEditions[0]?.id ||
+              0,
             qiraat_reading_id: prev.qiraat_reading_id || qiraats[0]?.id || 0,
           };
         }
         return prev;
       });
     }
-  }, [audioEditions, textEditions, qiraats]);
+  }, [audioEditions, qiraats, selectableTextEditions, tajweedEdition?.id, textEditions]);
 
   return (
     <div>
@@ -144,7 +226,7 @@ export default function SurahClient({ id }: { id: string }) {
                 <EditionSelector
                   filters={filters}
                   setFilters={setFilters}
-                  editions={textEditions}
+                  editions={selectableTextEditions}
                   accessor="text_edition"
                 />
               </div>
@@ -181,6 +263,20 @@ export default function SurahClient({ id }: { id: string }) {
           </div>
           <div className="flex items-center gap-2">
             <Switch
+              id="tajweed-mode"
+              checked={showTajweed}
+              onCheckedChange={handleShowTajweedChange}
+              className="cursor-pointer"
+            />
+            <label
+              htmlFor="tajweed-mode"
+              className="text-sm font-medium leading-none cursor-pointer"
+            >
+              {t("Show Tajweed")}
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
               id="qiraat-diff-mode"
               checked={showQiraatDiffs}
               onCheckedChange={handleShowQiraatDiffsChange}
@@ -195,6 +291,46 @@ export default function SurahClient({ id }: { id: string }) {
           </div>
         </div>
       </div>
+      {showTajweed ? (
+        <div
+          className={cn(
+            "sticky top-[calc(var(--header-height)+0.4rem)] z-30 mt-3",
+            showTajweedLegend && "pb-28 sm:pb-24",
+          )}
+        >
+          <div className="tajweed-legend-shell">
+            <div className="tajweed-legend-toggle-wrap">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="tajweed-legend-toggle h-8 px-3 text-xs"
+                onClick={handleShowTajweedLegendChange}
+              >
+                {t("Tajweed Colors")}
+                <ChevronDown
+                  className={cn(
+                    "ml-1 h-3.5 w-3.5 transition-transform",
+                    showTajweedLegend && "rotate-180",
+                  )}
+                />
+              </Button>
+            </div>
+            {showTajweedLegend ? (
+              <div className="tajweed-legend-dropdown">
+                <div className="tajweed-legend-bar">
+                  <TajweedLegend compact />
+                </div>
+              </div>
+            ) : null}
+            {!canRenderTajweed ? (
+              <p className="tajweed-legend-note text-xs text-muted-foreground">
+                {t("Tajweed Edition Compatibility Note")}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       <FadeInUp
         className={cn(
           "flex flex-col w-full",
@@ -211,6 +347,8 @@ export default function SurahClient({ id }: { id: string }) {
               ayah={item}
               isFocusMode={isFocusMode}
               showQiraatDiffs={showQiraatDiffs}
+              showTajweed={showTajweed && canRenderTajweed}
+              tajweedText={tajweedByAyahId.get(item.id)}
               ignoredActions={["surah"]}
             />
           ))

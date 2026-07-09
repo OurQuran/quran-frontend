@@ -14,6 +14,7 @@ import EditionSelector from "@/components/EditionSelector";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   BookOpen,
@@ -33,6 +34,13 @@ import { Fragment } from "react";
 import AyahCard from "@/components/AyahCard";
 import AppDialog from "@/components/AppDialog";
 import { cn } from "@/lib/utils";
+import TajweedLegend from "@/components/TajweedLegend";
+import {
+  canRenderTajweedForQiraat,
+  findTajweedEdition,
+  renderTajweedText,
+  TAJWEED_DEFAULT_QIRAAT_ID,
+} from "@/helpers/tajweed";
 
 function MushafBorder() {
   return (
@@ -117,6 +125,8 @@ export default function MushafPageClient({
   const [fontSize, setFontSize] = useState(36);
   const [jumpPage, setJumpPage] = useState("");
   const [showQiraatDiffs, setShowQiraatDiffs] = useState(true);
+  const [showTajweed, setShowTajweed] = useState(false);
+  const [showTajweedLegend, setShowTajweedLegend] = useState(true);
   const clickTimeoutRef =
     typeof window !== "undefined"
       ? { current: null as any }
@@ -134,6 +144,8 @@ export default function MushafPageClient({
     const savedQiraat = getItem("qiraat_reading_id");
     const savedFontSize = getItem("mushaf_font_size");
     const savedShowQiraatDiffs = getItem("show_qiraat_diffs");
+    const savedShowTajweed = getItem("show_tajweed");
+    const savedShowTajweedLegend = getItem("show_tajweed_legend");
 
     setFilters((prev) => ({
       ...prev,
@@ -155,6 +167,14 @@ export default function MushafPageClient({
       setShowQiraatDiffs(false);
     }
 
+    if (savedShowTajweed === true || savedShowTajweed === "true") {
+      setShowTajweed(true);
+    }
+
+    if (savedShowTajweedLegend === false || savedShowTajweedLegend === "false") {
+      setShowTajweedLegend(false);
+    }
+
     fetchEditions();
     fetchQiraats();
   }, [fetchEditions, fetchQiraats]);
@@ -172,28 +192,29 @@ export default function MushafPageClient({
     setItem("show_qiraat_diffs", checked);
   };
 
+  const handleShowTajweedChange = (checked: boolean) => {
+    setShowTajweed(checked);
+    setItem("show_tajweed", checked);
+
+    if (checked) {
+      setFilters((prev) => ({
+        ...prev,
+        qiraat_reading_id: TAJWEED_DEFAULT_QIRAAT_ID,
+      }));
+      setItem("qiraat_reading_id", TAJWEED_DEFAULT_QIRAAT_ID.toString());
+    }
+  };
+
+  const handleShowTajweedLegendChange = () => {
+    setShowTajweedLegend((prev) => {
+      const next = !prev;
+      setItem("show_tajweed_legend", next);
+      return next;
+    });
+  };
+
   const { data, isLoading, isError } = useMushafPage(pageNumber, filters);
   const { data: allSurahs } = useGet<ISurahs[]>("surahs");
-
-  useEffect(() => {
-    if (audioEditions.length || textEditions.length || qiraats.length) {
-      setFilters((prev) => {
-        const needsAudio = isNaN(prev.audio_edition || NaN);
-        const needsText = isNaN(prev.text_edition || NaN);
-        const needsQiraat = isNaN(prev.qiraat_reading_id || NaN);
-
-        if (needsAudio || needsText || needsQiraat) {
-          return {
-            ...prev,
-            audio_edition: prev.audio_edition || audioEditions[0]?.id || 0,
-            text_edition: prev.text_edition || textEditions[0]?.id || 0,
-            qiraat_reading_id: prev.qiraat_reading_id || qiraats[0]?.id || 0,
-          };
-        }
-        return prev;
-      });
-    }
-  }, [audioEditions, textEditions, qiraats]);
 
   const handleNextPage = () => {
     if (pageInt < 604) {
@@ -241,6 +262,67 @@ export default function MushafPageClient({
 
   const ayahs = data?.ayahs || [];
   const meta = ayahs[0] || {};
+  const selectableTextEditions = textEditions.filter(
+    (edition) => edition.identifier !== "quran-tajweed",
+  );
+  const tajweedEdition = findTajweedEdition(textEditions);
+  const canRenderTajweed = canRenderTajweedForQiraat(
+    tajweedEdition,
+    filters.qiraat_reading_id,
+  );
+  const tajweedQuery = useMushafPage(
+    pageNumber,
+    {
+      ...filters,
+      text_edition: tajweedEdition?.id ?? 0,
+    },
+    {
+      enabled: showTajweed && !!tajweedEdition?.id,
+      queryKeyPrefix: "mushaf-tajweed",
+    },
+  );
+  const tajweedByAyahId = new Map(
+    (tajweedQuery.data?.ayahs || []).map((ayah) => [ayah.id, ayah.translation]),
+  );
+
+  useEffect(() => {
+    if (!showTajweed || filters.qiraat_reading_id === TAJWEED_DEFAULT_QIRAAT_ID) {
+      return;
+    }
+
+    setFilters((prev) => ({
+      ...prev,
+      qiraat_reading_id: TAJWEED_DEFAULT_QIRAAT_ID,
+    }));
+    setItem("qiraat_reading_id", TAJWEED_DEFAULT_QIRAAT_ID.toString());
+  }, [filters.qiraat_reading_id, showTajweed]);
+
+  useEffect(() => {
+    if (audioEditions.length || textEditions.length || qiraats.length) {
+      setFilters((prev) => {
+        const needsAudio = isNaN(prev.audio_edition || NaN);
+        const needsText = isNaN(prev.text_edition || NaN);
+        const needsQiraat = isNaN(prev.qiraat_reading_id || NaN);
+        const textEditionIsTajweed = prev.text_edition === tajweedEdition?.id;
+
+        if (needsAudio || needsText || needsQiraat || textEditionIsTajweed) {
+          return {
+            ...prev,
+            audio_edition: prev.audio_edition || audioEditions[0]?.id || 0,
+            text_edition:
+              (textEditionIsTajweed
+                ? Number(getItem("preferred_translation_edition"))
+                : prev.text_edition) ||
+              selectableTextEditions[0]?.id ||
+              textEditions[0]?.id ||
+              0,
+            qiraat_reading_id: prev.qiraat_reading_id || qiraats[0]?.id || 0,
+          };
+        }
+        return prev;
+      });
+    }
+  }, [audioEditions, qiraats, selectableTextEditions, tajweedEdition?.id, textEditions]);
 
   if (isLoading && !data) return <Loading />;
   if (isError)
@@ -271,7 +353,7 @@ export default function MushafPageClient({
                   <EditionSelector
                     filters={filters}
                     setFilters={setFilters}
-                    editions={textEditions}
+                    editions={selectableTextEditions}
                     accessor="text_edition"
                   />
                 </div>
@@ -293,6 +375,47 @@ export default function MushafPageClient({
       </div>
 
       <div>
+        {showTajweed ? (
+          <div
+            className={cn(
+              "sticky top-[calc(var(--header-height)+0.4rem)] z-30 mb-5",
+              showTajweedLegend && "pb-28 sm:pb-24",
+            )}
+          >
+            <div className="tajweed-legend-shell">
+              <div className="tajweed-legend-toggle-wrap">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="tajweed-legend-toggle h-8 px-3 text-xs"
+                  onClick={handleShowTajweedLegendChange}
+                >
+                  {t("Tajweed Colors")}
+                  <ChevronDown
+                    className={cn(
+                      "ml-1 h-3.5 w-3.5 transition-transform",
+                      showTajweedLegend && "rotate-180",
+                    )}
+                  />
+                </Button>
+              </div>
+              {showTajweedLegend ? (
+                <div className="tajweed-legend-dropdown">
+                  <div className="tajweed-legend-bar">
+                    <TajweedLegend compact />
+                  </div>
+                </div>
+              ) : null}
+              {!canRenderTajweed ? (
+                <p className="tajweed-legend-note text-xs text-muted-foreground">
+                  {t("Tajweed Edition Compatibility Note")}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
         <Card className="border-border shadow-sm">
           <CardContent className="flex justify-between items-center w-full px-4 sm:px-6 ">
             <div className="flex items-center gap-2">
@@ -327,6 +450,21 @@ export default function MushafPageClient({
                 </div>
               </div>
               <div className="h-4 w-[1px] bg-border mx-1" />
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="mushaf-tajweed-mode"
+                  checked={showTajweed}
+                  onCheckedChange={handleShowTajweedChange}
+                  className="cursor-pointer"
+                />
+                <label
+                  htmlFor="mushaf-tajweed-mode"
+                  className="hidden sm:inline text-[10px] font-bold uppercase text-muted-foreground cursor-pointer"
+                >
+                  {t("Show Tajweed")}
+                </label>
+              </div>
+              <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
               <div className="flex items-center gap-2">
                 <Switch
                   id="mushaf-qiraat-diff-mode"
@@ -446,6 +584,7 @@ export default function MushafPageClient({
                 className={cn(
                   "font-quran-4 ayah text-justify ayah-flow w-full text-foreground/90 select-none",
                   !showQiraatDiffs && "qiraat-diffs-hidden",
+                  showTajweed && canRenderTajweed && "tajweed-text",
                 )}
                 style={{ fontSize: `${fontSize}px`, lineHeight: 2.3 }}
               >
@@ -460,6 +599,10 @@ export default function MushafPageClient({
                     /﴾([\u0660-\u0669]+)﴿/g,
                     "<span class='text-primary font-bold'>﴿$1﴾</span>",
                   );
+                  const tajweedText = tajweedByAyahId.get(ayah.id);
+                  const renderedAyahHtml = showTajweed && canRenderTajweed && tajweedText
+                    ? renderTajweedText(tajweedText)
+                    : fixedTemplate;
 
                   const isSurahStart =
                     ayah.number_in_surah === 0 ||
@@ -564,7 +707,7 @@ export default function MushafPageClient({
                           }
                           onPointerLeave={(e) => handleAyahInteraction(e, ayah)}
                           dangerouslySetInnerHTML={{
-                            __html: fixedTemplate + " ",
+                            __html: renderedAyahHtml + " ",
                           }}
                         />
                       )}
@@ -604,6 +747,8 @@ export default function MushafPageClient({
             ayah={selectedAyah}
             isFocusMode={false}
             showQiraatDiffs={showQiraatDiffs}
+            showTajweed={showTajweed && canRenderTajweed}
+            tajweedText={selectedAyah ? tajweedByAyahId.get(selectedAyah.id) : undefined}
             ignoredActions={["tag"]}
           />
         )}
