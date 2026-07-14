@@ -24,6 +24,7 @@ import TajweedLegend from "@/components/TajweedLegend";
 import {
   canRenderTajweedForQiraat,
   findTajweedEdition,
+  isTajweedEdition,
   TAJWEED_DEFAULT_QIRAAT_ID,
 } from "@/helpers/tajweed";
 
@@ -139,7 +140,7 @@ export default function SurahClient({ id }: { id: string }) {
 
   const ayahs = data?.pages.flatMap((page) => page.ayahs) ?? [];
   const selectableTextEditions = textEditions.filter(
-    (edition) => edition.identifier !== "quran-tajweed",
+    (edition) => !isTajweedEdition(edition),
   );
   const tajweedEdition = findTajweedEdition(textEditions);
   const canRenderTajweed = canRenderTajweedForQiraat(
@@ -162,6 +163,30 @@ export default function SurahClient({ id }: { id: string }) {
   const tajweedByAyahId = new Map(
     tajweedAyahs.map((ayah) => [ayah.id, ayah.translation]),
   );
+  const loadedPageCount = data?.pages.length ?? 0;
+  const loadedTajweedPageCount = tajweedQuery.data?.pages.length ?? 0;
+
+  useEffect(() => {
+    if (!showTajweed || !tajweedEdition?.id) {
+      return;
+    }
+
+    if (
+      loadedTajweedPageCount < loadedPageCount &&
+      tajweedQuery.hasNextPage &&
+      !tajweedQuery.isFetchingNextPage
+    ) {
+      tajweedQuery.fetchNextPage();
+    }
+  }, [
+    loadedPageCount,
+    loadedTajweedPageCount,
+    showTajweed,
+    tajweedEdition?.id,
+    tajweedQuery.hasNextPage,
+    tajweedQuery.isFetchingNextPage,
+    tajweedQuery.fetchNextPage,
+  ]);
 
   useEffect(() => {
     if (!showTajweed || filters.qiraat_reading_id === TAJWEED_DEFAULT_QIRAAT_ID) {

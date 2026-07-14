@@ -244,7 +244,7 @@ export default function AyahCard({
     : ayah.text;
   const isTajweedMode = showTajweed && !!tajweedText;
   const renderedAyahHtml = isTajweedMode
-    ? renderTajweedText(tajweedText || ayah.text)
+    ? renderTajweedText(tajweedText || ayah.text, fixedAyahTemplate)
     : ayah.number_in_surah == 0
       ? ayah.text
       : fixedAyahTemplate;

@@ -289,8 +289,11 @@
 }
 
 .tajweed-mark {
-  transition: color 160ms ease, text-shadow 160ms ease;
-  text-shadow: 0 0 0.01em currentColor;
+  transition: color 160ms ease;
+}
+
+.tajweed-plain {
+  color: var(--foreground) !important;
 }
 
 .tajweed-legend-compact {
@@ -368,103 +371,164 @@
 }
 
 .tajweed-h {
-  color: oklch(0.62 0.18 50);
+  color: oklch(0.66 0.015 250);
+  --tajweed-color: oklch(0.66 0.015 250);
 }
 
 .tajweed-l {
-  color: oklch(0.55 0.18 10);
+  color: oklch(0.66 0.015 250);
+  --tajweed-color: oklch(0.66 0.015 250);
 }
 
-.tajweed-n,
+.tajweed-n {
+  color: oklch(0.78 0.16 345);
+  --tajweed-color: oklch(0.78 0.16 345);
+}
+
 .tajweed-p {
-  color: oklch(0.6 0.16 250);
+  color: oklch(0.72 0.18 50);
+  --tajweed-color: oklch(0.72 0.18 50);
 }
 
 .tajweed-o {
-  color: oklch(0.63 0.19 300);
+  color: oklch(0.68 0.22 350);
+  --tajweed-color: oklch(0.68 0.22 350);
 }
 
 .tajweed-m {
-  color: oklch(0.53 0.22 325);
+  color: oklch(0.58 0.24 30);
+  --tajweed-color: oklch(0.58 0.24 30);
 }
 
 .tajweed-q {
-  color: oklch(0.56 0.2 25);
+  color: oklch(0.72 0.17 220);
+  --tajweed-color: oklch(0.72 0.17 220);
+}
+
+.tajweed-t {
+  color: oklch(0.64 0.18 255);
+  --tajweed-color: oklch(0.64 0.18 255);
 }
 
 .tajweed-g {
-  color: oklch(0.67 0.15 155);
+  color: oklch(0.64 0.18 145);
+  --tajweed-color: oklch(0.64 0.18 145);
 }
 
 .tajweed-i {
-  color: oklch(0.56 0.19 345);
+  color: oklch(0.63 0.19 345);
+  --tajweed-color: oklch(0.63 0.19 345);
 }
 
-.tajweed-f,
+.tajweed-f {
+  color: oklch(0.65 0.18 95);
+  --tajweed-color: oklch(0.65 0.18 95);
+}
+
 .tajweed-c {
-  color: oklch(0.62 0.2 105);
+  color: oklch(0.62 0.19 330);
+  --tajweed-color: oklch(0.62 0.19 330);
 }
 
-.tajweed-w,
+.tajweed-w {
+  color: oklch(0.62 0.17 145);
+  --tajweed-color: oklch(0.62 0.17 145);
+}
+
 .tajweed-a,
-.tajweed-u,
+.tajweed-u {
+  color: oklch(0.59 0.17 145);
+  --tajweed-color: oklch(0.59 0.17 145);
+}
+
 .tajweed-d,
 .tajweed-b {
-  color: oklch(0.54 0.17 200);
+  color: oklch(0.62 0.02 250);
+  --tajweed-color: oklch(0.62 0.02 250);
 }
 
 .tajweed-s {
-  color: oklch(0.48 0.02 250);
+  color: oklch(0.66 0.015 250);
+  --tajweed-color: oklch(0.66 0.015 250);
 }
 
 .dark .tajweed-h {
-  color: oklch(0.78 0.14 65);
+  color: oklch(0.74 0.015 250);
+  --tajweed-color: oklch(0.74 0.015 250);
 }
 
 .dark .tajweed-l {
-  color: oklch(0.74 0.16 18);
+  color: oklch(0.74 0.015 250);
+  --tajweed-color: oklch(0.74 0.015 250);
 }
 
-.dark .tajweed-n,
+.dark .tajweed-n {
+  color: oklch(0.82 0.13 345);
+  --tajweed-color: oklch(0.82 0.13 345);
+}
+
 .dark .tajweed-p {
-  color: oklch(0.78 0.14 260);
+  color: oklch(0.78 0.15 50);
+  --tajweed-color: oklch(0.78 0.15 50);
 }
 
 .dark .tajweed-o {
-  color: oklch(0.78 0.17 310);
+  color: oklch(0.78 0.18 350);
+  --tajweed-color: oklch(0.78 0.18 350);
 }
 
 .dark .tajweed-m {
-  color: oklch(0.73 0.18 330);
+  color: oklch(0.7 0.22 30);
+  --tajweed-color: oklch(0.7 0.22 30);
 }
 
 .dark .tajweed-q {
-  color: oklch(0.76 0.16 35);
+  color: oklch(0.78 0.15 220);
+  --tajweed-color: oklch(0.78 0.15 220);
+}
+
+.dark .tajweed-t {
+  color: oklch(0.72 0.16 255);
+  --tajweed-color: oklch(0.72 0.16 255);
 }
 
 .dark .tajweed-g {
-  color: oklch(0.8 0.13 155);
+  color: oklch(0.78 0.14 145);
+  --tajweed-color: oklch(0.78 0.14 145);
 }
 
 .dark .tajweed-i {
   color: oklch(0.78 0.15 350);
+  --tajweed-color: oklch(0.78 0.15 350);
 }
 
 .dark .tajweed-f,
 .dark .tajweed-c {
-  color: oklch(0.82 0.16 115);
+  color: oklch(0.82 0.15 330);
+  --tajweed-color: oklch(0.82 0.15 330);
+}
+
+.dark .tajweed-f {
+  color: oklch(0.82 0.15 105);
+  --tajweed-color: oklch(0.82 0.15 105);
 }
 
 .dark .tajweed-w,
 .dark .tajweed-a,
-.dark .tajweed-u,
+.dark .tajweed-u {
+  color: oklch(0.78 0.14 145);
+  --tajweed-color: oklch(0.78 0.14 145);
+}
+
 .dark .tajweed-d,
 .dark .tajweed-b {
-  color: oklch(0.76 0.14 210);
+  color: oklch(0.72 0.02 250);
+  --tajweed-color: oklch(0.72 0.02 250);
 }
 
 .dark .tajweed-s {
-  color: oklch(0.7 0.02 250);
+  color: oklch(0.74 0.015 250);
+  --tajweed-color: oklch(0.74 0.015 250);
 }
 
 .dark .tajweed-legend-item {

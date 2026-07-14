@@ -38,6 +38,7 @@ import TajweedLegend from "@/components/TajweedLegend";
 import {
   canRenderTajweedForQiraat,
   findTajweedEdition,
+  isTajweedEdition,
   renderTajweedText,
   TAJWEED_DEFAULT_QIRAAT_ID,
 } from "@/helpers/tajweed";
@@ -263,7 +264,7 @@ export default function MushafPageClient({
   const ayahs = data?.ayahs || [];
   const meta = ayahs[0] || {};
   const selectableTextEditions = textEditions.filter(
-    (edition) => edition.identifier !== "quran-tajweed",
+    (edition) => !isTajweedEdition(edition),
   );
   const tajweedEdition = findTajweedEdition(textEditions);
   const canRenderTajweed = canRenderTajweedForQiraat(
@@ -601,7 +602,7 @@ export default function MushafPageClient({
                   );
                   const tajweedText = tajweedByAyahId.get(ayah.id);
                   const renderedAyahHtml = showTajweed && canRenderTajweed && tajweedText
-                    ? renderTajweedText(tajweedText)
+                    ? renderTajweedText(tajweedText, fixedTemplate)
                     : fixedTemplate;
 
                   const isSurahStart =
@@ -616,7 +617,8 @@ export default function MushafPageClient({
                     ayah: IAayh,
                   ) => {
                     const target = e.target as HTMLElement;
-                    const isWordClick = target.tagName === "SPAN" && target.id;
+                    const wordElement = target.closest("span[id]") as HTMLElement | null;
+                    const isWordClick = !!wordElement?.id;
 
                     // Manual differentiation between single/double click and long press
                     if (e.type === "pointerdown") {
@@ -645,7 +647,7 @@ export default function MushafPageClient({
                           clickTimeoutRef.current = setTimeout(() => {
                             clickTimeoutRef.current = null;
                             if (isWordClick) {
-                              toast.info(`${t("Word")}: ${target.id}`, {
+                              toast.info(`${t("Word")}: ${wordElement.id}`, {
                                 icon: "📖",
                                 duration: 2000,
                               });
