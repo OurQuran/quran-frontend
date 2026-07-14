@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 import TajweedLegend from "@/components/TajweedLegend";
 import {
   canRenderTajweedForQiraat,
+  ensureQcfTajweedFonts,
   findTajweedEdition,
   isTajweedEdition,
   renderTajweedText,
@@ -285,6 +286,12 @@ export default function MushafPageClient({
   const tajweedByAyahId = new Map(
     (tajweedQuery.data?.ayahs || []).map((ayah) => [ayah.id, ayah.translation]),
   );
+
+  useEffect(() => {
+    if (showTajweed && canRenderTajweed) {
+      ensureQcfTajweedFonts(ayahs.map((ayah) => ayah.page));
+    }
+  }, [ayahs, canRenderTajweed, showTajweed]);
 
   useEffect(() => {
     if (!showTajweed || filters.qiraat_reading_id === TAJWEED_DEFAULT_QIRAAT_ID) {
@@ -601,8 +608,8 @@ export default function MushafPageClient({
                     "<span class='text-primary font-bold'>﴿$1﴾</span>",
                   );
                   const tajweedText = tajweedByAyahId.get(ayah.id);
-                  const renderedAyahHtml = showTajweed && canRenderTajweed && tajweedText
-                    ? renderTajweedText(tajweedText, fixedTemplate)
+                  const renderedAyahHtml = showTajweed && canRenderTajweed && (ayah.qcf_tajweed_template || tajweedText)
+                    ? ayah.qcf_tajweed_template || renderTajweedText(tajweedText || "", fixedTemplate)
                     : fixedTemplate;
 
                   const isSurahStart =

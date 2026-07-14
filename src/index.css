@@ -296,6 +296,23 @@
   color: var(--foreground) !important;
 }
 
+.qcf-tajweed-word,
+.qcf-tajweed-end {
+  display: inline-block;
+  color: inherit;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.qcf-tajweed-word {
+  cursor: pointer;
+}
+
+.qcf-tajweed-word:hover {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  border-radius: 0.25rem;
+}
+
 .tajweed-legend-compact {
   display: flex;
   justify-content: center;

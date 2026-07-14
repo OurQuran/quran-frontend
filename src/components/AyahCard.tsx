@@ -35,7 +35,7 @@ import useDelete from "@/react-query/useDelete";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { AyahAttachModal } from "./AyahAttachModal";
-import { renderTajweedText } from "@/helpers/tajweed";
+import { ensureQcfTajweedFonts, renderTajweedText } from "@/helpers/tajweed";
 
 export type AyahAction = "copy" | "bookmark" | "tag" | "audio" | "surah";
 
@@ -242,9 +242,12 @@ export default function AyahCard({
   const fixedAyahTemplate = ayah.ayah_template
     ? ayah.ayah_template.replace(/﴾([\u0660-\u0669]+)﴿/g, "<span>﴿$1﴾</span>")
     : ayah.text;
-  const isTajweedMode = showTajweed && !!tajweedText;
+  const isQcfTajweedMode = showTajweed && !!ayah.qcf_tajweed_template;
+  const isTajweedMode = showTajweed && (!!tajweedText || isQcfTajweedMode);
   const renderedAyahHtml = isTajweedMode
-    ? renderTajweedText(tajweedText || ayah.text, fixedAyahTemplate)
+    ? isQcfTajweedMode
+      ? ayah.qcf_tajweed_template || fixedAyahTemplate
+      : renderTajweedText(tajweedText || ayah.text, fixedAyahTemplate)
     : ayah.number_in_surah == 0
       ? ayah.text
       : fixedAyahTemplate;
@@ -252,6 +255,12 @@ export default function AyahCard({
     ayah.number_in_surah == 0
       ? ""
       : secondaryTextOverride || ayah.translation;
+
+  useEffect(() => {
+    if (isQcfTajweedMode) {
+      ensureQcfTajweedFonts([ayah.page]);
+    }
+  }, [ayah.page, isQcfTajweedMode]);
 
   if (isFocusMode) {
     return (

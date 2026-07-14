@@ -31,6 +31,7 @@ export interface IAayh {
   sajda: number;
   ayah_template: string;
   template: string;
+  qcf_tajweed_template?: string | null;
   bookmarked: boolean;
   translation: string;
   audio?: string;

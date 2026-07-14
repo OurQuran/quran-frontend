@@ -60,6 +60,36 @@ function escapeHtml(input: string): string {
 
 const YEH_MADD_CODES = new Set(["n", "p", "o", "m"]);
 const ARABIC_MARKS_PATTERN = "[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]";
+const loadedQcfTajweedPages = new Set<number>();
+
+export function ensureQcfTajweedFonts(pages: Array<number | null | undefined>): void {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  pages.forEach((page) => {
+    if (!page || loadedQcfTajweedPages.has(page)) {
+      return;
+    }
+
+    const fontName = `qcf-tajweed-p${page}`;
+    const style = document.createElement("style");
+    style.setAttribute("data-qcf-tajweed-page", `${page}`);
+    style.textContent = `
+@font-face {
+  font-family: "${fontName}";
+  src: url("/fonts/quran/hafs/v4/colrv1/woff2/p${page}.woff2") format("woff2");
+  font-display: swap;
+}
+.qcf-tajweed-p${page} {
+  font-family: "${fontName}", var(--font-quran-4), serif;
+}
+`;
+
+    document.head.appendChild(style);
+    loadedQcfTajweedPages.add(page);
+  });
+}
 
 function renderTajweedMarker(code: string, text: string): string {
   const normalizedCode = code.toLowerCase();
