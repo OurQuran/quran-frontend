@@ -81,8 +81,16 @@ export function ensureQcfTajweedFonts(pages: Array<number | null | undefined>): 
   src: url("/fonts/quran/hafs/v4/colrv1/woff2/p${page}.woff2") format("woff2");
   font-display: swap;
 }
+@font-palette-values --qcf-tajweed-dark-p${page} {
+  font-family: "${fontName}";
+  base-palette: 0;
+  override-colors: 0 #f4efe7;
+}
 .qcf-tajweed-p${page} {
   font-family: "${fontName}", var(--font-quran-4), serif;
+}
+.dark .qcf-tajweed-p${page} {
+  font-palette: --qcf-tajweed-dark-p${page};
 }
 `;
 
