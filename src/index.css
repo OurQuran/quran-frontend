@@ -388,164 +388,164 @@
 }
 
 .tajweed-h {
-  color: oklch(0.66 0.015 250);
-  --tajweed-color: oklch(0.66 0.015 250);
+  color: #a3a5a5;
+  --tajweed-color: #a3a5a5;
 }
 
 .tajweed-l {
-  color: oklch(0.66 0.015 250);
-  --tajweed-color: oklch(0.66 0.015 250);
+  color: #9fa5a5;
+  --tajweed-color: #9fa5a5;
 }
 
 .tajweed-n {
-  color: oklch(0.78 0.16 345);
-  --tajweed-color: oklch(0.78 0.16 345);
+  color: #3f48e6;
+  --tajweed-color: #3f48e6;
 }
 
 .tajweed-p {
-  color: oklch(0.72 0.18 50);
-  --tajweed-color: oklch(0.72 0.18 50);
+  color: #ff7b00;
+  --tajweed-color: #ff7b00;
 }
 
 .tajweed-o {
-  color: oklch(0.68 0.22 350);
-  --tajweed-color: oklch(0.68 0.22 350);
+  color: #ff0080;
+  --tajweed-color: #ff0080;
 }
 
 .tajweed-m {
-  color: oklch(0.58 0.24 30);
-  --tajweed-color: oklch(0.58 0.24 30);
+  color: #b50000;
+  --tajweed-color: #b50000;
 }
 
 .tajweed-q {
-  color: oklch(0.72 0.17 220);
-  --tajweed-color: oklch(0.72 0.17 220);
+  color: #2fadff;
+  --tajweed-color: #2fadff;
 }
 
 .tajweed-t {
-  color: oklch(0.64 0.18 255);
-  --tajweed-color: oklch(0.64 0.18 255);
+  color: #3f48e6;
+  --tajweed-color: #3f48e6;
 }
 
 .tajweed-g {
-  color: oklch(0.64 0.18 145);
-  --tajweed-color: oklch(0.64 0.18 145);
+  color: #09b000;
+  --tajweed-color: #09b000;
 }
 
 .tajweed-i {
-  color: oklch(0.63 0.19 345);
-  --tajweed-color: oklch(0.63 0.19 345);
+  color: #ff0080;
+  --tajweed-color: #ff0080;
 }
 
 .tajweed-f {
-  color: oklch(0.65 0.18 95);
-  --tajweed-color: oklch(0.65 0.18 95);
+  color: #ce9e00;
+  --tajweed-color: #ce9e00;
 }
 
 .tajweed-c {
-  color: oklch(0.62 0.19 330);
-  --tajweed-color: oklch(0.62 0.19 330);
+  color: #ff0080;
+  --tajweed-color: #ff0080;
 }
 
 .tajweed-w {
-  color: oklch(0.62 0.17 145);
-  --tajweed-color: oklch(0.62 0.17 145);
+  color: #2ca4ab;
+  --tajweed-color: #2ca4ab;
 }
 
 .tajweed-a,
 .tajweed-u {
-  color: oklch(0.59 0.17 145);
-  --tajweed-color: oklch(0.59 0.17 145);
+  color: #09b000;
+  --tajweed-color: #09b000;
 }
 
 .tajweed-d,
 .tajweed-b {
-  color: oklch(0.62 0.02 250);
-  --tajweed-color: oklch(0.62 0.02 250);
+  color: #2ca4ab;
+  --tajweed-color: #2ca4ab;
 }
 
 .tajweed-s {
-  color: oklch(0.66 0.015 250);
-  --tajweed-color: oklch(0.66 0.015 250);
+  color: #a5a5a5;
+  --tajweed-color: #a5a5a5;
 }
 
 .dark .tajweed-h {
-  color: oklch(0.74 0.015 250);
-  --tajweed-color: oklch(0.74 0.015 250);
+  color: #a3a5a5;
+  --tajweed-color: #a3a5a5;
 }
 
 .dark .tajweed-l {
-  color: oklch(0.74 0.015 250);
-  --tajweed-color: oklch(0.74 0.015 250);
+  color: #9fa5a5;
+  --tajweed-color: #9fa5a5;
 }
 
 .dark .tajweed-n {
-  color: oklch(0.82 0.13 345);
-  --tajweed-color: oklch(0.82 0.13 345);
+  color: #3f48e6;
+  --tajweed-color: #3f48e6;
 }
 
 .dark .tajweed-p {
-  color: oklch(0.78 0.15 50);
-  --tajweed-color: oklch(0.78 0.15 50);
+  color: #ff7b00;
+  --tajweed-color: #ff7b00;
 }
 
 .dark .tajweed-o {
-  color: oklch(0.78 0.18 350);
-  --tajweed-color: oklch(0.78 0.18 350);
+  color: #ff0080;
+  --tajweed-color: #ff0080;
 }
 
 .dark .tajweed-m {
-  color: oklch(0.7 0.22 30);
-  --tajweed-color: oklch(0.7 0.22 30);
+  color: #b50000;
+  --tajweed-color: #b50000;
 }
 
 .dark .tajweed-q {
-  color: oklch(0.78 0.15 220);
-  --tajweed-color: oklch(0.78 0.15 220);
+  color: #2fadff;
+  --tajweed-color: #2fadff;
 }
 
 .dark .tajweed-t {
-  color: oklch(0.72 0.16 255);
-  --tajweed-color: oklch(0.72 0.16 255);
+  color: #3f48e6;
+  --tajweed-color: #3f48e6;
 }
 
 .dark .tajweed-g {
-  color: oklch(0.78 0.14 145);
-  --tajweed-color: oklch(0.78 0.14 145);
+  color: #09b000;
+  --tajweed-color: #09b000;
 }
 
 .dark .tajweed-i {
-  color: oklch(0.78 0.15 350);
-  --tajweed-color: oklch(0.78 0.15 350);
+  color: #ff0080;
+  --tajweed-color: #ff0080;
 }
 
 .dark .tajweed-f,
 .dark .tajweed-c {
-  color: oklch(0.82 0.15 330);
-  --tajweed-color: oklch(0.82 0.15 330);
+  color: #ff0080;
+  --tajweed-color: #ff0080;
 }
 
 .dark .tajweed-f {
-  color: oklch(0.82 0.15 105);
-  --tajweed-color: oklch(0.82 0.15 105);
+  color: #ce9e00;
+  --tajweed-color: #ce9e00;
 }
 
 .dark .tajweed-w,
-.dark .tajweed-a,
-.dark .tajweed-u {
-  color: oklch(0.78 0.14 145);
-  --tajweed-color: oklch(0.78 0.14 145);
-}
-
 .dark .tajweed-d,
 .dark .tajweed-b {
-  color: oklch(0.72 0.02 250);
-  --tajweed-color: oklch(0.72 0.02 250);
+  color: #2ca4ab;
+  --tajweed-color: #2ca4ab;
+}
+
+.dark .tajweed-a,
+.dark .tajweed-u {
+  color: #09b000;
+  --tajweed-color: #09b000;
 }
 
 .dark .tajweed-s {
-  color: oklch(0.74 0.015 250);
-  --tajweed-color: oklch(0.74 0.015 250);
+  color: #a5a5a5;
+  --tajweed-color: #a5a5a5;
 }
 
 .dark .tajweed-legend-item {
