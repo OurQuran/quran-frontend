@@ -30,6 +30,12 @@ export const quranFont5 = localFont({
   display: "swap",
 });
 
+export const quranArabicFallback = localFont({
+  src: "../../public/fonts/quran/fallback/NotoNaskhArabic-Regular.ttf",
+  variable: "--font-quran-arabic-fallback",
+  display: "swap",
+});
+
 export const arkanGraphik = localFont({
   src: [
     {

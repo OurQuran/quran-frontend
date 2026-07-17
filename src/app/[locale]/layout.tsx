@@ -10,6 +10,7 @@ import {
   quranFont3,
   quranFont4,
   quranFont5,
+  quranArabicFallback,
 } from "@/lib/fonts";
 
 import { Metadata, Viewport } from "next";
@@ -68,6 +69,7 @@ export default async function LocaleLayout({
           ${quranFont3.variable} 
           ${quranFont4.variable} 
           ${quranFont5.variable} 
+          ${quranArabicFallback.variable}
           antialiased
         `}
       >

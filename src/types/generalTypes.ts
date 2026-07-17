@@ -34,6 +34,7 @@ export interface IAayh {
   qcf_tajweed_template?: string | null;
   bookmarked: boolean;
   translation: string;
+  qiraat_difference_text?: string | null;
   audio?: string;
   tags: Partial<ITag>[];
   pure_text: string;

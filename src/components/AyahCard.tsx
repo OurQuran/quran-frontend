@@ -240,7 +240,7 @@ export default function AyahCard({
   });
 
   const fixedAyahTemplate = ayah.ayah_template
-    ? ayah.ayah_template.replace(/﴾([\u0660-\u0669]+)﴿/g, "<span>﴿$1﴾</span>")
+    ? ayah.ayah_template.replace(/﴾([\u0660-\u0669]+)﴿/g, "<span class=\"ayah-number\">﴿$1﴾</span>")
     : ayah.text;
   const isQcfTajweedMode = showTajweed && !!ayah.qcf_tajweed_template;
   const isTajweedMode = showTajweed && (!!tajweedText || isQcfTajweedMode);
@@ -254,7 +254,9 @@ export default function AyahCard({
   const secondaryText =
     ayah.number_in_surah == 0
       ? ""
-      : secondaryTextOverride || ayah.translation;
+      : secondaryTextOverride !== undefined
+        ? secondaryTextOverride
+        : ayah.translation;
 
   useEffect(() => {
     if (isQcfTajweedMode) {
@@ -269,7 +271,7 @@ export default function AyahCard({
           <div
             dir="rtl"
             className={cn(
-              "text-2xl sm:text-3xl leading-loose hover:bg-secondary text-center font-quran-4 p-2 ayah font-semibold text-foreground",
+              "text-2xl sm:text-3xl leading-loose hover:bg-secondary text-center font-quran-4 p-2 ayah font-normal text-foreground",
               !showQiraatDiffs && "qiraat-diffs-hidden",
               isTajweedMode && "tajweed-text",
             )}

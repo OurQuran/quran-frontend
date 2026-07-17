@@ -28,6 +28,9 @@ import {
   TAJWEED_DEFAULT_QIRAAT_ID,
 } from "@/helpers/tajweed";
 
+const DEFAULT_TEXT_EDITION_ID = 34;
+const BASE_QIRAAT_READING_ID = 1;
+
 export default function SurahClient({ id }: { id: string }) {
   const { t, i18n } = useTranslation("global");
   const router = useRouter();
@@ -143,6 +146,15 @@ export default function SurahClient({ id }: { id: string }) {
     (edition) => !isTajweedEdition(edition),
   );
   const tajweedEdition = findTajweedEdition(textEditions);
+  const defaultTextEdition =
+    selectableTextEditions.find(
+      (edition) => edition.id === DEFAULT_TEXT_EDITION_ID,
+    ) ||
+    selectableTextEditions[0] ||
+    textEditions[0];
+  const isVariantQiraat =
+    !!filters.qiraat_reading_id &&
+    filters.qiraat_reading_id !== BASE_QIRAAT_READING_ID;
   const canRenderTajweed = canRenderTajweedForQiraat(
     tajweedEdition,
     filters.qiraat_reading_id,
@@ -189,16 +201,22 @@ export default function SurahClient({ id }: { id: string }) {
   ]);
 
   useEffect(() => {
-    if (!showTajweed || filters.qiraat_reading_id === TAJWEED_DEFAULT_QIRAAT_ID) {
+    if (!showTajweed || !isVariantQiraat) {
       return;
     }
 
-    setFilters((prev) => ({
-      ...prev,
-      qiraat_reading_id: TAJWEED_DEFAULT_QIRAAT_ID,
-    }));
-    setItem("qiraat_reading_id", TAJWEED_DEFAULT_QIRAAT_ID.toString());
-  }, [filters.qiraat_reading_id, showTajweed]);
+    setShowTajweed(false);
+    setItem("show_tajweed", false);
+  }, [isVariantQiraat, showTajweed]);
+
+  useEffect(() => {
+    if (!isVariantQiraat) {
+      return;
+    }
+
+    setShowQiraatDiffs(true);
+    setItem("show_qiraat_diffs", true);
+  }, [isVariantQiraat, filters.qiraat_reading_id]);
 
   useEffect(() => {
     if (audioEditions.length || textEditions.length || qiraats.length) {
@@ -216,8 +234,7 @@ export default function SurahClient({ id }: { id: string }) {
               (textEditionIsTajweed
                 ? Number(getItem("preferred_translation_edition"))
                 : prev.text_edition) ||
-              selectableTextEditions[0]?.id ||
-              textEditions[0]?.id ||
+              defaultTextEdition?.id ||
               0,
             qiraat_reading_id: prev.qiraat_reading_id || qiraats[0]?.id || 0,
           };
@@ -225,36 +242,45 @@ export default function SurahClient({ id }: { id: string }) {
         return prev;
       });
     }
-  }, [audioEditions, qiraats, selectableTextEditions, tajweedEdition?.id, textEditions]);
+  }, [audioEditions, defaultTextEdition?.id, qiraats, tajweedEdition?.id, textEditions]);
 
   return (
     <div>
       <Card className="w-full">
         <CardContent>
           <div className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2 justify-between">
-              <div className=" w-full">
-                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  {t("Audio Edition")}
-                </span>
-                <EditionSelector
-                  filters={filters}
-                  setFilters={setFilters}
-                  editions={audioEditions}
-                  accessor="audio_edition"
-                />
-              </div>
-              <div className="w-full">
-                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  {t("Text Edition")}
-                </span>
-                <EditionSelector
-                  filters={filters}
-                  setFilters={setFilters}
-                  editions={selectableTextEditions}
-                  accessor="text_edition"
-                />
-              </div>
+            <div
+              className={cn(
+                "grid grid-cols-1 items-center gap-2 justify-between",
+                isVariantQiraat ? "md:grid-cols-1" : "md:grid-cols-3",
+              )}
+            >
+              {!isVariantQiraat ? (
+                <>
+                  <div className=" w-full">
+                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {t("Audio Edition")}
+                    </span>
+                    <EditionSelector
+                      filters={filters}
+                      setFilters={setFilters}
+                      editions={audioEditions}
+                      accessor="audio_edition"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {t("Text Edition")}
+                    </span>
+                    <EditionSelector
+                      filters={filters}
+                      setFilters={setFilters}
+                      editions={selectableTextEditions}
+                      accessor="text_edition"
+                    />
+                  </div>
+                </>
+              ) : null}
               <div className="w-full">
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   {t("Readings")}
@@ -286,20 +312,22 @@ export default function SurahClient({ id }: { id: string }) {
               {t("Focus Mode")}
             </label>
           </div>
-          <div className="flex items-center gap-2">
-            <Switch
-              id="tajweed-mode"
-              checked={showTajweed}
-              onCheckedChange={handleShowTajweedChange}
-              className="cursor-pointer"
-            />
-            <label
-              htmlFor="tajweed-mode"
-              className="text-sm font-medium leading-none cursor-pointer"
-            >
-              {t("Show Tajweed")}
-            </label>
-          </div>
+          {!isVariantQiraat ? (
+            <div className="flex items-center gap-2">
+              <Switch
+                id="tajweed-mode"
+                checked={showTajweed}
+                onCheckedChange={handleShowTajweedChange}
+                className="cursor-pointer"
+              />
+              <label
+                htmlFor="tajweed-mode"
+                className="text-sm font-medium leading-none cursor-pointer"
+              >
+                {t("Show Tajweed")}
+              </label>
+            </div>
+          ) : null}
           <div className="flex items-center gap-2">
             <Switch
               id="qiraat-diff-mode"
@@ -374,6 +402,9 @@ export default function SurahClient({ id }: { id: string }) {
               showQiraatDiffs={showQiraatDiffs}
               showTajweed={showTajweed && canRenderTajweed}
               tajweedText={tajweedByAyahId.get(item.id)}
+              secondaryTextOverride={
+                isVariantQiraat ? item.qiraat_difference_text || "" : undefined
+              }
               ignoredActions={["surah"]}
             />
           ))

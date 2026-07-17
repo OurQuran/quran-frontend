@@ -172,7 +172,7 @@
   background-color: oklch(0.95 0.04 28);
   border-radius: 0.18em;
   padding-inline: 0.12em;
-  font-weight: 700;
+  font-weight: inherit;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
@@ -599,4 +599,8 @@
     width: 0.72rem;
     height: 0.72rem;
   }
+}
+
+.font-quran-4 {
+  font-family: var(--font-quran-4), var(--font-quran-arabic-fallback), serif !important;
 }
