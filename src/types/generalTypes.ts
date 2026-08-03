@@ -114,6 +114,20 @@ export interface IUser {
 export interface IBook {
   id: number;
   name: string;
+  author_name?: string | null;
+  supervisor_name?: string | null;
+  has_pdf?: boolean;
+  download_url?: string | null;
+  authors?: {
+    name: string;
+    role: string;
+    order_no: number;
+  }[];
+  supervisors?: {
+    name: string;
+    role: string;
+    order_no: number;
+  }[];
   section_count: number;
 }
 
@@ -133,6 +147,11 @@ export interface IBookSectionContent {
     refs?: { ref_no: number; ref_text: string }[];
   };
   book: {
+    id?: number;
     name: string;
+    author_name?: string | null;
+    supervisor_name?: string | null;
+    has_pdf?: boolean;
+    download_url?: string | null;
   };
 }

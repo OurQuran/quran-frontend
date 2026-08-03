@@ -7,6 +7,7 @@ import Loading from "@/components/Loading";
 import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
+import { Download, ShieldCheck, UserRound } from "lucide-react";
 
 interface SectionContentProps {
   bookId: number;
@@ -189,15 +190,47 @@ export default function SectionContent({
   return (
     <div className="h-full flex flex-col min-h-0">
       <div
-        className="h-[72px] shrink-0 px-6 border-b border-border bg-card flex flex-col justify-center sticky top-0 z-10"
+        className="min-h-[86px] shrink-0 px-6 py-3 border-b border-border bg-card flex flex-col justify-center sticky top-0 z-10"
         dir="rtl"
       >
-        <div className="text-xs text-muted-foreground mb-0.5 line-clamp-1">
-          {book.name}
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="text-xs text-muted-foreground mb-0.5 line-clamp-1">
+              {book.name}
+            </div>
+            <div className="text-lg font-bold line-clamp-1">
+              {section.header_text || `Section #${section.order_no}`}
+            </div>
+          </div>
+
+          {book.download_url && book.has_pdf && (
+            <a
+              href={book.download_url}
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-primary hover:text-primary transition-colors"
+              download
+            >
+              <Download className="h-3.5 w-3.5" />
+              {t("Download PDF", { defaultValue: "Download PDF" })}
+            </a>
+          )}
         </div>
-        <div className="text-lg font-bold flex items-center justify-between line-clamp-1">
-          <span>{section.header_text || `Section #${section.order_no}`}</span>
-        </div>
+
+        {(book.author_name || book.supervisor_name) && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.72rem] text-muted-foreground">
+            {book.author_name && (
+              <span className="inline-flex items-center gap-1">
+                <UserRound className="h-3.5 w-3.5" />
+                {book.author_name}
+              </span>
+            )}
+            {book.supervisor_name && (
+              <span className="inline-flex items-center gap-1">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                {book.supervisor_name}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div
