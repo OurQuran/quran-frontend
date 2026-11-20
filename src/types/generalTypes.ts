@@ -87,6 +87,8 @@ export interface ITaggedAyah {
   created_at: string;
 }
 
+export type BookLanguage = "ku" | "ar";
+
 export interface IFilter {
   revelation_order?: string;
   name?: string;
@@ -100,6 +102,7 @@ export interface IFilter {
   sort_by?: string;
   q?: string;
   with_images?: string;
+  language?: BookLanguage;
 }
 
 export interface IUser {
@@ -114,6 +117,7 @@ export interface IUser {
 export interface IBook {
   id: number;
   name: string;
+  language?: BookLanguage;
   author_name?: string | null;
   supervisor_name?: string | null;
   has_pdf?: boolean;

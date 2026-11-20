@@ -3,8 +3,10 @@
 import Loading from "@/components/Loading";
 import BookCard from "@/components/BookCard";
 import { useTranslation } from "react-i18next";
-import { IBook } from "@/types/generalTypes";
+import { BookLanguage, IBook } from "@/types/generalTypes";
 import { useState } from "react";
+import { useParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 import useGet from "@/react-query/useGet";
 
 interface BooksResponse {
@@ -19,12 +21,49 @@ interface BooksResponse {
 
 export default function BooksClient() {
   const { t } = useTranslation("global");
+  const { locale } = useParams();
   const [page, setPage] = useState(1);
+  // Arabic UI -> Arabic editions; everything else starts on the Kurdish editions. The user can switch.
+  const [language, setLanguage] = useState<BookLanguage>(locale === "ar" ? "ar" : "ku");
 
-  const { data, isLoading } = useGet<BooksResponse, false>("books", { page, per_page: 20 });
+  const { data, isLoading } = useGet<BooksResponse, false>("books", {
+    page,
+    per_page: 20,
+    language,
+  });
+
+  const languages: BookLanguage[] = ["ku", "ar"];
 
   return (
     <div>
+      <div
+        role="tablist"
+        aria-label={t("book_language_label", { defaultValue: "Book language" })}
+        className="mb-6 inline-flex rounded-lg bg-muted p-1"
+      >
+        {languages.map((lang) => (
+          <button
+            key={lang}
+            type="button"
+            role="tab"
+            aria-selected={language === lang}
+            onClick={() => {
+              setLanguage(lang);
+              setPage(1);
+            }}
+            className={cn(
+              "rounded-md px-4 py-1.5 text-sm font-medium transition-colors",
+              language === lang
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {t(`book_language_${lang}`, {
+              defaultValue: lang === "ku" ? "Kurdish edition" : "Arabic edition",
+            })}
+          </button>
+        ))}
+      </div>
       {isLoading ? (
         <Loading />
       ) : (
