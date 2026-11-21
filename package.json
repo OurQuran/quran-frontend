@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.8.1",
@@ -70,6 +70,7 @@
     "eslint-config-next": "latest",
     "globals": "^15.15.0",
     "postcss": "latest",
-    "typescript": "~5.7.2"
+    "typescript": "~5.7.2",
+    "zod-validation-error": "^4.0.2"
   }
 }

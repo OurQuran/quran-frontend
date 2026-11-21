@@ -6,8 +6,11 @@ import useGet from "@/react-query/useGet";
 import Loading from "@/components/Loading";
 import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Download, ShieldCheck, UserRound } from "lucide-react";
+
+// Must match ImportHtmlBooksFromFolder::CELL_SEP in the backend.
+const TABLE_CELL_SEP = "│";
 
 interface SectionContentProps {
   bookId: number;
@@ -176,14 +179,65 @@ export default function SectionContent({
         });
       };
 
-      return paragraphs.map((par, i) => (
-        <p
-          key={`${index}-${i}`}
-          className="wrap-break-word mb-2.5 md:mb-3 last:mb-0"
-        >
-          {formatFootnotes(par)}
-        </p>
-      ));
+      // The backend writes every table row as ONE line with cells separated by "│".
+      // Consecutive such lines are rebuilt into a real table; everything else stays a paragraph.
+      const blocks: ReactNode[] = [];
+      let rows: string[][] = [];
+      const flushRows = (key: string) => {
+        if (!rows.length) return;
+        const tableRows = rows;
+        rows = [];
+        blocks.push(
+          <div
+            key={key}
+            className="my-5 overflow-x-auto rounded-lg border border-border bg-card/40"
+          >
+            <table className="w-full border-collapse text-[0.95em] leading-relaxed">
+              <tbody>
+                {tableRows.map((cells, r) => (
+                  <tr
+                    key={r}
+                    className="border-b border-border last:border-b-0 odd:bg-muted/30"
+                  >
+                    {cells.map((cell, c) => (
+                      <td
+                        key={c}
+                        className={cn(
+                          "px-3 py-2 align-top text-start",
+                          c === 0 && /^\d+$/.test(cell)
+                            ? "w-12 text-muted-foreground tabular-nums"
+                            : "",
+                        )}
+                        style={{ textAlign: "start" }}
+                      >
+                        {formatFootnotes(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>,
+        );
+      };
+
+      paragraphs.forEach((par, i) => {
+        if (par.includes(TABLE_CELL_SEP)) {
+          rows.push(par.split(TABLE_CELL_SEP).map((c) => c.trim()));
+          return;
+        }
+        flushRows(`${index}-t-${i}`);
+        blocks.push(
+          <p
+            key={`${index}-${i}`}
+            className="wrap-break-word mb-2.5 md:mb-3 last:mb-0"
+          >
+            {formatFootnotes(par)}
+          </p>,
+        );
+      });
+      flushRows(`${index}-t-end`);
+      return blocks;
     });
   };
 

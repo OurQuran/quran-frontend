@@ -43,7 +43,12 @@ export default function SectionsSidebar({
 
   const preview = (text: string, len: number) => {
     if (!text) return "";
-    const txt = text.trim().replace(/\s+/g, " ");
+    // image placeholders ({{img1}}) and table-cell separators are not readable text
+    const txt = text
+      .replace(/\{\{img\d+\}\}/g, " ")
+      .replace(/│/g, " ")
+      .trim()
+      .replace(/\s+/g, " ");
     return txt.length > len ? txt.slice(0, len) + "…" : txt;
   };
 

@@ -28,9 +28,10 @@ export default function ReadingBooksLayout({
     <div className="flex flex-col gap-6">
       <Tabs
         value={currentTab}
-        onValueChange={(value) =>
-          router.push(`/${locale}/reading-books/${value}`)
-        }
+        onValueChange={(value) => {
+          const query = window.location.search;
+          router.push(`/${locale}/reading-books/${value}${query}`);
+        }}
         className="w-full"
       >
         <TabsList className="w-full">
