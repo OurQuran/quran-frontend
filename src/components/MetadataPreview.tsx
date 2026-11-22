@@ -16,7 +16,6 @@ export const MetadataPreview: React.FC<MetadataPreviewProps> = ({
   description,
   image = "/web-icon/og-image.png",
   url = "https://ourquran.com",
-  siteName = "Our Quran",
 }) => {
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-50 rounded-xl border border-slate-200 mt-10">

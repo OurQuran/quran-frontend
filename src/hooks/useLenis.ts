@@ -8,7 +8,7 @@ export function useLenis() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    let lenis: any;
+    let lenis: Lenis | undefined;
 
     import("@studio-freight/lenis").then(({ default: Lenis }) => {
       lenis = new Lenis({
@@ -20,7 +20,7 @@ export function useLenis() {
       lenisRef.current = lenis;
 
       const raf = (time: number) => {
-        lenis.raf(time);
+        lenis?.raf(time);
         requestAnimationFrame(raf);
       };
 

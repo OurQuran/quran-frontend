@@ -48,11 +48,15 @@ export default function UsersClient() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [filters, pathname, router]);
 
-  useEffect(() => {
-    if (!isOpen && !isPasswordOpen) {
-      setSelectedUser(null);
-    }
-  }, [isOpen, isPasswordOpen]);
+  // The selection is forgotten once BOTH dialogs are closed.
+  const handleUserOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open && !isPasswordOpen) setSelectedUser(null);
+  };
+  const handlePasswordOpenChange = (open: boolean) => {
+    setIsPasswordOpen(open);
+    if (!open && !isOpen) setSelectedUser(null);
+  };
 
   const usersColumn: ColumnDef<IUser>[] = [
     {
@@ -167,14 +171,14 @@ export default function UsersClient() {
       {isOpen && (
         <UserUpsearModal
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          setIsOpen={handleUserOpenChange}
           selectedRecord={selectedUser}
         />
       )}
       {isPasswordOpen && (
         <ChangePasswordModal
           id={selectedUser?.id + "" || ""}
-          setIsOpen={setIsPasswordOpen}
+          setIsOpen={handlePasswordOpenChange}
           isOpen={isPasswordOpen}
         />
       )}

@@ -7,6 +7,13 @@ export interface IApiResponse<T> {
   error: string | null;
 }
 
+/** Shape of an error response body from the API (same envelope as IApiResponse, data usually null). */
+export interface ApiErrorResponse {
+  success?: boolean;
+  message?: string;
+  error?: string | null;
+}
+
 export interface IPaginationResponse<T> {
   result: T[];
   meta: IMeta | null;

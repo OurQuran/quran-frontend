@@ -24,10 +24,10 @@ import { isTajweedEdition } from "@/helpers/tajweed";
 
 type SelectorItem = IEdition | IQiraat;
 
-function isTranslation(obj: any): obj is ITranslation {
+function isTranslation(obj: unknown): obj is ITranslation {
   return (
-    obj &&
     typeof obj === "object" &&
+    obj !== null &&
     ("ar" in obj || "en" in obj || "ku" in obj)
   );
 }

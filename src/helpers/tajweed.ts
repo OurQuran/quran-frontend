@@ -135,7 +135,7 @@ function renderTajweedWordTemplate(tajweedText: string, wordTemplate: string): s
   let wordIndex = 0;
   const rendered = wordTemplate.replace(
     /<span\b([^>]*)>([\s\S]*?)<\/span>/gi,
-    (fullMatch, attributes: string, content: string) => {
+    (fullMatch, attributes: string) => {
       if (!/\bid\s*=/i.test(attributes)) {
         return fullMatch;
       }

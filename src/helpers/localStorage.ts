@@ -30,7 +30,7 @@ export function destroyToken() {
   }
 }
 
-export function setItem(key: string, value: any) {
+export function setItem(key: string, value: unknown) {
   if (isBrowser) {
     localStorage.setItem(key, JSON.stringify(value));
   }
@@ -42,7 +42,7 @@ export function getItem(key: string) {
   if (!item) return null;
   try {
     return JSON.parse(item);
-  } catch (error) {
+  } catch {
     return null;
   }
 }

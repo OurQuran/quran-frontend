@@ -16,9 +16,10 @@ import { Input } from "@/components/ui/input";
 import useLogin from "@/react-query/auth/useLogin";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { EyeIcon, EyeOff, Lock, User, AtSign } from "lucide-react";
+import { EyeIcon, EyeOff, Lock, AtSign } from "lucide-react";
 import { ILogin, ILoginP } from "@/types/authTypes";
 import { saveToken } from "@/helpers/localStorage";
+import { ApiErrorResponse } from "@/api/axiosInstance";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import Link from "next/link";
@@ -48,9 +49,8 @@ export default function LoginClient() {
     router.push(`/${locale}`);
   }
 
-  function onError(error: AxiosError<ILogin>) {
-    //@ts-ignore
-    toast.error(error.response?.data.message || t("Something went wrong"));
+  function onError(error: AxiosError<ApiErrorResponse>) {
+    toast.error(error.response?.data?.message || t("Something went wrong"));
   }
 
   const loginMutation = useLogin(onSuccess, onError);

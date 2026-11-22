@@ -1,6 +1,6 @@
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import QuranLogoIcon from "./QuranLogoIcon";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -24,11 +24,12 @@ function Header() {
   const { locale } = useParams();
   const pathname = usePathname();
   const { user } = useAuthStore();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // false while server-rendering / hydrating, true afterwards (no effect needed)
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   const { t } = useTranslation("global");
 

@@ -1,6 +1,5 @@
 import { Metadata, Viewport } from "next";
 import TagClient from "./TagClient";
-import api from "@/api/axiosInstance";
 import { Suspense } from "react";
 import Loading from "@/components/Loading";
 

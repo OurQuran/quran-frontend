@@ -15,9 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { EyeIcon, EyeOff, Lock, User, UserPlus, AtSign, Contact, ShieldCheck } from "lucide-react";
+import { EyeIcon, EyeOff, Lock, AtSign, Contact, ShieldCheck } from "lucide-react";
 import { ILogin, IRegister, RoleTypeEnum } from "@/types/authTypes";
 import { saveToken } from "@/helpers/localStorage";
+import { ApiErrorResponse } from "@/api/axiosInstance";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import Link from "next/link";
@@ -83,12 +84,11 @@ export default function SignUpClient() {
     router.push(`/${locale}`);
   }
 
-  function onError(error: AxiosError<ILogin>) {
-    //@ts-ignore
-    toast.error(error.response?.data.message || t("Something went wrong"));
+  function onError(error: AxiosError<ApiErrorResponse>) {
+    toast.error(error.response?.data?.message || t("Something went wrong"));
   }
 
-  const signupMutation = useAdd<IRegister>("signup", onSuccess, onError);
+  const signupMutation = useAdd<IRegister, { data: ILogin }>("signup", onSuccess, onError);
 
   const form = useForm({
     resolver: zodResolver(formSchema),

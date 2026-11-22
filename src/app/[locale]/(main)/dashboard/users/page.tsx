@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import UsersClient from "./UsersClient";
 export const dynamic = "force-dynamic";
 

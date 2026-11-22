@@ -42,7 +42,11 @@ export default function AudioPlayer({
   } = useAudioPlayer({ audioId, src });
 
   const togglePlay = () => {
-    isPlaying ? pause() : play();
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
   };
 
   const skipForward = () => {

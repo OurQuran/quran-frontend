@@ -7,6 +7,12 @@ const API_URL = process.env.NEXT_PUBLIC_BASE_API || "http://localhost:3000";
 
 export const revalidate = 259200; // Revalidate once every 3 days
 
+/** The only fields the sitemap reads from /books, /qiraats and /tags items. */
+interface SitemapEntity {
+  id?: number;
+  all_children?: SitemapEntity[];
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = i18nConfig.locales;
   const mainRoutes = [
@@ -22,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
   // Helper to fetch data safely
-  const fetchData = async (url: string) => {
+  const fetchData = async (url: string): Promise<SitemapEntity[]> => {
     try {
       const resp = await axios.get(`${API_URL}/${url}`);
       const data = resp.data?.data;
@@ -50,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   // Flatten tags recursively
-  const getAllTagIds = (tagList: any[]): number[] => {
+  const getAllTagIds = (tagList: SitemapEntity[]): number[] => {
     let ids: number[] = [];
     if (!Array.isArray(tagList)) return ids;
     tagList.forEach((tag) => {
@@ -88,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     // Books
-    books.forEach((book: any) => {
+    books.forEach((book) => {
       entries.push({
         url: getAbsoluteUrl(`/reading-books/books/${book.id}`, locale),
         lastModified: new Date(),
@@ -98,7 +104,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     // Qiraats
-    qiraats.forEach((qiraat: any) => {
+    qiraats.forEach((qiraat) => {
       entries.push({
         url: getAbsoluteUrl(`/reading-books/qiraats/${qiraat.id}`, locale),
         lastModified: new Date(),

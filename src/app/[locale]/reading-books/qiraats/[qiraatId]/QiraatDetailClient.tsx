@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { isAxiosError } from "axios";
 import { useState, useEffect, useMemo } from "react";
 import useGet from "@/react-query/useGet";
 import TableData from "@/components/TableData";
@@ -92,7 +93,7 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
   );
 
   useEffect(() => {
-    if (isError && (error as any)?.response?.status === 404) {
+    if (isError && isAxiosError(error) && error.response?.status === 404) {
       notFound();
     }
   }, [isError, error]);

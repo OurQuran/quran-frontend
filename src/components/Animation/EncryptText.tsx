@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export default function EncryptText({
   target,
@@ -15,13 +15,12 @@ export default function EncryptText({
   const SHUFFLE_TIME = shuffleTime ?? 80;
   const CHARS = "!@#$%^&*():{};|,.<>/?";
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [text, setText] = useState(target);
 
-  const scramble = () => {
+  useEffect(() => {
     let pos = 0;
 
-    intervalRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       const scrambled = target
         .split("")
         .map((char, index) => {
@@ -30,9 +29,7 @@ export default function EncryptText({
           }
 
           const randomCharIndex = Math.floor(Math.random() * CHARS.length);
-          const randomChar = CHARS[randomCharIndex];
-
-          return randomChar;
+          return CHARS[randomCharIndex];
         })
         .join("");
 
@@ -40,16 +37,13 @@ export default function EncryptText({
       pos++;
 
       if (pos >= target.length * CYCLES_PER_LETTER) {
-        stopScramble();
+        clearInterval(interval);
+        setText(target);
       }
     }, SHUFFLE_TIME);
-  };
 
-  useEffect(scramble, [SHUFFLE_TIME, target]);
-  const stopScramble = () => {
-    clearInterval(intervalRef.current || undefined);
-    setText(target);
-  };
+    return () => clearInterval(interval);
+  }, [SHUFFLE_TIME, target]);
 
   const parts = text.split(new RegExp(`(${customPart})`, "gi"));
 

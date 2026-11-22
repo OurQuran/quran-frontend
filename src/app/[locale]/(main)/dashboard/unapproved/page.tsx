@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import UnapprovedTagsClient from "./UnapprovedTagsClient";
 export const dynamic = "force-dynamic";
 

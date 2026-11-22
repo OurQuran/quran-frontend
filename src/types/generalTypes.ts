@@ -99,7 +99,7 @@ export interface IFilter {
   qiraat_reading_id?: number;
   page?: number;
   per_page?: number;
-  sort_by?: string;
+  sort_by?: string | null; // null = sorting cleared (axios drops null params)
   q?: string;
   with_images?: string;
   language?: BookLanguage;

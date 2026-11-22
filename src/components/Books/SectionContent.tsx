@@ -2,15 +2,44 @@
 
 import { useTranslation } from "react-i18next";
 import { IBookSectionContent } from "@/types/generalTypes";
+
+type SectionImage = NonNullable<IBookSectionContent["section"]["images"]>[number];
 import useGet from "@/react-query/useGet";
 import Loading from "@/components/Loading";
 import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { Download, ShieldCheck, UserRound } from "lucide-react";
+import { ReactNode, useEffect, useState } from "react";
+import Image from "next/image";
+import { isAxiosError } from "axios";
+import { Download, RotateCcw, ShieldCheck, UserRound, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  BOOK_ZOOM_DEFAULT,
+  BOOK_ZOOM_MAX,
+  BOOK_ZOOM_MIN,
+  BOOK_ZOOM_STEP,
+  useBookZoom,
+} from "./useBookZoom";
 
 // Must match ImportHtmlBooksFromFolder::CELL_SEP in the backend.
 const TABLE_CELL_SEP = "│";
+
+// The site font (Arkan Graphik) places Arabic vowel marks badly (a kasra ends up above the letter), so
+// every word that carries tashkeel / Quranic marks is set in Noto Naskh Arabic, which positions them
+// correctly. Plain words keep the site font, so Kurdish prose looks unchanged.
+const ARABIC_MARKS = /[\u064B-\u065F\u0670\u06D6-\u06ED]/;
+
+function renderWithMarks(text: string): ReactNode {
+  if (!ARABIC_MARKS.test(text)) return text;
+  return text.split(/(\s+)/).map((token, i) =>
+    ARABIC_MARKS.test(token) ? (
+      <span key={i} className="font-arabic-marked">
+        {token}
+      </span>
+    ) : (
+      token
+    ),
+  );
+}
 
 interface SectionContentProps {
   bookId: number;
@@ -22,53 +51,51 @@ export default function SectionContent({
   orderNo,
 }: SectionContentProps) {
   const { t } = useTranslation("global");
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeFootnote, setActiveFootnote] = useState<number | null>(null);
-  const [activeFootnoteRef, setActiveFootnoteRef] = useState<number | null>(
-    null,
-  );
+  const { zoom, setZoom } = useBookZoom();
+  // The highlighted footnote / reference belongs to ONE section: keying the state by section makes the
+  // highlight disappear when the reader moves to another section, without a reset effect.
+  const sectionKey = `${bookId}-${orderNo}`;
+  const [footnoteHighlight, setFootnoteHighlight] = useState<{ key: string; refNo: number } | null>(null);
+  const [refHighlight, setRefHighlight] = useState<{ key: string; refNo: number } | null>(null);
+  const activeFootnote = footnoteHighlight?.key === sectionKey ? footnoteHighlight.refNo : null;
+  const activeFootnoteRef = refHighlight?.key === sectionKey ? refHighlight.refNo : null;
   const [fullscreenImage, setFullscreenImage] = useState<{
     src: string;
     alt: string;
   } | null>(null);
 
   const handleFootnoteClick = (refNo: number) => {
-    setActiveFootnote(refNo);
+    setFootnoteHighlight({ key: sectionKey, refNo });
     const element = document.getElementById(`footnote-${refNo}`);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     // Remove the highlight effect after a brief read-time
     setTimeout(() => {
-      setActiveFootnote(null);
+      setFootnoteHighlight(null);
     }, 2500);
   };
 
   const handleFootnoteRefClick = (refNo: number) => {
-    setActiveFootnoteRef(refNo);
+    setRefHighlight({ key: sectionKey, refNo });
     const element = document.getElementById(`footnote-ref-${refNo}`);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     setTimeout(() => {
-      setActiveFootnoteRef(null);
+      setRefHighlight(null);
     }, 2500);
   };
 
-  useEffect(() => {
-    setActiveFootnote(null);
-    setActiveFootnoteRef(null);
-  }, [bookId, orderNo]);
-
   const { data, isLoading, isError, error } = useGet<IBookSectionContent, false>(
     `books/${bookId}/sections/${orderNo}`,
-    { with_images: "1" as any },
+    { with_images: "1" },
     orderNo !== null,
     `book-${bookId}-section-${orderNo}`,
   );
 
   useEffect(() => {
-    if (isError && (error as any)?.response?.status === 404) {
+    if (isError && isAxiosError(error) && error.response?.status === 404) {
       notFound();
     }
   }, [isError, error]);
@@ -104,9 +131,9 @@ export default function SectionContent({
   const { section, book } = data;
 
   const renderContent = () => {
-    let body = section.body_text || "";
+    const body = section.body_text || "";
 
-    const imgMap: Record<number, any> = {};
+    const imgMap: Record<number, SectionImage> = {};
     if (section.images) {
       section.images.forEach((img) => {
         imgMap[img.order] = img;
@@ -130,12 +157,18 @@ export default function SectionContent({
         const imgSrc = `data:${img.mime};base64,${img.data}`;
         const imgAlt = img.filename || `Image ${n}`;
         return (
-          <img
+          // Book images arrive as base64 data URIs of unknown size, so next/image cannot optimise or
+          // measure them: render at natural size, capped to the column width.
+          <Image
             key={index}
             src={imgSrc}
             alt={imgAlt}
-            className="max-w-full rounded-lg border border-border block my-4 cursor-zoom-in hover:opacity-95 transition-opacity"
-            loading="lazy"
+            unoptimized
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: "auto", height: "auto", maxWidth: "100%" }}
+            className="rounded-lg border border-border block my-4 cursor-zoom-in hover:opacity-95 transition-opacity"
             onClick={() => setFullscreenImage({ src: imgSrc, alt: imgAlt })}
           />
         );
@@ -149,7 +182,7 @@ export default function SectionContent({
       if (!paragraphs.length) return null;
 
       const formatFootnotes = (text: string) => {
-        if (!section.refs || section.refs.length === 0) return text;
+        if (!section.refs || section.refs.length === 0) return renderWithMarks(text);
         const chunks = text.split(/(\[\d+\]|\(\d+\))/g);
         return chunks.map((chunk, i) => {
           const match = chunk.match(/^\[(\d+)\]$|^\((\d+)\)$/);
@@ -175,7 +208,7 @@ export default function SectionContent({
               );
             }
           }
-          return chunk;
+          return renderWithMarks(chunk);
         });
       };
 
@@ -257,6 +290,45 @@ export default function SectionContent({
             </div>
           </div>
 
+          <div className="shrink-0 flex items-center gap-2">
+          <div
+            className="inline-flex items-center rounded-md border border-border text-xs"
+            dir="ltr"
+            role="group"
+            aria-label={t("Zoom", { defaultValue: "Zoom" })}
+          >
+            <button
+              type="button"
+              onClick={() => setZoom(zoom - BOOK_ZOOM_STEP)}
+              disabled={zoom <= BOOK_ZOOM_MIN}
+              className="p-1.5 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              aria-label={t("Zoom out", { defaultValue: "Zoom out" })}
+              title={t("Zoom out", { defaultValue: "Zoom out" })}
+            >
+              <ZoomOut className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoom(BOOK_ZOOM_DEFAULT)}
+              disabled={zoom === BOOK_ZOOM_DEFAULT}
+              className="min-w-12 px-1 py-1.5 tabular-nums hover:text-primary disabled:cursor-default cursor-pointer transition-colors inline-flex items-center justify-center gap-1"
+              aria-label={t("Reset zoom", { defaultValue: "Reset zoom" })}
+              title={t("Reset zoom", { defaultValue: "Reset zoom" })}
+            >
+              {zoom === BOOK_ZOOM_DEFAULT ? `${zoom}%` : <><RotateCcw className="h-3 w-3" />{zoom}%</>}
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoom(zoom + BOOK_ZOOM_STEP)}
+              disabled={zoom >= BOOK_ZOOM_MAX}
+              className="p-1.5 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              aria-label={t("Zoom in", { defaultValue: "Zoom in" })}
+              title={t("Zoom in", { defaultValue: "Zoom in" })}
+            >
+              <ZoomIn className="h-4 w-4" />
+            </button>
+          </div>
+
           {book.download_url && book.has_pdf && (
             <a
               href={book.download_url}
@@ -267,6 +339,7 @@ export default function SectionContent({
               {t("Download PDF", { defaultValue: "Download PDF" })}
             </a>
           )}
+          </div>
         </div>
 
         {(book.author_name || book.supervisor_name) && (
@@ -292,10 +365,10 @@ export default function SectionContent({
         id="content-scroll-area"
         data-lenis-prevent
       >
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto" style={{ zoom: zoom / 100 }}>
           {section.header_text && (
             <h2 className="text-2xl font-bold mb-6 text-foreground" dir="rtl">
-              {section.header_text}
+              {renderWithMarks(section.header_text)}
             </h2>
           )}
 
@@ -348,10 +421,15 @@ export default function SectionContent({
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 cursor-zoom-out"
           onClick={() => setFullscreenImage(null)}
         >
-          <img
+          <Image
             src={fullscreenImage.src}
             alt={fullscreenImage.alt}
-            className="max-w-full max-h-full object-contain shadow-2xl rounded"
+            unoptimized
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: "auto", height: "auto", maxWidth: "100%", maxHeight: "100%" }}
+            className="object-contain shadow-2xl rounded"
           />
         </div>
       )}

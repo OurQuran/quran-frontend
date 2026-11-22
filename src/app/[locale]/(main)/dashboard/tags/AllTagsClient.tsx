@@ -54,11 +54,11 @@ export default function AllTagsClient() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [filters, pathname, router]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedTag(null);
-    }
-  }, [isOpen]);
+  // Closing the dialog forgets the selection, so "create" never reopens with a stale tag.
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) setSelectedTag(null);
+  };
 
   const tagsColumn: ColumnDef<ITagDashbaord>[] = [
     {
@@ -215,7 +215,7 @@ export default function AllTagsClient() {
       {isOpen && (
         <AyahUpsertModal
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          setIsOpen={handleOpenChange}
           selectedTag={selectedTag}
         />
       )}

@@ -154,9 +154,11 @@ function UpsertUser({
   );
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    selectedRecord
-      ? updateTagMutation.mutate({ id: selectedRecord.id + "", data: values })
-      : addMutation.mutate(values);
+    if (selectedRecord) {
+      updateTagMutation.mutate({ id: selectedRecord.id + "", data: values });
+    } else {
+      addMutation.mutate(values);
+    }
   };
 
   const roles = roleOptions.map((role, index) => {

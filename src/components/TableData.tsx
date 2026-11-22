@@ -35,7 +35,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   isLoading?: boolean;
   sortBy: string | null;
-  setSortBy: any;
+  setSortBy: React.Dispatch<React.SetStateAction<IFilter>>;
   onRowClick?: (data: TData) => void;
   renderRowDetails?: (data: TData) => React.ReactNode;
 }
@@ -49,11 +49,17 @@ export default function TableData<TData, TValue>({
   onRowClick,
   renderRowDetails,
 }: DataTableProps<TData, TValue>) {
+  // @tanstack/react-table's useReactTable returns functions React Compiler cannot memoize safely
+  "use no memo";
+
   const [t] = useTranslation("global");
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
+  // TanStack Table is on React Compiler's known-incompatible list; this component already opts out of
+  // memoization above ("use no memo"), so the rule's warning is expected here.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     columns,
     data,

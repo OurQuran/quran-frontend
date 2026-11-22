@@ -4,6 +4,8 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { navLinks } from "@/helpers/utils";
@@ -34,6 +36,11 @@ export function NavDrawer() {
         </Button>
       </DrawerTrigger>
       <DrawerContent className="bg-card/95 backdrop-blur-xl border-border/40">
+        {/* Radix requires a title and description for screen readers; they are not shown visually. */}
+        <DrawerTitle className="sr-only">{t("Menu", { defaultValue: "Menu" })}</DrawerTitle>
+        <DrawerDescription className="sr-only">
+          {t("Navigation menu", { defaultValue: "Navigation menu" })}
+        </DrawerDescription>
         <div className="mx-auto w-full max-w-sm p-6">
           <div className="flex flex-col gap-6">
             {/* Quick Actions */}

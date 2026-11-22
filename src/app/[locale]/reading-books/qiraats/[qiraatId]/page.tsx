@@ -5,6 +5,7 @@ import {
   generateCompleteMetadata,
 } from "@/helpers/metadataHelper";
 import api from "@/api/axiosInstance";
+import { IQiraat, ITranslation } from "@/types/generalTypes";
 import QiraatDetailClient from "./QiraatDetailClient";
 import { Suspense } from "react";
 import Loading from "@/components/Loading";
@@ -30,11 +31,11 @@ export async function generateMetadata({
 
   try {
     const response = await api.get("/qiraats");
-    const qiraats = response.data?.data;
-    const qiraat = qiraats?.find((q: any) => q.id.toString() === qiraatId);
+    const qiraats: IQiraat[] | undefined = response.data?.data;
+    const qiraat = qiraats?.find((q) => q.id.toString() === qiraatId);
 
     const qiraatName = qiraat
-      ? qiraat.name[locale] || qiraat.name.en || qiraat.name
+      ? qiraat.name[locale as keyof ITranslation] || qiraat.name.en
       : t("Qira'at");
 
     const title = t("Meta_Qiraat_Title", { name: qiraatName });
@@ -46,7 +47,7 @@ export async function generateMetadata({
       description,
       path: `/reading-books/qiraats/${qiraatId}`,
     });
-  } catch (error) {
+  } catch {
     const title = t("Meta_Qiraat_Title", { name: t("Qira'at") });
     const description = t("Meta_Qiraat_Description");
     return generateCompleteMetadata({

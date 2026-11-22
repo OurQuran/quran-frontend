@@ -21,18 +21,19 @@ export function getAbsoluteUrl(path: string = "", locale?: string) {
  * Safely extracts a localized string from a translation object or Record.
  */
 export function getLocalizedString(
-  data: any,
+  data: unknown,
   locale: string,
   fallbackKey: string = "en",
 ): string {
   if (!data) return "";
   if (typeof data === "string") return data;
-  return data[locale] || data[fallbackKey] || "";
+  const record = data as Record<string, string | undefined>;
+  return record[locale] || record[fallbackKey] || "";
 }
 
 export function getLocalizedMetadata(locale: string) {
   const i18n = createI18nInstance(locale);
-  const t = (key: string, variables?: Record<string, any>) => {
+  const t = (key: string, variables?: Record<string, unknown>) => {
     return i18n.t(key, { ...variables, ns: "global" });
   };
 

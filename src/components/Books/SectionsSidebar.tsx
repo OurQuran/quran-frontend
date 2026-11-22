@@ -4,7 +4,7 @@ import { IBookSection } from "@/types/generalTypes";
 import useGet from "@/react-query/useGet";
 import Loading from "@/components/Loading";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
@@ -19,24 +19,29 @@ interface SectionsResponse {
   };
 }
 
+export const SECTIONS_PER_PAGE = 20;
+
 export default function SectionsSidebar({
   bookId,
   activeOrderNo,
   onSelectSection,
+  page,
+  onPageChange,
 }: {
   bookId: number;
   activeOrderNo: number | null;
   onSelectSection: (orderNo: number) => void;
+  page: number;
+  onPageChange: (page: number) => void;
 }) {
   const { t } = useTranslation("global");
   const params = useParams();
   const locale = params?.locale as string;
   const isRTL = locale === "ar" || locale === "ku";
-  const [page, setPage] = useState(1);
 
   const { data, isLoading } = useGet<SectionsResponse, false>(
     `books/${bookId}/sections`,
-    { page, per_page: 20 },
+    { page, per_page: SECTIONS_PER_PAGE },
     true,
     `book-${bookId}-sections`,
   );
@@ -116,7 +121,7 @@ export default function SectionsSidebar({
           <button
             className="p-1 px-3 bg-secondary text-secondary-foreground rounded disabled:opacity-30 disabled:cursor-not-allowed hover:bg-secondary/80 text-xs flex items-center transition-colors cursor-pointer"
             disabled={page <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() => onPageChange(Math.max(1, page - 1))}
           >
             {isRTL ? (
               <ChevronRight className="w-4 h-4 ml-1" />
@@ -130,7 +135,7 @@ export default function SectionsSidebar({
           <button
             className="p-1 px-3 bg-secondary text-secondary-foreground rounded disabled:opacity-30 disabled:cursor-not-allowed hover:bg-secondary/80 text-xs flex items-center transition-colors cursor-pointer"
             disabled={page >= data.meta.total_pages}
-            onClick={() => setPage((p) => p + 1)}
+            onClick={() => onPageChange(page + 1)}
           >
             {isRTL ? (
               <ChevronLeft className="w-4 h-4 mr-1" />

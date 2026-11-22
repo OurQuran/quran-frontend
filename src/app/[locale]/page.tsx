@@ -36,7 +36,9 @@ export async function generateMetadata({
   });
 }
 
-async function getSurahs(filters: any) {
+async function getSurahs(
+  filters: Record<string, string | string[] | undefined>,
+) {
   try {
     const response = await api.get("/surahs", { params: filters });
     return response.data.data as ISurahs[];
@@ -48,8 +50,7 @@ async function getSurahs(filters: any) {
 
 import Loading from "@/components/Loading";
 
-export default async function HomePage({ params, searchParams }: PageProps) {
-  const { locale } = await params;
+export default async function HomePage({ searchParams }: PageProps) {
   const sParams = await searchParams;
 
   const filters = {

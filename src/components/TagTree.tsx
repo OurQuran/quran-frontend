@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -56,11 +56,12 @@ const TreeNode = ({ item, level, searchTerm }: TreeNodeProps) => {
   const hasChildren = item.all_children && item.all_children.length > 0;
   const { locale } = useParams();
 
-  useEffect(() => {
-    if (searchTerm !== "") {
-      setIsExpanded(true);
-    }
-  }, [searchTerm]);
+  // Expand when a search starts (adjusting state while rendering, instead of in an effect).
+  const [previousSearchTerm, setPreviousSearchTerm] = useState(searchTerm);
+  if (previousSearchTerm !== searchTerm) {
+    setPreviousSearchTerm(searchTerm);
+    if (searchTerm !== "") setIsExpanded(true);
+  }
 
   const matchesSearch =
     searchTerm === "" ||

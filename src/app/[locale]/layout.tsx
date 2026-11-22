@@ -13,7 +13,7 @@ import {
   quranArabicFallback,
 } from "@/lib/fonts";
 
-import { Metadata, Viewport } from "next";
+import { Viewport } from "next";
 import {
   getLocalizedMetadata,
   generateCompleteMetadata,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useRouter } from "next/navigation";
 import { useEditionStore } from "@/store/editionStore";
@@ -17,17 +17,12 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  BookOpen,
   Plus,
   Minus,
-  Settings2,
-  Info,
   ArrowRight,
-  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import AppTooltip from "./AppTooltip";
 import useGet from "@/react-query/useGet";
 import { IAayh, ISurahs } from "@/types/generalTypes";
 import { Fragment } from "react";
@@ -132,14 +127,8 @@ export default function MushafPageClient({
   const [showQiraatDiffs, setShowQiraatDiffs] = useState(true);
   const [showTajweed, setShowTajweed] = useState(false);
   const [showTajweedLegend, setShowTajweedLegend] = useState(true);
-  const clickTimeoutRef =
-    typeof window !== "undefined"
-      ? { current: null as any }
-      : { current: null };
-  const longPressTimeoutRef =
-    typeof window !== "undefined"
-      ? { current: null as any }
-      : { current: null };
+  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const pageInt = parseInt(pageNumber);
 
@@ -152,6 +141,9 @@ export default function MushafPageClient({
     const savedShowTajweed = getItem("show_tajweed");
     const savedShowTajweedLegend = getItem("show_tajweed_legend");
 
+    // Hydration-safe load of persisted settings: localStorage does not exist during SSR, so it can only
+    // be read after mount. This syncs React state with that external store, which is what effects are for.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFilters((prev) => ({
       ...prev,
       audio_edition: savedAudio ? parseInt(savedAudio) : prev.audio_edition,
@@ -221,11 +213,11 @@ export default function MushafPageClient({
   const { data, isLoading, isError } = useMushafPage(pageNumber, filters);
   const { data: allSurahs } = useGet<ISurahs[]>("surahs");
 
-  const handleNextPage = () => {
+  const handleNextPage = useCallback(() => {
     if (pageInt < 604) {
       router.push(`/${locale}/surahs/page/${pageInt + 1}`);
     }
-  };
+  }, [pageInt, router, locale]);
 
   const handleJump = (e: React.FormEvent) => {
     e.preventDefault();
@@ -238,11 +230,11 @@ export default function MushafPageClient({
     }
   };
 
-  const handlePrevPage = () => {
+  const handlePrevPage = useCallback(() => {
     if (pageInt > 1) {
       router.push(`/${locale}/surahs/page/${pageInt - 1}`);
     }
-  };
+  }, [pageInt, router, locale]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -265,7 +257,7 @@ export default function MushafPageClient({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [locale, pageInt, handleNextPage, handlePrevPage]);
 
-  const ayahs = data?.ayahs || [];
+  const ayahs = useMemo(() => data?.ayahs ?? [], [data]);
   const meta = ayahs[0] || {};
   const selectableTextEditions = textEditions.filter(
     (edition) => !isTajweedEdition(edition),
@@ -305,49 +297,60 @@ export default function MushafPageClient({
     }
   }, [ayahs, canRenderTajweed, showTajweed]);
 
-  useEffect(() => {
-    if (!showTajweed || !isVariantQiraat) {
-      return;
+  // Variant readings cannot show tajweed and always start with the qiraat differences on. These are
+  // adjustments of this component's own state while rendering (React's "derive state" pattern); the
+  // matching localStorage writes happen in the effect below.
+  const [diffsQiraatKey, setDiffsQiraatKey] = useState<number | undefined>(undefined);
+  const variantQiraatKey = isVariantQiraat ? filters.qiraat_reading_id : undefined;
+  if (variantQiraatKey !== diffsQiraatKey) {
+    setDiffsQiraatKey(variantQiraatKey);
+    if (variantQiraatKey !== undefined) {
+      setShowQiraatDiffs(true);
     }
-
+  }
+  if (isVariantQiraat && showTajweed) {
     setShowTajweed(false);
-    setItem("show_tajweed", false);
-  }, [isVariantQiraat, showTajweed]);
+  }
 
   useEffect(() => {
     if (!isVariantQiraat) {
       return;
     }
 
-    setShowQiraatDiffs(true);
+    setItem("show_tajweed", false);
     setItem("show_qiraat_diffs", true);
   }, [isVariantQiraat, filters.qiraat_reading_id]);
 
-  useEffect(() => {
-    if (audioEditions.length || textEditions.length || qiraats.length) {
-      setFilters((prev) => {
-        const needsAudio = isNaN(prev.audio_edition || NaN);
-        const needsText = isNaN(prev.text_edition || NaN);
-        const needsQiraat = isNaN(prev.qiraat_reading_id || NaN);
-        const textEditionIsTajweed = prev.text_edition === tajweedEdition?.id;
+  // Fill in missing / invalid defaults once the edition and qiraat lists have loaded.
+  if (audioEditions.length || textEditions.length || qiraats.length) {
+    const needsAudio = isNaN(filters.audio_edition || NaN);
+    const needsText = isNaN(filters.text_edition || NaN);
+    const needsQiraat = isNaN(filters.qiraat_reading_id || NaN);
+    const textEditionIsTajweed = filters.text_edition === tajweedEdition?.id;
 
-        if (needsAudio || needsText || needsQiraat || textEditionIsTajweed) {
-          return {
-            ...prev,
-            audio_edition: prev.audio_edition || audioEditions[0]?.id || 0,
-            text_edition:
-              (textEditionIsTajweed
-                ? Number(getItem("preferred_translation_edition"))
-                : prev.text_edition) ||
-              defaultTextEdition?.id ||
-              0,
-            qiraat_reading_id: prev.qiraat_reading_id || qiraats[0]?.id || 0,
-          };
-        }
-        return prev;
-      });
+    if (needsAudio || needsText || needsQiraat || textEditionIsTajweed) {
+      const next = {
+        ...filters,
+        audio_edition: filters.audio_edition || audioEditions[0]?.id || 0,
+        text_edition:
+          (textEditionIsTajweed
+            ? Number(getItem("preferred_translation_edition"))
+            : filters.text_edition) ||
+          defaultTextEdition?.id ||
+          0,
+        qiraat_reading_id: filters.qiraat_reading_id || qiraats[0]?.id || 0,
+      };
+      // Only update when something actually changes: the lists may still be empty, in which case the
+      // defaults equal the current values and setting a fresh object would re-render forever.
+      if (
+        next.audio_edition !== filters.audio_edition ||
+        next.text_edition !== filters.text_edition ||
+        next.qiraat_reading_id !== filters.qiraat_reading_id
+      ) {
+        setFilters(next);
+      }
     }
-  }, [audioEditions, defaultTextEdition?.id, qiraats, tajweedEdition?.id, textEditions]);
+  }
 
   if (isLoading && !data) return <Loading />;
   if (isError)
@@ -626,7 +629,7 @@ export default function MushafPageClient({
                 )}
                 style={{ fontSize: `${fontSize}px`, lineHeight: 2.3 }}
               >
-                {ayahs.map((ayah, index) => {
+                {ayahs.map((ayah) => {
                   let baseTemplate =
                     ayah.ayah_template || ayah.template || ayah.text;
                   baseTemplate = baseTemplate

@@ -3,7 +3,6 @@
 import Loading from "@/components/Loading";
 import SearchWithFilters from "@/components/SearchWithFilters";
 import SurahCard from "@/components/SurahCard";
-import { useTranslation } from "react-i18next";
 import { useSurahIdsStore } from "@/store/surahsIdStore";
 import { IFilter, ISurahs } from "@/types/generalTypes";
 import { useEffect, useState } from "react";
@@ -11,7 +10,6 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import useGet from "@/react-query/useGet";
 
 export default function HomeClient({ initialData }: { initialData: ISurahs[] }) {
-  const { t } = useTranslation("global");
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();

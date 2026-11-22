@@ -32,7 +32,7 @@ const DEFAULT_TEXT_EDITION_ID = 34;
 const BASE_QIRAAT_READING_ID = 1;
 
 export default function SurahClient({ id }: { id: string }) {
-  const { t, i18n } = useTranslation("global");
+  const { t } = useTranslation("global");
   const router = useRouter();
   const { locale } = useParams();
   const { audioEditions, textEditions, fetchEditions } = useEditionStore();
@@ -67,6 +67,9 @@ export default function SurahClient({ id }: { id: string }) {
     const savedShowTajweed = getItem("show_tajweed");
     const savedShowTajweedLegend = getItem("show_tajweed_legend");
 
+    // Hydration-safe load of persisted settings: localStorage does not exist during SSR, so it can only
+    // be read after mount. This syncs React state with that external store, which is what effects are for.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFilters((prev) => ({
       ...prev,
       audio_edition: savedAudio ? parseInt(savedAudio) : prev.audio_edition,
@@ -177,6 +180,11 @@ export default function SurahClient({ id }: { id: string }) {
   );
   const loadedPageCount = data?.pages.length ?? 0;
   const loadedTajweedPageCount = tajweedQuery.data?.pages.length ?? 0;
+  const {
+    hasNextPage: tajweedHasNextPage,
+    isFetchingNextPage: tajweedIsFetchingNextPage,
+    fetchNextPage: fetchNextTajweedPage,
+  } = tajweedQuery;
 
   useEffect(() => {
     if (!showTajweed || !tajweedEdition?.id) {
@@ -185,64 +193,75 @@ export default function SurahClient({ id }: { id: string }) {
 
     if (
       loadedTajweedPageCount < loadedPageCount &&
-      tajweedQuery.hasNextPage &&
-      !tajweedQuery.isFetchingNextPage
+      tajweedHasNextPage &&
+      !tajweedIsFetchingNextPage
     ) {
-      tajweedQuery.fetchNextPage();
+      fetchNextTajweedPage();
     }
   }, [
     loadedPageCount,
     loadedTajweedPageCount,
     showTajweed,
     tajweedEdition?.id,
-    tajweedQuery.hasNextPage,
-    tajweedQuery.isFetchingNextPage,
-    tajweedQuery.fetchNextPage,
+    tajweedHasNextPage,
+    tajweedIsFetchingNextPage,
+    fetchNextTajweedPage,
   ]);
 
-  useEffect(() => {
-    if (!showTajweed || !isVariantQiraat) {
-      return;
+  // Variant readings cannot show tajweed and always start with the qiraat differences on. These are
+  // adjustments of this component's own state while rendering (React's "derive state" pattern); the
+  // matching localStorage writes happen in the effect below.
+  const [diffsQiraatKey, setDiffsQiraatKey] = useState<number | undefined>(undefined);
+  const variantQiraatKey = isVariantQiraat ? filters.qiraat_reading_id : undefined;
+  if (variantQiraatKey !== diffsQiraatKey) {
+    setDiffsQiraatKey(variantQiraatKey);
+    if (variantQiraatKey !== undefined) {
+      setShowQiraatDiffs(true);
     }
-
+  }
+  if (isVariantQiraat && showTajweed) {
     setShowTajweed(false);
-    setItem("show_tajweed", false);
-  }, [isVariantQiraat, showTajweed]);
+  }
 
   useEffect(() => {
     if (!isVariantQiraat) {
       return;
     }
 
-    setShowQiraatDiffs(true);
+    setItem("show_tajweed", false);
     setItem("show_qiraat_diffs", true);
   }, [isVariantQiraat, filters.qiraat_reading_id]);
 
-  useEffect(() => {
-    if (audioEditions.length || textEditions.length || qiraats.length) {
-      setFilters((prev) => {
-        const needsAudio = isNaN(prev.audio_edition || NaN);
-        const needsText = isNaN(prev.text_edition || NaN);
-        const needsQiraat = isNaN(prev.qiraat_reading_id || NaN);
-        const textEditionIsTajweed = prev.text_edition === tajweedEdition?.id;
+  // Fill in missing / invalid defaults once the edition and qiraat lists have loaded.
+  if (audioEditions.length || textEditions.length || qiraats.length) {
+    const needsAudio = isNaN(filters.audio_edition || NaN);
+    const needsText = isNaN(filters.text_edition || NaN);
+    const needsQiraat = isNaN(filters.qiraat_reading_id || NaN);
+    const textEditionIsTajweed = filters.text_edition === tajweedEdition?.id;
 
-        if (needsAudio || needsText || needsQiraat || textEditionIsTajweed) {
-          return {
-            ...prev,
-            audio_edition: prev.audio_edition || audioEditions[0]?.id || 0,
-            text_edition:
-              (textEditionIsTajweed
-                ? Number(getItem("preferred_translation_edition"))
-                : prev.text_edition) ||
-              defaultTextEdition?.id ||
-              0,
-            qiraat_reading_id: prev.qiraat_reading_id || qiraats[0]?.id || 0,
-          };
-        }
-        return prev;
-      });
+    if (needsAudio || needsText || needsQiraat || textEditionIsTajweed) {
+      const next = {
+        ...filters,
+        audio_edition: filters.audio_edition || audioEditions[0]?.id || 0,
+        text_edition:
+          (textEditionIsTajweed
+            ? Number(getItem("preferred_translation_edition"))
+            : filters.text_edition) ||
+          defaultTextEdition?.id ||
+          0,
+        qiraat_reading_id: filters.qiraat_reading_id || qiraats[0]?.id || 0,
+      };
+      // Only update when something actually changes: the lists may still be empty, in which case the
+      // defaults equal the current values and setting a fresh object would re-render forever.
+      if (
+        next.audio_edition !== filters.audio_edition ||
+        next.text_edition !== filters.text_edition ||
+        next.qiraat_reading_id !== filters.qiraat_reading_id
+      ) {
+        setFilters(next);
+      }
     }
-  }, [audioEditions, defaultTextEdition?.id, qiraats, tajweedEdition?.id, textEditions]);
+  }
 
   return (
     <div>

@@ -6,10 +6,7 @@ import { ReactNode, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { I18nextProvider } from "react-i18next";
 import { DirectionProvider } from "@radix-ui/react-direction";
-import i18next, {
-  createClientI18nInstance,
-  initI18n,
-} from "@/translation/i18n";
+import { createClientI18nInstance, initI18n } from "@/translation/i18n";
 
 import { arkanGraphik } from "@/lib/fonts";
 

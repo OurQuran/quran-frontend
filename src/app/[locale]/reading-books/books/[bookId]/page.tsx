@@ -1,5 +1,4 @@
 import { Metadata, Viewport } from "next";
-import api from "@/api/axiosInstance";
 import BookDetailClient from "./BookDetailClient";
 import { Suspense } from "react";
 import Loading from "@/components/Loading";

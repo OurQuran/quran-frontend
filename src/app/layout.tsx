@@ -1,12 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import {
-  arkanGraphik,
-  quranFont1,
-  quranFont2,
-  quranFont3,
-  quranFont4,
-  quranFont5,
-} from "@/lib/fonts";
 import "@/index.css";
 
 export const viewport: Viewport = {

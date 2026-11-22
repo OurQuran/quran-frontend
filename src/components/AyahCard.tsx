@@ -25,14 +25,13 @@ import { useHover } from "react-haiku";
 import AyahTags from "./AyahTags";
 import { toast } from "sonner";
 import AudioPlayer from "./AudioPlayer";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { requireAuth } from "@/helpers/authGuards";
 import { useRouter, useParams } from "next/navigation";
 import useAdd from "@/react-query/useAdd";
 import useDelete from "@/react-query/useDelete";
-import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { AyahAttachModal } from "./AyahAttachModal";
 import { ensureQcfTajweedFonts, renderTajweedText } from "@/helpers/tajweed";
@@ -56,9 +55,15 @@ export default function AyahCard({
   secondaryTextOverride?: string;
   ignoredActions?: AyahAction[];
 }) {
-  const queryClient = useQueryClient();
   const [t] = useTranslation("global");
-  const { hovered, ref } = useHover();
+  const { hovered, ref: hoverRef } = useHover();
+  // useHover types its ref as EventTarget; adapt it to the Button's HTMLButtonElement ref
+  const setHoverRef = useCallback(
+    (node: HTMLButtonElement | null) => {
+      hoverRef.current = node;
+    },
+    [hoverRef],
+  );
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [tagModalOpen, setTagModalOpen] = useState(false);
   const router = useRouter();
@@ -90,10 +95,12 @@ export default function AyahCard({
   }
 
   const [localBookmarked, setLocalBookmarked] = useState(ayah.bookmarked);
-
-  useEffect(() => {
+  // Follow the server value when this card is reused for another ayah (adjust state while rendering).
+  const [bookmarkedForAyahId, setBookmarkedForAyahId] = useState(ayah.id);
+  if (bookmarkedForAyahId !== ayah.id) {
+    setBookmarkedForAyahId(ayah.id);
     setLocalBookmarked(ayah.bookmarked);
-  }, [ayah.id]);
+  }
 
   function handleBookmark() {
     if (requireAuth()) {
@@ -153,8 +160,7 @@ export default function AyahCard({
       trigger: (
         <Button
           variant="ghost"
-          // @ts-ignore
-          ref={ref}
+          ref={setHoverRef}
           size="icon"
           className="hover:bg-border hover:text-primary rounded-full"
           onClick={handleBookmark}

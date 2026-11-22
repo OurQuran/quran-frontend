@@ -112,9 +112,11 @@ function UpsertTag({
   );
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    selectedTag
-      ? updateTagMutation.mutate({ id: selectedTag.id + "", data: values })
-      : addTagMutation.mutate(values);
+    if (selectedTag) {
+      updateTagMutation.mutate({ id: selectedTag.id + "", data: values });
+    } else {
+      addTagMutation.mutate(values);
+    }
   };
   return (
     <Form {...form}>

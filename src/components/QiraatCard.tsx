@@ -4,11 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { IQiraat } from "@/types/generalTypes";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useTranslation } from "react-i18next";
-import { BookOpen, Users } from "lucide-react";
+import { Users } from "lucide-react";
 
 export default function QiraatCard({ qiraat }: { qiraat: IQiraat }) {
-  const { t } = useTranslation("global");
   const { locale } = useParams();
 
   const currentLocale = (locale as "ar" | "en" | "ku") || "en";

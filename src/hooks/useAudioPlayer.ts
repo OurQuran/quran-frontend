@@ -27,6 +27,15 @@ export function useAudioPlayer({ audioId, src, onEnded }: UseAudioPlayerProps) {
   const currentTime = audios[audioId]?.currentTime || 0;
   const duration = audios[audioId]?.duration || 0;
 
+  // The audio element must only be recreated when the source changes, but its listeners must still see the
+  // latest callback / volume: read them through refs updated after every render.
+  const onEndedRef = useRef(onEnded);
+  const volumeRef = useRef(volume);
+  useEffect(() => {
+    onEndedRef.current = onEnded;
+    volumeRef.current = volume;
+  });
+
   useEffect(() => {
     const audio = new Audio(src);
     audioRef.current = audio;
@@ -41,13 +50,13 @@ export function useAudioPlayer({ audioId, src, onEnded }: UseAudioPlayerProps) {
 
     const handleEnded = () => {
       setIsPlaying(false);
-      onEnded?.();
+      onEndedRef.current?.();
     };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
-    audio.volume = volume;
+    audio.volume = volumeRef.current;
 
     return () => {
       audio.pause();
@@ -57,14 +66,18 @@ export function useAudioPlayer({ audioId, src, onEnded }: UseAudioPlayerProps) {
       audio.removeEventListener("ended", handleEnded);
       audioRef.current = null;
     };
-  }, [src]);
+  }, [src, audioId, setIsPlaying, updateAudioTime, updateAudioDuration]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (currentAudioId === audioId) {
-      isPlaying ? audio.play().catch(console.error) : audio.pause();
+      if (isPlaying) {
+        audio.play().catch(console.error);
+      } else {
+        audio.pause();
+      }
     } else {
       audio.pause();
     }

@@ -1,4 +1,4 @@
-import { getItem, setItem } from "@/helpers/localStorage";
+import { setItem } from "@/helpers/localStorage";
 import { create } from "zustand";
 
 interface SurhaIdsState {

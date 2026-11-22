@@ -601,6 +601,12 @@
   }
 }
 
+.font-arabic-marked {
+  font-family: var(--font-quran-arabic-fallback), serif;
+  /* Naskh sits smaller than the sans UI font next to it */
+  font-size: 1.1em;
+}
+
 .font-quran-4 {
   font-family: var(--font-quran-4), var(--font-quran-arabic-fallback), serif !important;
 }
