@@ -45,9 +45,28 @@ export interface IQiraatDifference {
   qiraat_options: string;
   qiraat_text: string;
   explanation: string;
+  // language `explanation` is actually in (Arabic is only available for part of the data, else Kurdish)
+  explanation_lang?: "ku" | "ar";
   created_at: string;
   updated_at: string;
 }
+
+function KurdishOnlyBadge({ label }: { label: string }) {
+  return (
+    <span
+      className="me-2 inline-block rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground align-middle"
+      title={label}
+    >
+      {label}
+    </span>
+  );
+}
+
+type ExplanationLang = "ku" | "ar";
+const EXPLANATION_LANGUAGES: { value: ExplanationLang; label: string }[] = [
+  { value: "ar", label: "العربية" },
+  { value: "ku", label: "کوردی" },
+];
 
 export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
   const { t, i18n } = useTranslation("global");
@@ -67,6 +86,14 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
     }
   }, [qiraats.length, fetchQiraats]);
 
+  // The stored explanations are Kurdish; Arabic exists for most rows of the readings that have an Arabic book.
+  // Default to the site language (Arabic UI -> Arabic text), overridable with ?lang=.
+  const langParam = searchParams.get("lang");
+  const defaultExplanationLang: ExplanationLang = locale === "ar" ? "ar" : "ku";
+  const [explanationLang, setExplanationLang] = useState<ExplanationLang>(
+    langParam === "ar" || langParam === "ku" ? langParam : defaultExplanationLang,
+  );
+
   const [filter, setFilter] = useState<IFilter>({
     page: Number(searchParams.get("page")) || 1,
     per_page: Number(searchParams.get("per_page")) || 20,
@@ -82,14 +109,15 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
     if (filter.per_page && filter.per_page !== 20)
       params.set("per_page", filter.per_page.toString());
     if (filter.sort_by) params.set("sort_by", filter.sort_by);
+    if (explanationLang !== defaultExplanationLang) params.set("lang", explanationLang);
 
     const query = params.toString();
     router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
-  }, [filter, pathname, router]);
+  }, [filter, explanationLang, defaultExplanationLang, pathname, router]);
 
   const { data, isLoading, isError, error } = useGet<IQiraatDifference, true>(
     `qiraats/${qiraatId}/differences`,
-    filter,
+    { ...filter, lang: explanationLang },
   );
 
   useEffect(() => {
@@ -160,7 +188,13 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
       accessorKey: "explanation",
       header: t("Explanation", { defaultValue: "Explanation" }),
       cell: ({ row }) => (
-        <div className="text-sm rtl:text-right w-full max-w-[300px] lg:max-w-[400px] truncate text-muted-foreground">
+        <div
+          className="text-sm rtl:text-right w-full max-w-[300px] lg:max-w-[400px] truncate text-muted-foreground"
+          dir="rtl"
+        >
+          {explanationLang === "ar" && row.original.explanation_lang === "ku" && (
+            <KurdishOnlyBadge label={t("Kurdish only", { defaultValue: "Kurdish only" })} />
+          )}
           {row.original.explanation}
         </div>
       ),
@@ -270,7 +304,7 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
 
       <Card className="w-full mb-6">
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">
                 {t("Qira'at", { defaultValue: "Qira'at" })}
@@ -318,6 +352,37 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
                 })}
                 allowClear
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                {t("Explanation language", { defaultValue: "Explanation language" })}
+              </label>
+              <div
+                className="inline-flex w-full rounded-md border border-input overflow-hidden"
+                role="group"
+                aria-label={t("Explanation language", { defaultValue: "Explanation language" })}
+              >
+                {EXPLANATION_LANGUAGES.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={explanationLang === option.value}
+                    onClick={() => {
+                      setExplanationLang(option.value);
+                      setFilter((prev) => ({ ...prev, page: 1 }));
+                    }}
+                    className={cn(
+                      "flex-1 px-4 py-2 text-sm transition-colors cursor-pointer",
+                      explanationLang === option.value
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-accent",
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </CardContent>
@@ -382,9 +447,15 @@ export default function QiraatDetailClient({ qiraatId }: { qiraatId: string }) {
                     {t("Explanation", { defaultValue: "Explanation" })}
                   </h4>
                   <div className="bg-background border rounded-xl p-6 shadow-sm">
-                    <p className="text-base md:text-lg leading-loose text-foreground whitespace-pre-wrap">
+                    <p
+                      className="text-base md:text-lg leading-loose text-foreground whitespace-pre-wrap"
+                      dir="rtl"
+                    >
                       {diff.explanation}
                     </p>
+                    {explanationLang === "ar" && diff.explanation_lang === "ku" && (
+                      <KurdishOnlyBadge label={t("Kurdish only", { defaultValue: "Kurdish only" })} />
+                    )}
                   </div>
                 </div>
 

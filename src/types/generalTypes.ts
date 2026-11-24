@@ -103,6 +103,7 @@ export interface IFilter {
   q?: string;
   with_images?: string;
   language?: BookLanguage;
+  lang?: "ku" | "ar"; // language of the qiraat-difference explanations
 }
 
 export interface IUser {
